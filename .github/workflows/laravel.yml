@@ -10,6 +10,8 @@ jobs:
   laravel-tests:
 
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./PartyApp
     
     steps:
     - uses: actions/checkout@v2
