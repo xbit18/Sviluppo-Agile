@@ -13,6 +13,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+<<<<<<< Updated upstream
 Route::get('/', function () {
     return view('welcome');
 });
+=======
+Route::get('/index', function() {
+    return view('user/pages/index');
+});
+
+Auth::routes(['verify' => true]);
+
+/**
+ * UNAUTHENTICATED ROUTES
+ */
+Route::get('/', 'HomeController@index')->name('home')->middleware('verified');
+Route::get('home', function () {
+    return redirect('/');
+});
+
+/** 
+ * PARTY MANAGEMENT
+ */
+Route::get('/party/create', 'PartyController@create')->name('party.create')->middleware('verified');
+Route::post('/party', 'PartyController@store')->name('party.store')->middleware('verified');
+
+
+>>>>>>> Stashed changes

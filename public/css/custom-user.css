@@ -1,0 +1,17 @@
+.main-container {
+    margin-bottom: 100px;
+}
+
+.classy-nav-container {
+    background-color: #000000 !important; 
+}
+
+.custom-link {
+    text-transform: uppercase;
+    color: #666666;
+    font-size: 14px;
+}
+
+.custom-link:hover {
+    color: #f55656;
+}
