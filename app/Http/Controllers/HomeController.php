@@ -18,6 +18,7 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
+
     /**
      * Show the application dashboard.
      *
@@ -25,7 +26,12 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        return view('home', ['user'=>$user]);
+        /**
+         * Se l'utente è loggato restituisce la schermata di home altrimenti quella di login
+         */
+        if(Auth::check()) 
+            return view('user.pages.home', ['user' => Auth::user() ]); 
+        else
+            return view('auth.login');
     }
 }

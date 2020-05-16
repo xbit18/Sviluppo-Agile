@@ -8,6 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class PartyController extends Controller
 {
+
+    /**
+     * Mostra il form di creazione del party
+     */
+    public function create() {
+        return view('user.pages.create_party');
+    }
+
+    /**
+     * Effettua la creazione del party
+     */
     public function store(Request $request){
         $party = Party::create([
             'user_id' => Auth::id(),
@@ -18,6 +29,6 @@ class PartyController extends Controller
             'source' => $request->source
         ]);
 
-        return view('party', ['party'=>$party]);
+        return view('user.pages.party', ['party'=>$party]);
     }
 }
