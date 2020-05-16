@@ -46,12 +46,12 @@
                                 <div class="form-group">
                                     <label for="partyname">Party Name</label>
                                     <input type="text" class="form-control" id="partyname" aria-describedby="partyname_help" placeholder="es. My Rock Party" name="name">
-                                    <small id="partyname_help" class="form-text text-muted">Party Name will be user by your friends to search your party</small>
+                                    <small id="partyname_help" class="form-text text-muted">The Party Name will be used by your friends to find your party</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="partymood">Party Mood</label>
                                     <input type="tet" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood">
-                                    <small id="partymood_help" class="form-text text-muted">Party mood tell party theme</small>
+                                    <small id="partymood_help" class="form-text text-muted">The Party Mood suggests the party theme</small>
                                 </div>
                                 <div class="form-group">
                                     <label class="description" for="partytype">Party Type </label>
@@ -72,14 +72,14 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="description" for="source">Party Genre </label>
+                                    <label class="description" for="source">Music Source </label>
                                     <select class="form-control form-control-sm" id="source" name="source">
                                         <option>YouTube</option>
                                         <option>Spotify</option>
                                         <option>SoundCloud</option>
                                     </select>
                                 </div>
-                                
+
                                 <button type="submit" class="btn poca-btn">Create</button>
                             </form>
 
@@ -90,5 +90,5 @@
         </div>
     </div>
 
-      
+
 @endsection
