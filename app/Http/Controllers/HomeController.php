@@ -25,11 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-<<<<<<< HEAD
-        return view('home');
-=======
         $user = Auth::user();
         return view('home', ['user'=>$user]);
->>>>>>> c7183762243e71ebc5194eb3d951a0c897beec83
     }
 }
