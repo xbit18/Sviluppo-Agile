@@ -49839,8 +49839,13 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
+<<<<<<< HEAD
 __webpack_require__(/*! D:\wamp64\www\Agile\resources\js\app.js */"./resources/js/app.js");
 module.exports = __webpack_require__(/*! D:\wamp64\www\Agile\resources\sass\app.scss */"./resources/sass/app.scss");
+=======
+__webpack_require__(/*! E:\Desktop\Progetti\SviluppoAgile\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! E:\Desktop\Progetti\SviluppoAgile\resources\sass\app.scss */"./resources/sass/app.scss");
+>>>>>>> c7183762243e71ebc5194eb3d951a0c897beec83
 
 
 /***/ })

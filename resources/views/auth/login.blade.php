@@ -8,7 +8,11 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
+<<<<<<< HEAD
                     <form method="POST" action="/login">
+=======
+                    <form method="POST" action="{{ route('login') }}">
+>>>>>>> c7183762243e71ebc5194eb3d951a0c897beec83
                         @csrf
 
                         <div class="form-group row">
@@ -53,7 +57,11 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
+<<<<<<< HEAD
                                 <button name="login" type="submit" class="btn btn-primary">
+=======
+                                <button type="submit" class="btn btn-primary">
+>>>>>>> c7183762243e71ebc5194eb3d951a0c897beec83
                                     {{ __('Login') }}
                                 </button>
 
