@@ -10,19 +10,37 @@ use App\User;
 class PartyTest extends TestCase
 {
     use RefreshDatabase;
+
+    /** @test **/
+
+    public function only_if_logged_in_can_create_party(){
+
+        $response = $this->get('/party/create');
+        $response->assertRedirect('/login');
+
+    }
+
+    /** @test **/
+
+    public function if_not_logged_in_cannot_create_party(){
+
+        $response = $this->post('/party',$this->data());
+        $response->assertRedirect('/login');
+        
+    }
+
+
      /** @test **/
     public function party_is_created()
     {
 
-        $this->withoutMiddleware();
         $this->withoutExceptionHandling();
-        $user = factory(User::class)->create([
-            'email_verified_at' => date("Y-m-d H:i:s")
-        ]);
+        $user = factory(User::class)->create();
+        $user->markEmailAsVerified();
         
         $response = $this->actingAs($user)->post('/party',$this->data());
 
-        $response->assertStatus(302)->assertRedirect('/party');
+        $response->assertSee('Party created succesfully');
     }
 
     private function data(){

@@ -15,7 +15,7 @@ class logInTest extends TestCase
     /** @test **/
     public function if_not_logged_in_redirect_log_in_page()
     {
-        $response = $this->get('/home');
+        $response = $this->get('/');
 
         $response->assertRedirect('/login');
     }
@@ -25,7 +25,7 @@ class logInTest extends TestCase
     public function users_can_register(){
 
         $this->withoutExceptionHandling();
-        $response = $this->get('register');
+        $response = $this->get('/register');
         $response->assertStatus(200);
 
         $response = $this->post('/register', $this->data());
@@ -47,12 +47,13 @@ class logInTest extends TestCase
         $user = factory(User::class)->create([
             'password' => bcrypt($password = 'password123'),
         ]);
+        $user->markEmailAsVerified();
     
         $response = $this->post('/login',[
             'email' => $user->email,
             'password' => $password,
         ]);
-        $response->assertRedirect('/home');
+        $response->assertRedirect('/');
         $this->assertAuthenticatedAs($user);
 
     }
