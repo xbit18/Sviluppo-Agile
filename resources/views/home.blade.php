@@ -14,9 +14,6 @@
                         </div>
                     @endif
 
-<<<<<<< HEAD
-                    You are logged in!
-=======
                     You are logged in!<br>
                         Name: {{ $user->name }}<br>
                         Email: {{ $user->email }}
@@ -78,7 +75,6 @@
                                 </ul>
                                 <input style="margin-top:10px; margin-left: 40px; padding-left: 20px; padding-right: 20px;" id="saveForm" class="button_text" type="submit" value="Confirm"/>
                             </form>
->>>>>>> c7183762243e71ebc5194eb3d951a0c897beec83
                 </div>
             </div>
         </div>

@@ -7,17 +7,17 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\User;
 
-class UserTest extends TestCase
+class logInTest extends TestCase
 {
     
     use RefreshDatabase;
 
     /** @test **/
-    public function testExample()
+    public function if_not_logged_in_redirect_log_in_page()
     {
-        $response = $this->get('/');
+        $response = $this->get('/home');
 
-        $response->assertStatus(200);
+        $response->assertRedirect('/login');
     }
 
     /** @test **/
@@ -31,7 +31,7 @@ class UserTest extends TestCase
         $response = $this->post('/register', $this->data());
 
         $this->assertCount(1, User::all());
-        $response->assertRedirect('/home')->assertStatus(302);
+        $response->assertRedirect('/email/verify')->assertStatus(302);
         
     }
 

@@ -18,6 +18,6 @@ class PartyController extends Controller
             'source' => $request->source
         ]);
 
-        return view('party', ['party'=>$party]);
+        return response()->view('party', ['party'=>$party],302);
     }
 }
