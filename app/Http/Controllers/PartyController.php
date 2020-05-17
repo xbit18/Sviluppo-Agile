@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 
 class PartyController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth','verified']);
+    }
 
     /**
      * Mostra il form di creazione del party

@@ -22,13 +22,11 @@ Auth::routes(['verify' => true]);
 /**
  * UNAUTHENTICATED ROUTES
  */
-Route::get('/', 'HomeController@index')->name('home')->middleware('verified');
-Route::get('home', function () {
-    return redirect('/');
-});
+Route::get('/', 'HomeController@index')->name('home');
+
 
 /** 
  * PARTY MANAGEMENT
  */
-Route::get('/party/create', 'PartyController@create')->name('party.create')->middleware('verified');
-Route::post('/party', 'PartyController@store')->name('party.store')->middleware('verified');
+Route::get('/party/create', 'PartyController@create')->name('party.create');
+Route::post('/party', 'PartyController@store')->name('party.store');
