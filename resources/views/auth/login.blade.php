@@ -1,7 +1,34 @@
-@extends('layouts.app')
+@extends('user.layouts.layout')
 
 @section('content')
-<div class="container">
+
+  <!-- ***** Breadcrumb Area Start ***** -->
+  <div class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/bg-img/2.jpg') }});">
+    <div class="container h-100">
+      <div class="row h-100 align-items-center">
+        <div class="col-12">
+          <h2 class="title mt-70">Log In</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="breadcumb--con">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Log In</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ***** Breadcrumb Area End ***** -->
+
+<div class="container main-container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -53,12 +80,12 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                                <button type="submit" class="btn poca-btn">
                                     {{ __('Login') }}
                                 </button>
 
                                 @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                    <a class="custom-link ml-30" href="{{ route('password.request') }}">
                                         {{ __('Forgot Your Password?') }}
                                     </a>
                                 @endif
