@@ -45,7 +45,7 @@ class PartyController extends Controller
         return view('user.pages.party', ['party'=>$party]);
 
         } else{
-            throw ValidationException::withMessages(['genre' => 'This value is incorrect']);
+            return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
         }
 
         

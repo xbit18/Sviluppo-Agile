@@ -64,17 +64,17 @@
                                 <div class="form-group">
                                     <label class="description" for="partygenre">Party Genre </label>
                                     <select class="form-control form-control-sm" id="partygenre" name="genre">
-                                        <option>Rock</option>
+                                        <option>Roc1k</option>
                                         <option>Classic</option>
                                         <option>Metal</option>
                                         <option>EDM</option>
                                     </select>
 
-                                    @error('genre')
+                                    @if($errors->has('genre'))
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                        <strong>{{ $errors->first('genre') }}</strong>
                                     </span>
-                                    @enderror
+                                    @endif
                                 </div>
 
                                 <div class="form-group">
