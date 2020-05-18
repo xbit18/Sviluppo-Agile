@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +26,7 @@ Auth::routes(['verify' => true]);
 Route::get('/', 'HomeController@index')->name('home');
 
 
-/** 
+/**
  * PARTY MANAGEMENT
  */
 Route::get('/party/create', 'PartyController@create')->name('party.create');

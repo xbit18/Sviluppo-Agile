@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartiesTable extends Migration
+class CreateMoodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,10 @@ class CreatePartiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('parties', function (Blueprint $table) {
+        Schema::create('moods', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->text('name');
-            $table->enum('genre', ['Rock','Classic','Metal','EDM']);
-            $table->text('mood');
-            $table->enum('type',['Battle','Democracy']);
-            $table->enum('source',['Youtube','Spotify','SoundCloud']);
             $table->timestamps();
+            $table->string('mood')->unique();
         });
     }
 
@@ -33,7 +28,7 @@ class CreatePartiesTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('parties');
+        Schema::dropIfExists('moods');
         Schema::enableForeignKeyConstraints();
     }
 }
