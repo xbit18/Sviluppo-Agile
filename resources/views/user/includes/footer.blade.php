@@ -10,8 +10,9 @@
           <div class="newsletter-content mb-50">
             <h2>Sign Up To Website</h2>
             <h6>Start to create and share parties with your friends!</h6>
-              <a href="{{ route('register') }}" class="btn poca-btn mt-30">Register </a>
+            <a href="{{ route('register') }}" class="btn poca-btn mt-30">Register </a>
           </div>
+        
         </div>
       @endguest
 

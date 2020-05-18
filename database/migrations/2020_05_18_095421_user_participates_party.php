@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartiesTable extends Migration
+class UserParticipatesParty extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,10 @@ class CreatePartiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('parties', function (Blueprint $table) {
+        Schema::create('user_participates_party', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('party_id');
             $table->unsignedBigInteger('user_id');
-            $table->text('name');
-            $table->enum('genre', ['Rock','Classic','Metal','EDM']);
-            $table->text('mood');
-            $table->enum('type',['Battle','Democracy']);
-            $table->enum('source',['Youtube','Spotify','SoundCloud']);
-            $table->timestamps();
         });
     }
 
@@ -33,7 +28,7 @@ class CreatePartiesTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('parties');
+        Schema::dropIfExists('user_participates_party');
         Schema::enableForeignKeyConstraints();
     }
 }
