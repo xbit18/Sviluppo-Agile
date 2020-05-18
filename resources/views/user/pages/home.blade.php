@@ -3,9 +3,8 @@
 @section('content')
 
 
-
-  <!-- ***** Welcome Area Start ***** -->
-  <section class="welcome-area">
+<!-- ***** Welcome Area Start ***** -->
+<section class="welcome-area">
     <!-- Welcome Slides -->
     <div class="welcome-slides owl-carousel">
 
@@ -17,10 +16,9 @@
               <!-- Welcome Text -->
               <div class="welcome-text">
                 <h2 data-animation="fadeInUp" data-delay="100ms">Bentornato {{ $user->name }}</h2>
-                <h5 data-animation="fadeInUp" data-delay="300ms">You are logged in!</h5>
+                <h5 data-animation="fadeInUp" data-delay="150ms">You are logged in!</h5>
                 <div class="welcome-btn-group">
-                  <a href="{{ route('party.create') }}" class="btn poca-btn m-2 ml-0 active" data-animation="fadeInUp" data-delay="500ms">Create Party</a>
-                  <a href="{{ route('logout') }}" class="btn poca-btn btn-2 m-2" data-animation="fadeInUp" data-delay="700ms">Logout</a>
+                  <a href="{{ route('party.create') }}" class="btn poca-btn m-2 ml-0 active" data-animation="fadeInUp" data-delay="200ms">Create Party</a>
                 </div>
               </div>
             </div>
@@ -30,6 +28,7 @@
 
     </div>
   </section>
-  
 <!-- ***** Welcome Area End ***** -->
+  
+
 @endsection

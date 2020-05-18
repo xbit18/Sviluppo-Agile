@@ -26,31 +26,32 @@
             <div class="classynav">
               <ul id="nav">
                 
-                <li><a href="{{ route('home') }}">Home</a></li>
+                <li class="{{ Route::currentRouteName() == 'home' ? 'current-item' : '' }}" ><a href="{{ route('home') }}">Home</a></li>
                 @auth 
-                    <li><a href="{{ route('party.create') }}">Create Party</a></li>
+                    <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create Party</a></li>
                     <li><a href="#">{{ Auth::user()->name }}</a>
                       <ul class="dropdown">
                         <li>
-                          <a href="{{ route('logout') }}"
+                            <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                               document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
 
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
+                            
                           </li>
                       </ul>
                     </li>
                 @endauth
 
                 @guest
-                <li><a href="{{ route('login') }}">Login</a></li>
-                <li><a href="{{ route('register') }}">Register</a></li>
+                <li class="{{ Route::currentRouteName() == 'login' ? 'current-item' : '' }}" ><a href="{{ route('login') }}">Login</a></li>
+                <li class="{{ Route::currentRouteName() == 'register' ? 'current-item' : '' }}" ><a href="{{ route('register') }}">Register</a></li>
                 @endguest
               </ul>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                  @csrf
+              </form>
 
               <!-- 
               Top Search Area - Per il momento non ci serve  -->

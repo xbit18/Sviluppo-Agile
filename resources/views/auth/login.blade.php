@@ -8,6 +8,7 @@
       <div class="row h-100 align-items-center">
         <div class="col-12">
           <h2 class="title mt-70">Log In</h2>
+          <h5 class="text-white text-center"></h5>
         </div>
       </div>
     </div>
