@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Genre;
 
 class PartyController extends Controller
 {
@@ -24,15 +26,32 @@ class PartyController extends Controller
      * Effettua la creazione del party
      */
     public function store(Request $request){
+
+        $genre = Genre::where('genre',$request->genre)->first();
+
+        /* Se il genero esiste nel db crea la party */
+
+        if($genre){
         $party = Party::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'genre' => $request->genre,
-            'mood' => $request->mood,
-            'type' => $request->type,
-            'source' => $request->source
-        ]);
+                    'user_id' => Auth::id(),
+                    'name' => $request->name,
+                    'mood' => $request->mood,
+                    'type' => $request->type,
+                    'source' => $request->source
+                ]);
+
+        $party->genre()->attach($genre->id);
 
         return view('user.pages.party', ['party'=>$party]);
+
+        } else{
+            throw ValidationException::withMessages(['genre' => 'This value is incorrect']);
+        }
+
+        
+
+
+
+      
     }
 }

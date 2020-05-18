@@ -45,12 +45,12 @@
                             @csrf
                                 <div class="form-group">
                                     <label for="partyname">Party Name</label>
-                                    <input type="text" class="form-control" id="partyname" aria-describedby="partyname_help" placeholder="es. My Rock Party" name="name">
+                                    <input type="text" class="form-control" id="partyname" aria-describedby="partyname_help" placeholder="es. My Rock Party" name="name" required>
                                     <small id="partyname_help" class="form-text text-muted">The Party Name will be used by your friends to find your party</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="partymood">Party Mood</label>
-                                    <input type="tet" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood">
+                                    <input type="tet" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood" required />
                                     <small id="partymood_help" class="form-text text-muted">The Party Mood suggests the party theme</small>
                                 </div>
                                 <div class="form-group">
@@ -69,6 +69,12 @@
                                         <option>Metal</option>
                                         <option>EDM</option>
                                     </select>
+
+                                    @error('genre')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
 
                                 <div class="form-group">

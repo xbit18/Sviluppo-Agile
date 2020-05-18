@@ -13,13 +13,6 @@ class ForeignKeys extends Migration
      */
     public function up()
     {
-        Schema::table('party_has_mood', function(Blueprint $table0) {
-            $table0->foreign('party_id')->references('id')
-                ->on('parties')->onDelete('cascade'); });
-
-        Schema::table('party_has_mood', function(Blueprint $table0) {
-            $table0->foreign('mood_id')->references('id')
-                ->on('moods')->onDelete('cascade'); });
 
         Schema::table('party_has_genre', function(Blueprint $table0) {
             $table0->foreign('party_id')->references('id')

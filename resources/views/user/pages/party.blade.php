@@ -45,7 +45,7 @@
 
                             Party created successfully!<br>
                             Name: {{ $party->name }}<br>
-                            Genre: {{ $party->genre }}<br>
+                            Genre: {{ $party->genre[0]->genre }}<br>
                             Mood: {{ $party->mood }}<br>
                             Type: {{ $party->type }}<br>
                             Source: {{ $party->source }}<br>
