@@ -36,4 +36,17 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /** RELATIONSHIPS **/
+
+    public function party(){
+        return $this->hasOne('App\Party');
+    }
+
+    public function currentParty(){
+        return $this->belongsToMany('App\Party','user_participates_party');
+    }
+
+
+
 }

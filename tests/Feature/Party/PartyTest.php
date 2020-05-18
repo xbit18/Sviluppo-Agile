@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\User;
+use App\Genre;
 
 class PartyTest extends TestCase
 {
@@ -37,6 +38,9 @@ class PartyTest extends TestCase
         $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $user->markEmailAsVerified();
+        $genre = Genre::create([
+            'genre' => 'Rock'
+        ]);
         
         $response = $this->actingAs($user)->post('/party',$this->data());
 

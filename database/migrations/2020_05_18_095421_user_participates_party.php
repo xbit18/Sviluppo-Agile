@@ -16,7 +16,7 @@ class UserParticipatesParty extends Migration
         Schema::create('user_participates_party', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('party_id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->unique();
         });
     }
 

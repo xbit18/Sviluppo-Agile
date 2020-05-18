@@ -17,7 +17,6 @@ class CreatePartiesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->text('name');
-            $table->enum('genre', ['Rock','Classic','Metal','EDM']);
             $table->text('mood');
             $table->enum('type',['Battle','Democracy']);
             $table->enum('source',['Youtube','Spotify','SoundCloud']);
