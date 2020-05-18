@@ -1,16 +1,30 @@
 
+  
   <!-- ***** Newsletter Area Start ***** -->
   <section class="poca-newsletter-area bg-img bg-overlay pt-50 jarallax" style="background-image: url({{ asset('img/bg-img/15.jpg')}});">
     <div class="container">
       <div class="row align-items-center">
+      @guest
         <!-- Newsletter Content -->
         <div class="col-12 col-lg-12">
           <div class="newsletter-content mb-50">
             <h2>Sign Up To Website</h2>
             <h6>Start to create and share parties with your friends!</h6>
+            <a href="{{ route('register') }}" class="btn poca-btn mt-30">Register </a>
           </div>
-        <a href="{{ route('register') }}" class="btn poca-btn mt-30">Register </a>
+        
         </div>
+      @endguest
+
+      @auth
+      <!-- Newsletter Content -->
+      <div class="col-12 col-lg-12">
+          <div class="newsletter-content mb-50">
+            <h2>Let's go!</h2>
+            <h6>Start to create and share parties with your friends!</h6>
+          </div>
+        </div>
+      @endauth
       </div>
     </div>
   </section>

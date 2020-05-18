@@ -28,12 +28,18 @@
   if($.fn.owlCarousel) {
     var welcomeSlider = $('.welcome-slides');
     welcomeSlider.owlCarousel({
-      items: 1,
+      items : 1, 
+      itemsDesktop : false,
+      itemsDesktopSmall : false,
+      itemsTablet: false,
+      itemsMobile : false,
+      touchDrag : false,
+      mouseDrag : false,
       loop: true,
       autoplay: false,
       smartSpeed: 1500,
       animateIn: 'fadeIn',
-      animateOut: 'fadeOut'
+      animateOut: 'fadeOut',
     })
     welcomeSlider.on('translate.owl.carousel', function() {
       var layer = $("[data-animation]");

@@ -2,9 +2,11 @@
     margin-bottom: 100px;
 }
 
+/*
 .classy-nav-container {
     background-color: #000000 !important; 
 }
+*/
 
 .custom-link {
     text-transform: uppercase;
@@ -15,3 +17,21 @@
 .custom-link:hover {
     color: #f55656;
 }
+
+/**
+*   SOVRASCRITTURA MOBILE
+*/
+@media only screen and (max-width: 1199px) {
+    
+    /* OVERRIDE TOP CONTENT */
+    .welcome-text h2, .welcome-text h5, .welcome-btn-group {
+      text-align: center !important;
+    }
+
+    /* OVERRIDE BOTTOM CONTENT */
+    .newsletter-content {
+        text-align: center !important;
+    }
+
+    
+  }
