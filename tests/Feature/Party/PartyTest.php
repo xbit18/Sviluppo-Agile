@@ -38,22 +38,37 @@ class PartyTest extends TestCase
         $this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $user->markEmailAsVerified();
-        $genre = Genre::create([
-            'genre' => 'Rock'
-        ]);
+        /*$genre = Genre::create([
+            'genre' => 'rock'
+        ]);*/
         
         $response = $this->actingAs($user)->post('/party',$this->data());
 
-        $response->assertSee('Party created succesfully');
+        /**
+         * La frase Party created succesfully è stata tolta
+         * Controllo che stia redirezionando verso il link giusto
+         */
+        $response->assertSee('Redirecting to http://localhost/me/party/show');
     }
 
+    /**
+     * Aggiungendo la validazione i campi devono essere così
+     * $validatedData = $request->validate([
+     *      'name' => 'required|string',
+     *      'mood' => 'required|string',
+     *      'type' => 'required|in:Battle,Democracy',
+     *      'desc' => 'required|string',
+     *      'genre' =>'required|array'
+     *   ]);
+     */
     private function data(){
         return [
             'name' => 'ProvaNome',
-            'genre' => 'Rock',
+            'genre' => array('Rock'),
             'mood' => 'ProvaMood',
             'type' => 'Battle',
-            'source' => 'Youtube'
+            'source' => 'Youtube',
+            'desc' => "description"
         ];
     }
 }

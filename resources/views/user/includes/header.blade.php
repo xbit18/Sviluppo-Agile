@@ -26,9 +26,14 @@
             <div class="classynav">
               <ul id="nav">
                 
+                <!-- Generic Links -->
                 <li class="{{ Route::currentRouteName() == 'home' ? 'current-item' : '' }}" ><a href="{{ route('home') }}">Home</a></li>
+
+
                 @auth 
-                    <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create Party</a></li>
+                <!-- Auth Links -->
+                    <li class="{{ Route::currentRouteName() == 'me.party.show' ? 'current-item' : '' }}" ><a href="{{ route('me.party.show') }}">Party</a></li>
+                    <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create</a></li>
                     <li><a href="#">{{ Auth::user()->name }}</a>
                       <ul class="dropdown">
                         <li>
@@ -45,6 +50,7 @@
                 @endauth
 
                 @guest
+                <!-- Guest Links -->
                 <li class="{{ Route::currentRouteName() == 'login' ? 'current-item' : '' }}" ><a href="{{ route('login') }}">Login</a></li>
                 <li class="{{ Route::currentRouteName() == 'register' ? 'current-item' : '' }}" ><a href="{{ route('register') }}">Register</a></li>
                 @endguest
