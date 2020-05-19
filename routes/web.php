@@ -31,3 +31,5 @@ Route::get('/', 'HomeController@index')->name('home');
  */
 Route::get('/party/create', 'PartyController@create')->name('party.create');
 Route::post('/party', 'PartyController@store')->name('party.store');
+
+Route::get('me/party/show', 'PartyController@get_party_by_user')->name('me.party.show');
