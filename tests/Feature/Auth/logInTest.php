@@ -30,7 +30,10 @@ class logInTest extends TestCase
 
         $response = $this->post('/register', $this->data());
 
-        $this->assertCount(1, User::all());
+        /**
+         * Modificato 1 in 2 visto che esiste l'utente statico
+         */
+        $this->assertCount(2, User::all());
         $response->assertRedirect('/email/verify')->assertStatus(302);
         
     }
