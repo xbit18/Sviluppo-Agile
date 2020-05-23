@@ -26,9 +26,9 @@ class StaticSeeder extends Seeder
         DB::table('genres')->insert(['genre' => 'Alternative']);
         DB::table('genres')->insert(['genre' => 'Other']);
 
-        
+
         /**
-         * ADDING STATIC USER 
+         * ADDING STATIC USER
          */
         $user = array(
             'name' => 'Statico',

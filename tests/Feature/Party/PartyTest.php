@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Party;
 
+use App\Party;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 use App\User;
 use App\Genre;
@@ -27,7 +29,7 @@ class PartyTest extends TestCase
 
         $response = $this->post('/party',$this->data());
         $response->assertRedirect('/login');
-        
+
     }
 
 
@@ -41,7 +43,7 @@ class PartyTest extends TestCase
         /*$genre = Genre::create([
             'genre' => 'rock'
         ]);*/
-        
+
         $response = $this->actingAs($user)->post('/party',$this->data());
 
         /**
@@ -49,6 +51,49 @@ class PartyTest extends TestCase
          * Controllo che stia redirezionando verso il link giusto
          */
         $response->assertSee('Redirecting to http://localhost/me/party/show');
+    }
+
+    /** @test **/
+
+    public function party_link_with_code_works(){
+        $code = Str::random(16);
+        $party = Party::create([
+            'user_id' => 1,
+            'name' => 'Prova Nome',
+            'mood' => 'Prova Mood',
+            'type' => 'Democracy',
+            'source' => 'Youtube',
+            'description' => 'Prova Description',
+            'code' => $code
+        ]);
+
+        $party->genre()->attach(4);
+
+        $user = factory(User::class)->create();
+        $user->markEmailAsVerified();
+        $response = $this->actingAs($user)->get('/party/show/'.$code);
+
+        $response->assertJson([
+            'id' => $party->id,
+        ]);
+    }
+
+    /** @test **/
+
+    public function party_link_with_fake_code_fails(){
+        do{
+            $code = Str::random(16);
+        }
+        while(Party::where('code', '=', $code)->exists());
+
+
+        $user = factory(User::class)->create();
+        $user->markEmailAsVerified();
+        $response = $this->actingAs($user)->get('/party/show/'.$code);
+
+        $response->assertJson([
+            'error' => 'This party does not exist',
+        ]);
     }
 
     /**
