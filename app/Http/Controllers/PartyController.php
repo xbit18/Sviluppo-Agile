@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
@@ -16,18 +17,31 @@ class PartyController extends Controller
     }
 
     public function get_party_by_user() {
-        
-        // Controllo (anche se non necessario) se l'utente è loggato 
+
+        // Controllo (anche se non necessario) se l'utente è loggato
         if(Auth::check()) {
 
             $me = Auth::user();
             $genres = Genre::paginate(10);
             $my_party = $me->party;
 
-            return view('user.pages.party', ['party' => $my_party, 'genres' => $genres]);            
+            return view('user.pages.party', ['party' => $my_party, 'genres' => $genres]);
 
         }
 
+    }
+
+    /**
+     * Mostra un party in base al codice
+     */
+    public function show($code){
+        $party = Party::where('code','=',$code)->first();
+
+        if(!$party){
+            return response(['error' => 'This party does not exist'], 404);
+        }
+
+        return $party;
     }
 
     /**
@@ -55,7 +69,7 @@ class PartyController extends Controller
         $genre_ids = array();
 
         /**
-         * Per ogni genere controllo se esiste 
+         * Per ogni genere controllo se esiste
          */
         $validation = true;
         foreach($genres as $genre_in) {
@@ -68,7 +82,15 @@ class PartyController extends Controller
         }
 
         if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
-        
+
+        /**
+         * Genero un nuovo codice finchè sono certo che sia unico all'interno del db
+         */
+        do{
+            $code = Str::random(16);
+        }
+        while(Party::where('code', '=', $code)->exists());
+
         $party = Party::create([
             'user_id' => Auth::id(),
             'name' => $request->name,
@@ -76,6 +98,7 @@ class PartyController extends Controller
             'type' => $request->type,
             'source' => $request->source,
             'description' => $request->desc,
+            'code' => $code,
         ]);
 
         foreach($genre_ids as $id) {
@@ -84,6 +107,6 @@ class PartyController extends Controller
 
 
         return redirect()->route('me.party.show');
-      
+
     }
 }
