@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
+use App\User;
 
 class PartyController extends Controller
 {
@@ -16,16 +17,19 @@ class PartyController extends Controller
         $this->middleware(['auth','verified']);
     }
 
-    public function get_party_by_user() {
+    public function get_parties_by_user() {
 
         // Controllo (anche se non necessario) se l'utente è loggato
         if(Auth::check()) {
 
             $me = Auth::user();
-            $genres = Genre::paginate(10);
-            $my_party = $me->party;
+            $my_parties = $me->parties;
 
-            return view('user.pages.party', ['party' => $my_party, 'genres' => $genres]);
+            $my_parties->map(function ($party) {
+                $party->genre_id = $party->genre->first()->id;
+            });
+
+            return view('user.pages.my_parties', ['parties' => $my_parties]);
 
         }
 
@@ -35,13 +39,19 @@ class PartyController extends Controller
      * Mostra un party in base al codice
      */
     public function show($code){
+
+
         $party = Party::where('code','=',$code)->first();
 
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
 
-        return $party;
+        $genres = Genre::paginate(10);
+        $party->genre_id = $party->genre->first()->id;
+
+        return view('user.pages.party', ['party' => $party, 'genres' => $genres]);
+
     }
 
     /**
@@ -106,7 +116,54 @@ class PartyController extends Controller
         }
 
 
-        return redirect()->route('me.party.show');
+        return redirect()->route('me.parties.show');
+
+    }
+
+    public function invite(Request $request, $code) {
+
+        /**
+         * Controllo se il party esiste
+         */
+        $party = Party::where('code', '=', $code)->first();
+
+        /**
+         * Logica di analisi stringa di utenti della forma
+         * (Nome - email),(Nome - email),(Nome - email)
+         * 
+         * MIGLIORABILE IN TERMINI DI OTTIMIZZAZIONE E FUNZIONALITA'
+         * 
+         * 1 - Ottengo l'array usando explode sul carattere ","
+         * 2 - Rimuovo le parentesi dagli elementi
+         * 3 - Separo il restante in un miniarray di Nome,-,email
+         * 4 - prendo soltanto l'email e ho le email degli utenti
+         */
+        $users_array = explode(",", $request->invite_list);
+        $user_emails = array();
+        foreach($users_array as $user_item) {
+
+            /**
+             * CONTROLLO TRAMITE REGEX SE IL FORMATO E' CORRETTO
+             */
+            if(!preg_match('/(\([a-zA-Z]+ - [_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})\)){1}/', $user_item)) abort(400, 'La stringa è malformata : ' . $user_item);
+            $user_item = str_replace("(", "", $user_item);
+            $user_item = str_replace(")", "", $user_item);
+            $mini_arr = explode(" ", $user_item);
+            if($mini_arr[2])
+                array_push($user_emails, $mini_arr[2]);
+            else abort(500);
+        }
+
+        /**
+         * Scorro le email e vedo se sono valide
+         */
+        $users = User::whereIn('email', $user_emails)->get();
+        return $users;
+
+        /**
+         * LOGICA DI INVIO EMAIL MANCANTE
+         */
+        
 
     }
 }

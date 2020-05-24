@@ -8,7 +8,7 @@
     <div class="container h-100">
       <div class="row h-100 align-items-center">
         <div class="col-12">
-          <h2 class="title mt-70">My Party</h2>
+          <h2 class="title mt-70">Party Details</h2>
         </div>
       </div>
     </div>
@@ -20,7 +20,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">My Party</li>
+              <li class="breadcrumb-item active" aria-current="page">...</li>
             </ol>
           </nav>
         </div>
@@ -31,6 +31,8 @@
 
 
 @isset($party)
+@include('user._shared.invite', ['code' => $party->code ])
+
 <!-- ***** Blog Details Area Start ***** -->
 <section class="blog-details-area">
     <div class="container">
@@ -52,7 +54,7 @@
 
             <!-- Post Details Text -->
             <div class="post-details-text">
-              <img src="{{ asset('img/bg-img/23.jpg') }}" class="mb-30" alt="">
+              <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="mb-30" alt="">
 
               <div class="post-content">
                 <a href="#" class="post-date">{{ $party->created_at }}</a>
@@ -181,6 +183,9 @@
     </div>
   </section>
   <!-- ***** Blog Details Area End ***** -->
+
+  
+
   @endisset
 
 

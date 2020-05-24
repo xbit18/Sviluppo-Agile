@@ -32,7 +32,7 @@
 
                 @auth 
                 <!-- Auth Links -->
-                    <li class="{{ Route::currentRouteName() == 'me.party.show' ? 'current-item' : '' }}" ><a href="{{ route('me.party.show') }}">Party</a></li>
+                    <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="{{ route('me.parties.show') }}">My Parties</a></li>
                     <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create</a></li>
                     <li><a href="#">{{ Auth::user()->name }}</a>
                       <ul class="dropdown">

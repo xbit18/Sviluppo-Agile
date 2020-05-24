@@ -32,6 +32,12 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('/party/create', 'PartyController@create')->name('party.create');
 Route::post('/party', 'PartyController@store')->name('party.store');
 
-Route::get('me/party/show', 'PartyController@get_party_by_user')->name('me.party.show');
+Route::get('me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
 
 Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
+
+/**
+ * Invite routes
+ */
+Route::get('/users/{email}/nome', 'UserController@get_name_by_email')->name('user.namebyemail');
+Route::post('/party/{code}/invite/', 'PartyController@invite')->name('party.invite');

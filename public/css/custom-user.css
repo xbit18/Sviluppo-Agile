@@ -1,3 +1,7 @@
+body {
+    overflow-x: hidden ; 
+}
+
 .main-container {
     margin-bottom: 100px;
 }
@@ -18,6 +22,14 @@
     color: #f55656;
 }
 
+.form-control {
+    text-transform: none !important;
+}
+
+#invite_list {
+    font-family: cursive !important;
+}
+
 /**
 *   SOVRASCRITTURA MOBILE
 */
@@ -32,6 +44,8 @@
     .newsletter-content {
         text-align: center !important;
     }
+
+    
 
     
   }

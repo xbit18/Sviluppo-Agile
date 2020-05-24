@@ -73,9 +73,7 @@ class PartyTest extends TestCase
         $user->markEmailAsVerified();
         $response = $this->actingAs($user)->get('/party/show/'.$code);
 
-        $response->assertJson([
-            'id' => $party->id,
-        ]);
+        $response->assertStatus(200);
     }
 
     /** @test **/
@@ -96,6 +94,95 @@ class PartyTest extends TestCase
         ]);
     }
 
+    /** @test */
+    public function user_can_invite_people() {
+        
+        $user = factory(User::class)->create();
+        $user->name = 'Bryant';
+        $user->email = 'bryantsarabia@example.com';
+        $user->markEmailAsVerified();
+
+        $data_invite = [
+            'invite_list' => '(' . $user->name . ' - ' . $user->email . ')',
+        ];
+
+        $response = $this->actingAs($user)->post('/party/ederWGcVCp0ASTqx/invite', $data_invite);
+
+        $response->assertJson([ 
+            [
+                "name" => "Bryant",
+                "email" => "bryantsarabia@example.com"
+            ]
+         ]);
+
+    }
+
+    /** @test */
+    public function user_cannot_invite_fake_people() {
+        
+        $user = factory(User::class)->create();
+        $user->name = 'Bryant';
+        $user->email = 'bryantsarabia@example.com';
+        $user->markEmailAsVerified();
+
+        $data_invite = [
+            'invite_list' => '(' . $user->name . 'de - de' . $user->email . ')',
+        ];
+
+        $response = $this->actingAs($user)->post('/party/ederWGcVCp0ASTqx/invite', $data_invite);
+
+        $response->assertJson([]);
+
+    }
+
+    /** @test */
+    public function user_cannot_manipulate_invite_field() {
+        
+        $user = factory(User::class)->create();
+        $user->name = 'Bryant';
+        $user->email = 'bryantsarabia@example.com';
+        $user->markEmailAsVerified();
+
+        //INVALIDO L'EMAIL 
+        $data_invite = [
+            'invite_list' => '(' . $user->name . 'de - ' . $user->email . 'cde)',
+        ];
+
+        $response = $this->actingAs($user)->post('/party/ederWGcVCp0ASTqx/invite', $data_invite);
+
+        // Ritorna 400 -> Bad Request
+        $response->assertStatus(400);
+
+    }
+
+    /** @test */
+    public function user_can_find_name_by_email_from_ajax() {
+
+        $user = factory(User::class)->create();
+        $user->name = 'Bryant';
+        $user->email = 'bryantsarabia@example.com';
+        $user->markEmailAsVerified();
+
+        $response = $this->actingAs($user)->get('/users/' . $user->email . '/nome', array('HTTP_X-Requested-With' => 'XMLHttpRequest'));
+
+        // Ritorna 400 -> Bad Request
+        $response->assertSee('Bryant');
+    }
+
+    /** @test */
+    public function user_cannot_find_name_by_email_if_not_from_ajax() {
+
+        $user = factory(User::class)->create();
+        $user->name = 'Bryant';
+        $user->email = 'bryantsarabia@example.com';
+        $user->markEmailAsVerified();
+
+        $response = $this->actingAs($user)->get('/users/' . $user->email . '/nome');
+
+        // Ritorna 400 -> Bad Request
+        $response->assertStatus(500);
+    }
+
     /**
      * Aggiungendo la validazione i campi devono essere così
      * $validatedData = $request->validate([
@@ -112,6 +199,7 @@ class PartyTest extends TestCase
             'genre' => array('Rock'),
             'mood' => 'ProvaMood',
             'type' => 'Battle',
+            'code' => 'ederWGcVCp0ASTqx',
             'source' => 'Youtube',
             'desc' => "description"
         ];
