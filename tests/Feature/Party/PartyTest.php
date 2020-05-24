@@ -13,6 +13,30 @@ use App\Genre;
 class PartyTest extends TestCase
 {
     use RefreshDatabase;
+    protected $party;
+    protected $user;
+    protected $code;
+
+    public function setUp() :void{
+
+        parent::setUp();
+
+        $this->user = factory(User::class)->create();
+        $this->user->markEmailAsVerified();
+
+        $this->code = Str::random(16);
+
+        $this->party = Party::create([
+            'user_id' => $this->user->id,
+            'name' => 'Prova Nome',
+            'mood' => 'Prova Mood',
+            'type' => 'Democracy',
+            'source' => 'Youtube',
+            'description' => 'Prova Description',
+            'code' => $this->code
+        ]);
+        $this->party->genre()->attach(4);
+    }
 
     /** @test **/
 
@@ -38,13 +62,7 @@ class PartyTest extends TestCase
     {
 
         $this->withoutExceptionHandling();
-        $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
-        /*$genre = Genre::create([
-            'genre' => 'rock'
-        ]);*/
-
-        $response = $this->actingAs($user)->post('/party',$this->data());
+        $response = $this->actingAs($this->user)->post('/party',$this->data());
 
         /**
          * La frase Party created succesfully è stata tolta
@@ -56,22 +74,8 @@ class PartyTest extends TestCase
     /** @test **/
 
     public function party_link_with_code_works(){
-        $code = Str::random(16);
-        $party = Party::create([
-            'user_id' => 1,
-            'name' => 'Prova Nome',
-            'mood' => 'Prova Mood',
-            'type' => 'Democracy',
-            'source' => 'Youtube',
-            'description' => 'Prova Description',
-            'code' => $code
-        ]);
 
-        $party->genre()->attach(4);
-
-        $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
-        $response = $this->actingAs($user)->get('/party/show/'.$code);
+        $response = $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
 
         $response->assertStatus(200);
     }
@@ -80,14 +84,11 @@ class PartyTest extends TestCase
 
     public function party_link_with_fake_code_fails(){
         do{
-            $code = Str::random(16);
+            $this->code = Str::random(16);
         }
-        while(Party::where('code', '=', $code)->exists());
+        while(Party::where('code', '=', $this->code)->exists());
 
-
-        $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
-        $response = $this->actingAs($user)->get('/party/show/'.$code);
+        $response = $this->actingAs($this->user)->get('/party/show/'.$this->code);
 
         $response->assertJson([
             'error' => 'This party does not exist',
