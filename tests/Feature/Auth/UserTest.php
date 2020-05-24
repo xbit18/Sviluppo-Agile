@@ -7,10 +7,23 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\User;
 
-class logInTest extends TestCase
+class UserTest extends TestCase
 {
     
     use RefreshDatabase;
+    protected $user;
+    protected $password;
+
+    public function setUp() :void{
+
+        parent::setUp();
+
+        $this->user = factory(User::class)->create([
+            'password' => bcrypt($this->password = 'password123'),
+        ]);
+        $this->user->markEmailAsVerified();
+
+    }
 
     /** @test **/
     public function if_not_logged_in_redirect_log_in_page()
@@ -31,9 +44,9 @@ class logInTest extends TestCase
         $response = $this->post('/register', $this->data());
 
         /**
-         * Modificato 1 in 2 visto che esiste l'utente statico
+         * Modificato 2 in 3 visto che esiste l'utente statico, un altro viene creato al testare la registrazione e l'altro al iniziare il test con la funzione setUp()
          */
-        $this->assertCount(2, User::all());
+        $this->assertCount(3, User::all());
         $response->assertRedirect('/email/verify')->assertStatus(302);
         
     }
@@ -46,18 +59,13 @@ class logInTest extends TestCase
 
         $response = $this->get('/login');
         $response->assertStatus(200);
-
-        $user = factory(User::class)->create([
-            'password' => bcrypt($password = 'password123'),
-        ]);
-        $user->markEmailAsVerified();
     
         $response = $this->post('/login',[
-            'email' => $user->email,
-            'password' => $password,
+            'email' => $this->user->email,
+            'password' => $this->password
         ]);
         $response->assertRedirect('/');
-        $this->assertAuthenticatedAs($user);
+        $this->assertAuthenticatedAs($this->user);
 
     }
 
@@ -65,21 +73,15 @@ class logInTest extends TestCase
 
     public function users_cannot_log_in_with_incorrect_password(){
 
-        $user = factory(User::class)->create([
-            'password' => bcrypt($password = 'password123')
-        ]);
 
         $response = $this->from('/login')->post('/login',[
-            'email' => $user->email,
+            'email' => $this->user->email,
             'password' => 'invalid-password',
         ]);
         
         $response->assertRedirect('/login');
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
-        
-
-
     }
 
     private function data(){
@@ -90,4 +92,5 @@ class logInTest extends TestCase
             'password_confirmation' => 'password123'
         ];
     }
+
 }
