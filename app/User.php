@@ -38,8 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /** RELATIONSHIPS **/
-
-    public function party(){
+    public function parties(){
         return $this->hasMany('App\Party');
     }
 
