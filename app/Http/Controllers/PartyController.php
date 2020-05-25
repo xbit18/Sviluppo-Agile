@@ -9,6 +9,8 @@ use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
 use App\User;
+use app\Events\MusicPaused;
+
 
 class PartyController extends Controller
 {
@@ -115,7 +117,6 @@ class PartyController extends Controller
             $party->genre()->attach($id);
         }
 
-
         return redirect()->route('me.parties.show');
 
     }
@@ -164,6 +165,13 @@ class PartyController extends Controller
          * LOGICA DI INVIO EMAIL MANCANTE
          */
         
+
+    }
+
+    public function pause(Request $request){
+
+        $time = $request->time;
+        event(new MusicPaused(100));
 
     }
 }

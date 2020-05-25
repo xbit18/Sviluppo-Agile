@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Events\MusicPaused;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -31,10 +33,14 @@ Route::get('/', 'HomeController@index')->name('home');
  */
 Route::get('/party/create', 'PartyController@create')->name('party.create');
 Route::post('/party', 'PartyController@store')->name('party.store');
-
 Route::get('me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
-
 Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
+
+Route::post('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
+
+Route::get('party/pause',function(){
+    broadcast(new MusicPaused(123));
+});
 
 /**
  * Invite routes
