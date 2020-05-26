@@ -51,4 +51,3 @@ window.Echo = new Echo({
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
-
