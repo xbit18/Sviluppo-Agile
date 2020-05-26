@@ -190,7 +190,7 @@ class PartyController extends Controller
         Prendo il model Party e lo mando all'evento
         */
         $party = Party::where('code',$code)->first();
-        broadcast(new MusicPaused($party))->toOthers();
+        broadcast(new PlayerPaused($party))->toOthers();
     }
 
     public function play($code){
@@ -198,6 +198,6 @@ class PartyController extends Controller
         Prendo il model Party e lo mando all'evento
         */
         $party = Party::where('code',$code)->first();
-        broadcast(new MusicPlayed($party))->toOthers();
+        broadcast(new PlayerPlayed($party))->toOthers();
     }
 }
