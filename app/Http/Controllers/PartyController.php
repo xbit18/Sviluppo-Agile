@@ -11,6 +11,8 @@ use App\Events\PlayerPlayed;
 use App\Genre;
 use App\Party;
 use App\User;
+use SpotifyWebAPI\Session;
+use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PartyController extends Controller
@@ -132,9 +134,9 @@ class PartyController extends Controller
         /**
          * Logica di analisi stringa di utenti della forma
          * (Nome - email),(Nome - email),(Nome - email)
-         * 
+         *
          * MIGLIORABILE IN TERMINI DI OTTIMIZZAZIONE E FUNZIONALITA'
-         * 
+         *
          * 1 - Ottengo l'array usando explode sul carattere ","
          * 2 - Rimuovo le parentesi dagli elementi
          * 3 - Separo il restante in un miniarray di Nome,-,email
@@ -165,10 +167,10 @@ class PartyController extends Controller
         /**
          * LOGICA DI INVIO EMAIL MANCANTE
          */
-        
+
 
     }
-    
+
 
     public function getSong() {
         //$path = storage_path().$song->path.".mp3";
@@ -176,14 +178,14 @@ class PartyController extends Controller
         $user = Auth::user();
         if($user) {
             $response = new BinaryFileResponse($path);
-            BinaryFileResponse::trustXSendfileTypeHeader(); 
-            return $response; 
-        } 
-        abort(400); 
+            BinaryFileResponse::trustXSendfileTypeHeader();
+            return $response;
+        }
+        abort(400);
     }
 
     /* ------------------- EVENTS ------------------ */
-    
+
     public function pause($code){
 
         /*
@@ -199,5 +201,90 @@ class PartyController extends Controller
         */
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerPlayed($party))->toOthers();
+    }
+
+
+
+
+
+
+
+
+
+    public function load()
+    {
+        $session = new Session(
+            '03cf764ae57d4984834da3db10d241d2',
+            'bc1b66fe0e0f40c7bc5cc62af87a5a50',
+            'http://127.0.0.1:8000/callback'
+        );
+
+
+        $options = [
+            'scope' => [
+                'playlist-read-private',
+                'user-read-private',
+                'user-read-email',
+                'streaming'
+            ],
+        ];
+
+        header('Location: ' . $session->getAuthorizeUrl($options));
+        die();
+
+    }
+
+    public function getAuthCode(Request $request){
+        $session = new Session(
+            '03cf764ae57d4984834da3db10d241d2',
+            'bc1b66fe0e0f40c7bc5cc62af87a5a50',
+            'http://127.0.0.1:8000/callback'
+        );
+
+// Request a access token using the code from Spotify
+        $session->requestAccessToken($_GET['code']);
+
+        $accessToken = $session->getAccessToken();
+        $user = Auth::user();
+        $user->access_token = $accessToken;
+        $user -> save();
+
+// Store the access token somewhere. In a database for example.
+        return redirect()->back();
+    }
+
+    public function logout(){
+        $user = User::all()->first();
+        if(!$user) return redirect('/');
+
+        $user->delete();
+        return redirect('/');
+    }
+
+
+    public function playpause($state)
+    {
+        $api = new SpotifyWebAPI();
+
+        $user = User::all()->first();
+        // Fetch the saved access token from somewhere. A database for example.
+        $api->setAccessToken($user->access_token);
+
+        if($state == 'play'){
+            $api->play();
+        }
+
+        if($state == 'pause'){
+            $api->pause();
+        }
+
+        return redirect()->back();
+    }
+
+    public function page(){
+        $user = User::all()->first();
+        if(!$user) return redirect('/');
+
+        return view('playback');
     }
 }
