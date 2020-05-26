@@ -72,5 +72,10 @@ $( document ).ready( function() {
         $('#invite_btn').attr('disabled', true);
     });
 
+
+    if( $('.autofade').length ) {
+        $('.autofade').modal('show');
+    }
+
 });
 
