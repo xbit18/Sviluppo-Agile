@@ -167,16 +167,7 @@ class PartyController extends Controller
         
 
     }
-
-    public function pause($code){
-
-        /*
-        Prendo il model Party e lo mando all'evento
-        */
-        
-        $party = Party::where('code',$code)->first();
-        broadcast(new MusicPaused($party))->toOthers();
-    }
+    
 
     public function getSong() {
         //$path = storage_path().$song->path.".mp3";
@@ -188,5 +179,24 @@ class PartyController extends Controller
             return $response; 
         } 
         abort(400); 
+    }
+
+    /* ------------------- EVENTS ------------------ */
+    
+    public function pause($code){
+
+        /*
+        Prendo il model Party e lo mando all'evento
+        */
+        $party = Party::where('code',$code)->first();
+        broadcast(new MusicPaused($party))->toOthers();
+    }
+
+    public function play($code){
+          /*
+        Prendo il model Party e lo mando all'evento
+        */
+        $party = Party::where('code',$code)->first();
+        broadcast(new MusicPlayed($party))->toOthers();
     }
 }
