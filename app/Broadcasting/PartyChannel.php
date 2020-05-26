@@ -33,6 +33,9 @@ class PartyChannel
         // }else{
         //     return false;
         // }
-        return (['user' => $user]);
+        return([
+            'id' => $user->id,
+            'name' => $user->name,
+        ]);
     }
 }
