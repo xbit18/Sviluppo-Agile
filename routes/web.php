@@ -44,3 +44,4 @@ Route::get('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
  */
 Route::get('/users/{email}/nome', 'UserController@get_name_by_email')->name('user.namebyemail');
 Route::post('/party/{code}/invite/', 'PartyController@invite')->name('party.invite');
+Route::get('/song', 'PartyController@getSong');

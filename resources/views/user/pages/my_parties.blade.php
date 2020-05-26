@@ -64,7 +64,28 @@
             </div>
             </div>
          @empty
-         <p>No Parties</p>
+         <!-- Modal -->
+          <div class="modal fade autofade" id="noPartiesModal" tabindex="-1" role="dialog" aria-labelledby="noPartiesModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Warning</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                You must have created at least one party to view your party list. <br/>
+                <ol class="breadcrumb mt-2">
+                  <li class="breadcrumb-item"><i class="fa fa-arrow-right mr-3"></i><i class="fa fa-home"></i> Home</li>
+                  <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('party.create') }}">Create</a></li>
+                </ol>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-success" data-dismiss="modal">Okay, I Understand</button>
+                </div>
+              </div>
+            </div>
          @endforelse
         
 

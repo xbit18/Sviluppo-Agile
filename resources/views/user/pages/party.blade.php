@@ -186,6 +186,6 @@
 
   @endisset
 
-@include('events.partyEvents')
+@include('user._shared.events.partyEvents')
 
 @endsection

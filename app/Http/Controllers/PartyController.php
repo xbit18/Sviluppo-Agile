@@ -10,8 +10,7 @@ use App\Events\MusicPaused;
 use App\Genre;
 use App\Party;
 use App\User;
-
-
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PartyController extends Controller
 {
@@ -177,6 +176,17 @@ class PartyController extends Controller
         
         $party = Party::where('code',$code)->first();
         broadcast(new MusicPaused($party))->toOthers();
+    }
 
+    public function getSong() {
+        //$path = storage_path().$song->path.".mp3";
+        $path = public_path() . "\audio\dummy-audio.mp3";
+        $user = Auth::user();
+        if($user) {
+            $response = new BinaryFileResponse($path);
+            BinaryFileResponse::trustXSendfileTypeHeader(); 
+            return $response; 
+        } 
+        abort(400); 
     }
 }
