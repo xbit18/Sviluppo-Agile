@@ -15,3 +15,7 @@
   <script src="{{ asset('js/default-assets/active.js')}}"></script>
   <!-- CUSTOM js -->
   <script src="{{ asset('js/custom-user.js')}}"></script>
+  <!-- APP JS -->
+  <script src="{{ asset('js/app.js') }}"></script>
+  
+  

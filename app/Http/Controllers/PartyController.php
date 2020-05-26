@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Events\PlayerPaused;
+use App\Events\PlayerPlayed;
 use App\Genre;
 use App\Party;
 use App\User;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PartyController extends Controller
 {
@@ -115,7 +118,6 @@ class PartyController extends Controller
             $party->genre()->attach($id);
         }
 
-
         return redirect()->route('me.parties.show');
 
     }
@@ -165,5 +167,37 @@ class PartyController extends Controller
          */
         
 
+    }
+    
+
+    public function getSong() {
+        //$path = storage_path().$song->path.".mp3";
+        $path = public_path() . "\audio\dummy-audio.mp3";
+        $user = Auth::user();
+        if($user) {
+            $response = new BinaryFileResponse($path);
+            BinaryFileResponse::trustXSendfileTypeHeader(); 
+            return $response; 
+        } 
+        abort(400); 
+    }
+
+    /* ------------------- EVENTS ------------------ */
+    
+    public function pause($code){
+
+        /*
+        Prendo il model Party e lo mando all'evento
+        */
+        $party = Party::where('code',$code)->first();
+        broadcast(new PlayerPaused($party))->toOthers();
+    }
+
+    public function play($code){
+          /*
+        Prendo il model Party e lo mando all'evento
+        */
+        $party = Party::where('code',$code)->first();
+        broadcast(new PlayerPlayed($party))->toOthers();
     }
 }
