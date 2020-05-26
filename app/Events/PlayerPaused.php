@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Events;
-
+use App\Party;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -9,10 +10,8 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 
-
-class MusicPlayed implements ShouldBroadcast
+class PlayerPaused implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -45,7 +44,7 @@ class MusicPlayed implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'music.played';
+        return 'player.paused';
     }
 
     public function broadcastWhen(){

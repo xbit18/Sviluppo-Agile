@@ -23,13 +23,13 @@ $( document ).ready( function() {
 
   /* Music Pause */
 
-  channel.listen('.music.paused', () => {
-    console.log('music paused')
+  channel.listen('.player.paused', () => {
+    console.log('player paused')
   })
   
   /* Music Play */
-  channel.listen('.music.played', (/** Informazione sul brano**/) => {
-    console.log('music played')
+  channel.listen('.player.played', (/** Informazione sul brano**/) => {
+    console.log('player played')
   })
 
 })
