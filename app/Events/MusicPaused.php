@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Events;
-
+use App\Party;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -15,16 +16,16 @@ class MusicPaused implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $code;
+    public $party;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($code)
+    public function __construct(Party $party)
     {
-      $this->code = $code;
+      $this->party = $party;
     }
 
     /**
@@ -34,7 +35,7 @@ class MusicPaused implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('my-party');
+        return new Channel('party.'.$this->party->code);
     }
 
     /**
@@ -45,5 +46,10 @@ class MusicPaused implements ShouldBroadcast
     public function broadcastAs()
     {
         return 'music.paused';
+    }
+
+    public function broadcastWhen(){
+        $user_id = Auth::id();
+        return $this->party->user->id === $user_id;
     }
 }

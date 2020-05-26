@@ -184,9 +184,8 @@
   </section>
   <!-- ***** Blog Details Area End ***** -->
 
-  
-
   @endisset
 
+@include('events.partyEvents')
 
 @endsection

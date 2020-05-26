@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Events\MusicPaused;
 use App\Genre;
 use App\Party;
 use App\User;
-use app\Events\MusicPaused;
+
 
 
 class PartyController extends Controller
@@ -168,10 +169,14 @@ class PartyController extends Controller
 
     }
 
-    public function pause(Request $request){
+    public function pause($code){
 
-        $time = $request->time;
-        event(new MusicPaused(100));
+        /*
+        Prendo il model Party e lo mando all'evento
+        */
+        
+        $party = Party::where('code',$code)->first();
+        broadcast(new MusicPaused($party))->toOthers();
 
     }
 }
