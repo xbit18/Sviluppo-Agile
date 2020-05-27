@@ -38,6 +38,7 @@ Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
 
 Route::get('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
 Route::get('party/{code}/play', 'PartyController@play')->name('party.play');
+Route::get('/parties/show', 'PartyController@index')->name('parties.index');
 
 
 /**
