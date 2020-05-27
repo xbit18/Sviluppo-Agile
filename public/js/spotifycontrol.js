@@ -1,4 +1,5 @@
-window.onSpotifyWebPlaybackSDKReady = () => {
+
+    window.onSpotifyWebPlaybackSDKReady = () => {
     //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
     const token = $('#mytoken').text();
     const player = new Spotify.Player({
@@ -57,8 +58,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
     var instance = axios.create();
-        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-
+    delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
     instance({
         url: "https://api.spotify.com/v1/me",
@@ -69,6 +69,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         },
     }).then(function(data){
         // DEBUGGING
+        console.log(data);
         my_id = data.data.id;
         //actual_context_uri = data.item.uri;
         //$('#title-player').val(data.item.name);
@@ -146,6 +147,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         var p_uri = $(this).attr('data-playlist-uri');
         var p_numb = $(this).attr('data-number');
 
+        var track_uri = $(this).attr('data-uri');
 
         instance({
             url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
@@ -177,6 +179,41 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     console.log("errore");
                 }
             }
+        }).then( function(data) {
+
+            var party_code = window.location.href.slice(33);
+            console.log("uri " + track_uri);
+    
+            $.ajax({
+                url: "/party/" + party_code + "/play",
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "track_uri": track_uri,
+                    "position_ms": 0
+                },
+                dataType: 'json',
+                success: function(data){
+                    console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error:function (xhr, ajaxOptions, thrownError){ 
+                    /**
+                     * Error Handling
+                     */
+                    if(xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    }else if(xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    }else{
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });    
+    
         });    
 
     });
@@ -208,8 +245,25 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
         console.log(devId);
-        
 
+
+        player.getCurrentState().then(state => {
+            
+            if (!state) {
+                console.error('User is not playing music through the Web Playback SDK');
+
+                $('.song_link').first().click();
+
+                return;
+            }
+
+
+            
+            player.resume();
+
+          });
+
+        /*
         instance({
             url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
             method: 'PUT',
@@ -219,13 +273,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             data: {},
             dataType: 'json',
             success: function(data){
-                // DEBUGGING
-                //console.log(data);
             },
             error:function (xhr, ajaxOptions, thrownError){ 
-                /**
-                 * Error Handling
-                 */
                 if(xhr.status == 404) {
                     console.log("404 NOT FOUND");
                 }else if(xhr.status == 500) {
@@ -238,16 +287,24 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         
 
-
+*/
         
 
 
     }); 
 
 
+    $('#spotify_prev_form').on('submit', function(event) {
+        event.preventDefault();
+        player.previousTrack();
+
+    });     
 
   
-
+    $('#spotify_next_form').on('submit', function(event) {
+        event.preventDefault();
+        player.nextTrack();
+    }); 
 
 
 
@@ -257,7 +314,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         /**
          * AJAX CALL FOR PAUSE
          */
-
+        /*
         instance({
             url: "https://api.spotify.com/v1/me/player/pause?device_id=" + devId,
             method: 'PUT',
@@ -265,9 +322,18 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 'Authorization': 'Bearer ' + token,
             },
             dataType: 'json',       
-        });
+        });*/
+        player.pause();
 
     }); 
+
+
+
+    var slider = $("#volume_range");
+
+    slider.on('click', function() {
+        player.setVolume(slider.val() / 100);
+    });
 
 
 

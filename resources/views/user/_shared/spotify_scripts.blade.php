@@ -1,3 +1,3 @@
 
-<script src="https://sdk.scdn.co/spotify-player.js"></script>
-<script src="{{ asset('js/spotifycontrol.js') }}"></script>
+<script src="https://sdk.scdn.co/spotify-player.js" defer></script>
+<script src="{{ asset('js/spotifycontrol.js') }}" defer></script>

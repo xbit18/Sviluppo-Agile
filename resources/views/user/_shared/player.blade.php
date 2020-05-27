@@ -27,12 +27,21 @@
         </div>
         <!-- Music Player -->
         <div class="row">
-            <form  id="spotify_play_form" action="/playback/play">
+            <form  id="spotify_play_form" action="#">
                 <button class="btn player-button-play" id="play" type="submit"><i class="fa fa-play" aria-hidden="true"></i></button>
             </form>
-            <form  id="spotify_pause_form" action="/playback/pause">
+            <form  id="spotify_pause_form" action="#">
                 <button class="btn player-button-play" id="pause" type="submit"><i class="fa fa-pause" aria-hidden="true"></i></button>
             </form> 
+            <form  id="spotify_prev_form" action="#">
+                <button class="btn player-button-play" id="prev-song" type="submit">Prev</button>
+            </form> 
+            <form  id="spotify_next_form" action="#">
+                <button class="btn player-button-play" id="next-song" type="submit">Next</button>
+            </form> 
+            <div class="slidecontainer">
+                <input type="range" min="1" max="100" value="50" class="slider" id="volume_range">
+            </div>
             <form id="spotify_login_form" action="/loginspotify" method="GET">
                 <button type="submit" class="btn spotfy-style-play">Login</button>
                 <p id="device_id"></p>

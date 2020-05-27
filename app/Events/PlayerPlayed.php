@@ -16,16 +16,18 @@ class PlayerPlayed implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party;
+    public $party, $track_uri, $position_ms;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Party $party)
+    public function __construct(Party $party, $track_uri, $position_ms)
     {
-      $this->party = $party;
+        $this->party = $party;
+        $this->track_uri = $track_uri;
+        $this->position_ms = $position_ms;
     }
 
     /**

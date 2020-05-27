@@ -58,7 +58,8 @@
 
               <div class="post-content">
                 <a href="#" class="post-date">{{ $party->created_at }}</a>
-                <h2 id="party_name" class="text-uppercase">{{ $party->name }}</h2>
+                <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) (Hosting) @endif{{ $party->name }}</h2>
+                <p id="party_name" class="d-none">{{ $party->name }}</p>
                 <div class="post-meta">
                   <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
                 </div>
@@ -187,7 +188,6 @@
 
   @endisset
 
-@include('user._shared.events.partyEvents')
-@include('user._shared.spotify_scripts')
 
+@include('user._shared.events.partyEvents')
 @endsection
