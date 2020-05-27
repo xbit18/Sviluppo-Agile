@@ -1,5 +1,20 @@
+
+
+
 <div class="poca-music-area mt-100 d-flex align-items-center flex-wrap" data-animation="fadeInUp" data-delay="900ms">
+    
+    
+
     <div class="poca-music-content poca-music-content-play">
+        <!-- Single Widget Area -->
+        <div class="single-widget-area catagories-widget mb-80">
+            <h5 class="widget-title">Songs</h5>
+
+            <!-- catagories list -->
+            <ul id="party-song-list" class="catagories-list">
+                <li class="d-none" id="song-prototype"><a href="#"></a></li>
+            </ul>
+        </div>
         <span id="artist-player" class="music-published-date">Artist</span>
         <h2 id="title-player">Play your music</h2>
         <div class="music-meta-data">
