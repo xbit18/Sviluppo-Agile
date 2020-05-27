@@ -207,10 +207,9 @@ class PartyController extends Controller
 
 
 
-
-
-
-
+    /**
+     * Spotify API Interaction
+     */
     public function load()
     {
         $session = new Session(
@@ -223,6 +222,9 @@ class PartyController extends Controller
         $options = [
             'scope' => [
                 'playlist-read-private',
+                'user-modify-playback-state',
+                'user-read-playback-state',
+                'user-read-currently-playing',
                 'user-read-private',
                 'user-read-email',
                 'streaming'
@@ -235,21 +237,25 @@ class PartyController extends Controller
     }
 
     public function getAuthCode(Request $request){
+        
+        /**
+         * Spotify Session Parameters
+         */
         $session = new Session(
             '03cf764ae57d4984834da3db10d241d2',
             'bc1b66fe0e0f40c7bc5cc62af87a5a50',
             'http://127.0.0.1:8000/callback'
         );
 
-// Request a access token using the code from Spotify
+        // Request a access token using the code from Spotify
         $session->requestAccessToken($_GET['code']);
 
         $accessToken = $session->getAccessToken();
         $user = Auth::user();
         $user->access_token = $accessToken;
-        $user -> save();
+        $user->save();
 
-// Store the access token somewhere. In a database for example.
+        // Store the access token somewhere. In a database for example.
         return redirect()->back();
     }
 

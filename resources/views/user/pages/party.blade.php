@@ -90,52 +90,9 @@
 
             </div>
           </div>
-            <script src="https://sdk.scdn.co/spotify-player.js"></script>
-            <script>
-                window.onSpotifyWebPlaybackSDKReady = () => {
-                    const token = 'BQB6TSJB-tTyqmuasLKCvvH_S2f5vRdrxMlMRzYT0lkW7OWDm1qMvBzWk1Kk_BHTrvyH8L5VdlLThomX9JgyGSR_QVrRVqxejIigRLKXwMA3OWTCJGsLn1PgM6v9FRknriD2AaIl77vCU9D0xNCg0kAG1AHTx50Z7UqXtzKatc6TDd6Q6EsjwH2a9n-UOMYPhg';
-                    const player = new Spotify.Player({
-                        name: 'Web Playback SDK Quick Start Player',
-                        getOAuthToken: cb => { cb(token); }
-                    });
 
-                    // Error handling
-                    player.addListener('initialization_error', ({ message }) => { console.error(message); });
-                    player.addListener('authentication_error', ({ message }) => { console.error(message); });
-                    player.addListener('account_error', ({ message }) => { console.error(message); });
-                    player.addListener('playback_error', ({ message }) => { console.error(message); });
+                @include('user._shared.player')
 
-                    // Playback status updates
-                    player.addListener('player_state_changed', state => { console.log(state); });
-
-                    // Ready
-                    player.addListener('ready', ({ device_id }) => {
-                        console.log('Ready with Device ID', device_id);
-                    });
-
-                    // Not Ready
-                    player.addListener('not_ready', ({ device_id }) => {
-                        console.log('Device ID has gone offline', device_id);
-                    });
-
-                    // Connect to the player!
-                    player.connect();
-                };
-            </script>
-            <div>
-                <form action="/loginspotify" method="GET">
-                    <input type="submit"  value="Login">
-                </form>
-                <form action="/playback/play" method="GET">
-                    <input id='play' type="submit" value="Play">
-                </form>
-                <form action="/playback/pause" method="GET">
-                    <input id='pause' type="submit" value="Pause">
-                </form>
-                <form action="/logoutspotify" method="GET">
-                    <input type="submit" value="Logout">
-                </form>
-            </div>
         </div>
 
 
@@ -231,5 +188,6 @@
   @endisset
 
 @include('user._shared.events.partyEvents')
+@include('user._shared.spotify_scripts')
 
 @endsection
