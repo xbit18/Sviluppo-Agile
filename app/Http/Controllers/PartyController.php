@@ -214,8 +214,8 @@ class PartyController extends Controller
     public function load()
     {
         $session = new Session(
-            '03cf764ae57d4984834da3db10d241d2',
-            'bc1b66fe0e0f40c7bc5cc62af87a5a50',
+            'e2a5fd9ef8654b19ac499e340f8290fe',
+            '5fe477929f9a45aea98df7a59347f21a',
             'http://127.0.0.1:8000/callback'
         );
 
@@ -236,8 +236,8 @@ class PartyController extends Controller
 
     public function getAuthCode(Request $request){
         $session = new Session(
-            '03cf764ae57d4984834da3db10d241d2',
-            'bc1b66fe0e0f40c7bc5cc62af87a5a50',
+            'e2a5fd9ef8654b19ac499e340f8290fe',
+            '5fe477929f9a45aea98df7a59347f21a',
             'http://127.0.0.1:8000/callback'
         );
 
