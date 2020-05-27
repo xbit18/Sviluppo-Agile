@@ -60,6 +60,24 @@ class PartyController extends Controller
     }
 
     /**
+     * Mostra i party creati
+     */
+    public function index() {
+        $parties = Party::all();
+
+        if(!$parties){
+            return response(['error' => 'This party does not exist'], 404);
+        }
+
+        $parties->map(function ($party) {
+            $party->genre_id = $party->genre->first()->id;
+        });
+
+        return view('user.pages.parties',  ['parties' => $parties]);
+    }
+
+
+    /**
      * Mostra il form di creazione del party
      */
     public function create() {
