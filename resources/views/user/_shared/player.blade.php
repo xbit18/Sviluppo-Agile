@@ -7,6 +7,11 @@
 
     <div class="poca-music-content poca-music-content-play">
         <!-- Single Widget Area -->
+        <form id="add_to_party" action="#" method="post">
+            @csrf
+            <input readonly="readonly" id="invite_list" type="text" name="song_name" class="form-control email">
+            <button id="add_to_party_btn" type="submit" class="btn">Add</button>
+        </form>
         <div class="single-widget-area catagories-widget mb-80">
             <h5 class="widget-title">Songs</h5>
 

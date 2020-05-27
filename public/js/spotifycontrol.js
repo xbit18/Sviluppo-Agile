@@ -57,6 +57,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     var instance = axios.create();
     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
+    var instance = axios.create();
+        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+
     instance({
         url: "https://api.spotify.com/v1/me",
         method: 'GET',
@@ -64,103 +68,92 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         headers: {
             'Authorization': 'Bearer ' + token,
         },
-        success: function(data){
-            // DEBUGGING
-            my_id = data.id;
-            //actual_context_uri = data.item.uri;
-            //$('#title-player').val(data.item.name);
+    }).then(function(data){
+        // DEBUGGING
+        my_id = data.data.id;
+        //actual_context_uri = data.item.uri;
+        //$('#title-player').val(data.item.name);
 
-            $.ajax({
-                url: "https://api.spotify.com/v1/users/" + my_id + "/playlists",
-                method: 'GET',
-                dataType: "json",
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                success: function(data){
-                    // DEBUGGING
-                    console.log('data playlists');
-                    console.log(data);
-                    $.each( data.items, function( index, playlist ){
-                        if(playlist.name.toLowerCase() === party_name.toLowerCase()) my_party_playlist = playlist;
-                    });
-                    console.log(my_party_playlist);
-                    /**
-                     * Ho preso la playlist
-                     */
+        $.ajax({
+            url: "https://api.spotify.com/v1/users/" + my_id + "/playlists",
+            method: 'GET',
+            dataType: "json",
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            success: function(data){
+                // DEBUGGING
+                console.log('data playlists');
+                console.log(data);
+                $.each( data.items, function( index, playlist ){
+                    if(playlist.name.toLowerCase() === party_name.toLowerCase()) my_party_playlist = playlist;
+                });
+                console.log(my_party_playlist);
+                /**
+                 * Ho preso la playlist
+                 */
 
-                    $.ajax({
-                        url: "https://api.spotify.com/v1/playlists/" + my_party_playlist.id + "/tracks",
-                        method: 'GET',
-                        dataType: "json",
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                        },
-                        success: function(data){
-                            // DEBUGGING
-                            console.log('play tracks');
-                            console.log(data);
-                            
-                            $.each( data.items, function( index, item ){
-                                var song_item = $('#song-prototype').clone();
-                                song_item.removeClass('d-none');
-                                song_item_link = song_item.find('a'); 
-                                song_item_link.text(' - ' + item.track.name);
-                                song_item_link.attr('data-id', item.track.id);
-                                song_item_link.attr('data-uri', item.track.uri);
-                                song_item_link.attr('data-number', index);
-                                song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
-                                song_item_link.addClass('song_link');
-                                $('#party-song-list').append(song_item);
-                            });
-                
-                        },
-                        error:function (xhr, ajaxOptions, thrownError){ 
-                            /**
-                             * Error Handling
-                             */
-                            if(xhr.status == 404) {
-                                console.log("404 NOT FOUND");
-                            }else if(xhr.status == 500) {
-                                console.log("500 INTERNAL SERVER ERROR");
-                            }else{
-                                console.log("errore");
-                            }
+                $.ajax({
+                    url: "https://api.spotify.com/v1/playlists/" + my_party_playlist.id + "/tracks",
+                    method: 'GET',
+                    dataType: "json",
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    success: function(data){
+                        // DEBUGGING
+                        console.log('play tracks');
+                        console.log(data);
+                        
+                        $.each( data.items, function( index, item ){
+                            var song_item = $('#song-prototype').clone();
+                            song_item.removeClass('d-none');
+                            song_item_link = song_item.find('a'); 
+                            song_item_link.text(' - ' + item.track.name);
+                            song_item_link.attr('data-id', item.track.id);
+                            song_item_link.attr('data-uri', item.track.uri);
+                            song_item_link.attr('data-number', index);
+                            song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
+                            song_item_link.addClass('song_link');
+                            $('#party-song-list').append(song_item);
+                        });
+            
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){ 
+                        /**
+                         * Error Handling
+                         */
+                        if(xhr.status == 404) {
+                            console.log("404 NOT FOUND");
+                        }else if(xhr.status == 500) {
+                            console.log("500 INTERNAL SERVER ERROR");
+                        }else{
+                            console.log("errore");
                         }
-                    });
-        
-                },
-                error:function (xhr, ajaxOptions, thrownError){ 
-                    /**
-                     * Error Handling
-                     */
-                    if(xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    }else if(xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    }else{
-                        console.log("errore");
                     }
+                });
+    
+            },
+            error:function (xhr, ajaxOptions, thrownError){ 
+                /**
+                 * Error Handling
+                 */
+                if(xhr.status == 404) {
+                    console.log("404 NOT FOUND");
+                }else if(xhr.status == 500) {
+                    console.log("500 INTERNAL SERVER ERROR");
+                }else{
+                    console.log("errore");
                 }
-            });
-        
-
-        },
-        error:function (xhr, ajaxOptions, thrownError){ 
-            /**
-             * Error Handling
-             */
-            if(xhr.status == 404) {
-                console.log("404 NOT FOUND");
-            }else if(xhr.status == 500) {
-                console.log("500 INTERNAL SERVER ERROR");
-            }else{
-                console.log("errore");
             }
+<<<<<<< HEAD
         }
     })
     .then(function(response){
         console.log('ciao')
+=======
+        });
+>>>>>>> 8f04c3a463aac6b8b5b18c16ac9c40e2af6fac48
     });
 
 
@@ -319,6 +312,12 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
     }); 
+
+
+    /**
+     * add_to party_btn Listener
+     */
+    $('#add_to party_btn')
 
 
 
