@@ -54,9 +54,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     var my_id; 
     var my_party_playlist;
+    var instance = axios.create();
+    delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
-
-    $.ajax({
+    instance({
         url: "https://api.spotify.com/v1/me",
         method: 'GET',
         dataType: "json",
@@ -157,6 +158,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 console.log("errore");
             }
         }
+    })
+    .then(function(response){
+        console.log('ciao')
     });
 
 
@@ -176,8 +180,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
          * AJAX CALL FOR PLAY THAT SONG
          */
         
-        var instance = axios.create();
-        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
         var p_uri = $(this).attr('data-playlist-uri');
         var p_numb = $(this).attr('data-number');
