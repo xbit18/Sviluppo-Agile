@@ -1,10 +1,5 @@
-
-
-
 <div class="poca-music-area mt-100 d-flex align-items-center flex-wrap" data-animation="fadeInUp" data-delay="900ms">
     
-    
-
     <div class="poca-music-content poca-music-content-play">
         <!-- Single Widget Area -->
         <form id="add_to_party" action="#" method="post">
@@ -25,8 +20,10 @@
         <div class="music-meta-data">
         <p>By <a href="#" class="music-author">Admin</a> | <a href="#" class="music-catagory">Tutorials</a> | <a href="#" class="music-duration">00:02:56</a></p>
         </div>
+        
         <!-- Music Player -->
         <div class="row">
+            @if(Auth::user()->id == $party->user->id)    
             <form  id="spotify_play_form" action="#">
                 <button class="btn player-button-play" id="play" type="submit"><i class="fa fa-play" aria-hidden="true"></i></button>
             </form>
@@ -39,9 +36,11 @@
             <form  id="spotify_next_form" action="#">
                 <button class="btn player-button-play" id="next-song" type="submit">Next</button>
             </form> 
+            
             <div class="slidecontainer">
                 <input type="range" min="1" max="100" value="50" class="slider" id="volume_range">
             </div>
+            @endif
             <form id="spotify_login_form" action="/loginspotify" method="GET">
                 <button type="submit" class="btn spotfy-style-play">Login</button>
                 <p id="device_id"></p>
@@ -51,6 +50,7 @@
                 <button type="submit" class="btn spotfy-style-play">Logout</button>
             </form>
         </div>
+        
         <!-- Likes, Share & Download -->
         <div class="likes-share-download d-flex align-items-center justify-content-between">
         <a href="#"><i class="fa fa-heart" aria-hidden="true"></i> Like (29)</a>
