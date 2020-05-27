@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Invite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Events\PlayerPaused;
@@ -180,13 +182,18 @@ class PartyController extends Controller
          * Scorro le email e vedo se sono valide
          */
         $users = User::whereIn('email', $user_emails)->get();
-        return $users;
+        //return $users;
 
         /**
          * LOGICA DI INVIO EMAIL MANCANTE
          */
+        $link = 'http://127.0.0.1:8000/party/show/'.$code;
 
+        foreach ($user_emails as $recipient) {
+            Mail::to($recipient)->send(new Invite($link));
+        }
 
+        return redirect()->back();
     }
 
 
@@ -220,7 +227,7 @@ class PartyController extends Controller
 
         $track_uri = $request->track_uri;
         $position_ms = $request->position_ms;
-        
+
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerPlayed($party, $track_uri, $position_ms));//->toOthers();
 
@@ -260,7 +267,7 @@ class PartyController extends Controller
     }
 
     public function getAuthCode(Request $request){
-        
+
         /**
          * Spotify Session Parameters
          */

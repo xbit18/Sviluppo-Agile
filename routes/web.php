@@ -54,3 +54,7 @@ Route::get('/callback', 'PartyController@getAuthCode');
 Route::get('/callback/auth', 'PartyController@storeCode');
 Route::get('/playback/{state}', 'PartyController@playpause');
 Route::get('/playback', 'PartyController@page');
+
+Route::get('/seemail', function(){
+    return view('invite');
+});
