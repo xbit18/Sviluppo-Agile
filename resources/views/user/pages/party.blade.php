@@ -58,7 +58,7 @@
 
               <div class="post-content">
                 <a href="#" class="post-date">{{ $party->created_at }}</a>
-                <h2 class="text-uppercase">{{ $party->name }}</h2>
+                <h2 id="party_name" class="text-uppercase">{{ $party->name }}</h2>
                 <div class="post-meta">
                   <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
                 </div>
