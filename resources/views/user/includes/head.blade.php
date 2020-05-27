@@ -20,3 +20,6 @@
 
     <!-- CUSTOM OVERRIDE CSS -->
     <link rel="stylesheet" href="{{ asset('css/custom-user.css') }}">
+
+    <!-- Player CSS -->
+    <link rel="stylesheet" href="{{ asset('css/player.css') }}">
