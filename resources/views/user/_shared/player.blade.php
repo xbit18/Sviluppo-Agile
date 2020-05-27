@@ -12,7 +12,7 @@
             </form>
             <form  id="spotify_pause_form" action="/playback/pause">
                 <button class="btn player-button-play" id="pause" type="submit"><i class="fa fa-pause" aria-hidden="true"></i></button>
-            </form>
+            </form> 
             <form id="spotify_login_form" action="/loginspotify" method="GET">
                 <button type="submit" class="btn spotfy-style-play">Login</button>
                 <p id="device_id"></p>
