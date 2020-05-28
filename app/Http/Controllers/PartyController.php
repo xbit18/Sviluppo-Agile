@@ -185,7 +185,7 @@ class PartyController extends Controller
         //return $users;
 
         /**
-         * LOGICA DI INVIO EMAIL MANCANTE
+         * LOGICA DI INVIO EMAIL 
          */
         $link = 'http://127.0.0.1:8000/party/show/'.$code;
 
@@ -290,11 +290,18 @@ class PartyController extends Controller
     }
 
     public function logout(){
-        $user = User::all()->first();
+
+        $me = Auth::user();
+        $me->access_token = "";
+        $me->save();
+
+        return redirect('/');
+        /*$user = User::all()->first();
         if(!$user) return redirect('/');
 
         $user->delete();
         return redirect('/');
+        */
     }
 
 

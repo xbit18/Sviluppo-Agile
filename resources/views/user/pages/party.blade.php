@@ -57,6 +57,7 @@
               <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="mb-30" alt="">
 
               <div class="post-content">
+                <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
                 <a href="#" class="post-date">{{ $party->created_at }}</a>
                 <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) (Hosting) @endif{{ $party->name }}</h2>
                 <p id="party_name" class="d-none">{{ $party->name }}</p>
@@ -115,12 +116,10 @@
             <div class="single-widget-area catagories-widget mb-80">
               <h5 class="widget-title">Participants</h5>
 
+              <ul class="d-none"><li id="partecipant-prototype" class="partecipant"><a href="#"></a></li></ul>
+
               <!-- catagories list -->
-              <ul class="catagories-list">
-                <li><a href="#">User1</a></li>
-                <li><a href="#">User2</a></li>
-                <li><a href="#">User3</a></li>
-                <li><a href="#">Other 12...</a></li>
+              <ul id="joining-list" class="catagories-list">
               </ul>
             </div>
 

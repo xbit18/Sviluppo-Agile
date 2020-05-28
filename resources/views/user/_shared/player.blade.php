@@ -37,18 +37,15 @@
                 <button class="btn player-button-play" id="next-song" type="submit">Next</button>
             </form> 
             
+            
+            @endif
+
             <div class="slidecontainer">
+                <label><i class="fa fa-volume-up" aria-hidden="true"></i></label>
                 <input type="range" min="1" max="100" value="50" class="slider" id="volume_range">
             </div>
-            @endif
-            <form id="spotify_login_form" action="/loginspotify" method="GET">
-                <button type="submit" class="btn spotfy-style-play">Login</button>
-                <p id="device_id"></p>
-            </form>
+
             
-            <form  id="spotify_logout_form" action="/logoutspotify" method="GET">
-                <button type="submit" class="btn spotfy-style-play">Logout</button>
-            </form>
         </div>
         
         <!-- Likes, Share & Download -->
@@ -60,5 +57,14 @@
         </div>
         </div>
     </div>
+
+    <form id="spotify_login_form" action="/loginspotify" method="GET">
+        <button type="submit" class="btn spotfy-style-play"><i class="fa fa-spotify" aria-hidden="true"></i> Login</button>
+        <p id="device_id" class="d-none"></p>
+    </form>
+    
+    <form  id="spotify_logout_form" action="/logoutspotify" method="GET">
+        <button type="submit" class="btn spotfy-style-play"><i class="fa fa-sign-out" aria-hidden="true"></i> EXIT</button>
+    </form>
 </div>
 <p id="mytoken" class="d-none">{{ Auth::user()->access_token }}</p>

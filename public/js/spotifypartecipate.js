@@ -2,32 +2,60 @@
 
 /** -------Prendo il codice del party dall'URI ------**/
 
-var party_code = window.location.href.slice(33);
+var party_code = $('#party_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
 
 /* Music Pause */ 
 
 /**
- * Comunica a tutti i partecipanti del canale
+ * Comunica a tutti i partecipanti del canale quando un utente si unisce
  */
 channel.here((users) => {
-  console.log(users)
+    console.log(users);
+    $('#joining-list').empty();
+    $.each(users, function( index, user) {
+        console.log(user);
+        var new_partecipant = $('#partecipant-prototype').clone();
+        new_partecipant_link = new_partecipant.find('a'); 
+        new_partecipant_link.text(user.name);
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+    });
+    
 });
 
 /**
  *  Action a utente entrante
  */
 channel.joining((user) => {
-  console.log('joining')
-  console.log(user)
+    //console.log('joining')
+    //console.log(user)
+    var new_partecipant = $('#partecipant-prototype').clone();
+    new_partecipant_link = new_partecipant.find('a'); 
+    new_partecipant.removeAttr('id');
+    new_partecipant_link.text(user.name);
+    new_partecipant_link.attr('data-id', user.id);
+    $('#joining-list').append(new_partecipant);
 })
 
 /**
  *  Comunica a tutti che un utente lascia il canale
  */
-channel.leaving((user) => {
-  console.log('leaving')
-  console.log(user)
+channel.leaving((leaving_user) => {
+    //console.log('leaving')
+    //console.log(user)
+    $('#joining-list li').each(function( index, user) {
+        console.log(user);
+        var partecipant_link = $(this).find('a'); 
+        console.log(partecipant_link);
+        if(partecipant_link.attr('data-id') == leaving_user.id) {
+            partecipant_link.text( partecipant_link.text() + " (leaving party...)");
+            setTimeout(function(){ 
+                user.remove();
+             }, 1000);
+        }
+    });
 })
 
 /* Music Pause */
@@ -89,6 +117,14 @@ channel.listen('.player.paused', () => {
 
     // Connect to the player!
     player.connect();
+
+    
+
+    var slider = $("#volume_range");
+
+    slider.on('click', function() {
+        player.setVolume(slider.val() / 100);
+    });
 
 
 

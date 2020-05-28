@@ -38,3 +38,35 @@
     background-color: #1DB954;
     color: #ffffff;
 }
+
+.partecipant a {
+    margin: 5px;
+    text-align: center !important;
+    animation: joinin 0.5s forwards;
+  }
+  
+  @keyframes joinin {
+    from {
+      transform: scale(1.5);
+      opacity: 1;
+      color: #1DB954;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+        color: black;
+    }
+  }
+
+
+  #volume_range {
+      position: relative;
+      top: 40%;
+  }
+
+  .slidecontainer label {
+    position: relative;
+    top: 40%;
+    font-size: 18px;
+    margin-right: 0.5em;
+   }

@@ -42,6 +42,7 @@
                 <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" alt="">
                 </div>
                 <div class="poca-music-content text-center">
+                  
                 <span class="music-published-date mb-2">{{ $party->created_at }}</span>
                 <h2><a href="{{ route('party.show', [ 'code' => $party->code]) }}">@if(Auth::user()->id == $party->user->id) (Hosting) @endif {{ $party->name }}</a></h2>
                 <div class="music-meta-data">
