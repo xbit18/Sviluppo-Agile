@@ -3,13 +3,6 @@ $( document ).ready( function() {
 
 
 
-
-
-
-
-
-
-
 /** -------Prendo il codice del party dall'URI ------**/
 
   var party_code = window.location.href.slice(33);

@@ -212,7 +212,6 @@ class PartyController extends Controller
     /* ------------------- EVENTS ------------------ */
 
     public function pause($code){
-
         /*
         Prendo il model Party e lo mando all'evento
         */

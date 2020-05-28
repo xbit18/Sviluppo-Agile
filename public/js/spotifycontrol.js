@@ -5,23 +5,23 @@
 var party_code = $('#party_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
 
-/* Music Pause */ 
+/* Music Pause */
 /**
  * Comunica a tutti i partecipanti del canale quando un utente si unisce
  */
 channel.here((users) => {
     console.log(users);
     $('#joining-list').empty();
-    $.each(users, function( index, user) {
+    $.each(users, function (index, user) {
         console.log(user);
         var new_partecipant = $('#partecipant-prototype').clone();
-        new_partecipant_link = new_partecipant.find('a'); 
+        new_partecipant_link = new_partecipant.find('a');
         new_partecipant_link.text(user.name);
         new_partecipant.removeAttr('id');
         new_partecipant_link.attr('data-id', user.id);
         $('#joining-list').append(new_partecipant);
     });
-    
+
 });
 
 /**
@@ -31,7 +31,7 @@ channel.joining((user) => {
     //console.log('joining')
     //console.log(user)
     var new_partecipant = $('#partecipant-prototype').clone();
-    new_partecipant_link = new_partecipant.find('a'); 
+    new_partecipant_link = new_partecipant.find('a');
     new_partecipant.removeAttr('id');
     new_partecipant_link.text(user.name);
     new_partecipant_link.attr('data-id', user.id);
@@ -44,15 +44,15 @@ channel.joining((user) => {
 channel.leaving((leaving_user) => {
     //console.log('leaving')
     //console.log(user)
-    $('#joining-list li').each(function( index, user) {
+    $('#joining-list li').each(function (index, user) {
         console.log(user);
-        var partecipant_link = $(this).find('a'); 
+        var partecipant_link = $(this).find('a');
         console.log(partecipant_link);
-        if(partecipant_link.attr('data-id') == leaving_user.id) {
-            partecipant_link.text( partecipant_link.text() + " (leaving party...)");
-            setTimeout(function(){ 
+        if (partecipant_link.attr('data-id') == leaving_user.id) {
+            partecipant_link.text(partecipant_link.text() + " (leaving party...)");
+            setTimeout(function () {
                 user.remove();
-             }, 1000);
+            }, 1000);
         }
     });
 })
@@ -63,7 +63,7 @@ channel.leaving((leaving_user) => {
  * Per i partecipanti : ascolta l'evento paused
  */
 channel.listen('.player.paused', () => {
-  console.log('player paused')
+    console.log('player paused')
 })
 
 
@@ -71,7 +71,7 @@ channel.listen('.player.paused', () => {
 
 
 
-    window.onSpotifyWebPlaybackSDKReady = () => {
+window.onSpotifyWebPlaybackSDKReady = () => {
     //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
     const token = $('#mytoken').text();
     const player = new Spotify.Player({
@@ -82,23 +82,23 @@ channel.listen('.player.paused', () => {
     var devId;
 
     // Error handling
-    player.addListener('initialization_error', ({ message }) => { console.error(message); });
-    player.addListener('authentication_error', ({ message }) => { console.error(message); });
-    player.addListener('account_error', ({ message }) => { console.error(message); });
+    player.addListener('initialization_error', ({ message }) => { window.location.replace('/loginspotify') });
+    player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
+    player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
     // Playback status updates
-    player.addListener('player_state_changed', state => { 
+    player.addListener('player_state_changed', state => {
         console.log(state);
-        if(!($('#title-player').text() === state.track_window.current_track.name))
+        if (!($('#title-player').text() === state.track_window.current_track.name))
             $('#title-player').text(state.track_window.current_track.name);
 
         var artists = "";
-        $.each( state.track_window.current_track.artists, function( index, artist ){
+        $.each(state.track_window.current_track.artists, function (index, artist) {
             artists += artist.name;
         });
 
-        if(!($('#artist-player').text() === artists))
+        if (!($('#artist-player').text() === artists))
             $('#artist-player').text(artists);
     });
 
@@ -125,7 +125,7 @@ channel.listen('.player.paused', () => {
 
     var party_name = $('#party_name').text();
 
-    var my_id; 
+    var my_id;
     var my_party_playlist;
 
 
@@ -139,7 +139,7 @@ channel.listen('.player.paused', () => {
         headers: {
             'Authorization': 'Bearer ' + token,
         },
-    }).then(function(data){
+    }).then(function (data) {
         // DEBUGGING
         console.log(data);
         my_id = data.data.id;
@@ -154,48 +154,48 @@ channel.listen('.player.paused', () => {
                 'Authorization': 'Bearer ' + token,
             },
         })
-        .then(function(data){
+            .then(function (data) {
 
-            // DEBUGGING
-            console.log('data playlists');
-            console.log(data);
-            $.each( data.data.items, function( index, playlist ){
-                if(playlist.name.toLowerCase() === party_name.toLowerCase()) my_party_playlist = playlist;
+                // DEBUGGING
+                console.log('data playlists');
+                console.log(data);
+                $.each(data.data.items, function (index, playlist) {
+                    if (playlist.name.toLowerCase() === party_name.toLowerCase()) my_party_playlist = playlist;
+                });
+                console.log(my_party_playlist);
+                /**
+                 * Ho preso la playlist
+                 */
+
+                instance({
+                    url: "https://api.spotify.com/v1/playlists/" + my_party_playlist.id + "/tracks",
+                    method: 'GET',
+                    dataType: "json",
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    }
+                })
+                    .then(function (data) {
+                        // DEBUGGING
+                        console.log('play tracks');
+                        console.log(data);
+
+                        $.each(data.data.items, function (index, item) {
+                            var song_item = $('#song-prototype').clone();
+                            song_item.removeClass('d-none');
+                            song_item_link = song_item.find('a');
+                            song_item_link.text(' - ' + item.track.name);
+                            song_item_link.attr('data-id', item.track.id);
+                            song_item_link.attr('data-uri', item.track.uri);
+                            song_item_link.attr('data-number', index);
+                            song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
+                            song_item_link.addClass('song_link');
+                            $('#party-song-list').append(song_item);
+                        });
+
+                    })
+
             });
-            console.log(my_party_playlist);
-            /**
-             * Ho preso la playlist
-             */
-
-            instance({
-                url: "https://api.spotify.com/v1/playlists/" + my_party_playlist.id + "/tracks",
-                method: 'GET',
-                dataType: "json",
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                }
-                })
-                .then(function(data){
-                    // DEBUGGING
-                    console.log('play tracks');
-                    console.log(data);
-                    
-                    $.each( data.data.items, function( index, item ){
-                        var song_item = $('#song-prototype').clone();
-                        song_item.removeClass('d-none');
-                        song_item_link = song_item.find('a'); 
-                        song_item_link.text(' - ' + item.track.name);
-                        song_item_link.attr('data-id', item.track.id);
-                        song_item_link.attr('data-uri', item.track.uri);
-                        song_item_link.attr('data-number', index);
-                        song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
-                        song_item_link.addClass('song_link');
-                        $('#party-song-list').append(song_item);
-                    });
-        
-                })
-        
-        });
     });
 
 
@@ -206,7 +206,7 @@ channel.listen('.player.paused', () => {
     /**
      * Listener alle canzoni
      */
-    $(document).on('click', '.song_link', function(event) {
+    $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
 
         console.log('clicked');
@@ -214,7 +214,7 @@ channel.listen('.player.paused', () => {
         /**
          * AJAX CALL FOR PLAY THAT SONG
          */
-        
+
 
         var p_uri = $(this).attr('data-playlist-uri');
         var p_numb = $(this).attr('data-number');
@@ -235,27 +235,26 @@ channel.listen('.player.paused', () => {
                 "position_ms": 0
             },
             dataType: 'json',
-            success: function(data){
+            success: function (data) {
                 // DEBUGGING
                 //console.log(data);
             },
-            error:function (xhr, ajaxOptions, thrownError){ 
+            error: function (xhr, ajaxOptions, thrownError) {
                 /**
                  * Error Handling
                  */
-                if(xhr.status == 404) {
+                if (xhr.status == 404) {
                     console.log("404 NOT FOUND");
-                }else if(xhr.status == 500) {
+                } else if (xhr.status == 500) {
                     console.log("500 INTERNAL SERVER ERROR");
-                }else{
+                } else {
                     console.log("errore");
                 }
             }
-        }).then( function(data) {
+        }).then(function (data) {
 
-            var party_code = $('#party_code').attr('data-code');
             console.log("uri " + track_uri);
-    
+
             $.ajax({
                 url: "/party/" + party_code + "/play",
                 method: 'POST',
@@ -267,26 +266,26 @@ channel.listen('.player.paused', () => {
                     "position_ms": 0
                 },
                 dataType: 'json',
-                success: function(data){
+                success: function (data) {
                     console.log(data);
                     // DEBUGGING
                     //console.log(data);
                 },
-                error:function (xhr, ajaxOptions, thrownError){ 
+                error: function (xhr, ajaxOptions, thrownError) {
                     /**
                      * Error Handling
                      */
-                    if(xhr.status == 404) {
+                    if (xhr.status == 404) {
                         console.log("404 NOT FOUND");
-                    }else if(xhr.status == 500) {
+                    } else if (xhr.status == 500) {
                         console.log("500 INTERNAL SERVER ERROR");
-                    }else{
+                    } else {
                         console.log("errore " + xhr.status);
                     }
                 }
-            });    
-    
-        });    
+            });
+
+        });
 
     });
 
@@ -302,13 +301,13 @@ channel.listen('.player.paused', () => {
      * BUTTONS CONTROLS
      */
 
-    $('#spotify_play_form').on('submit', function(event) {
+    $('#spotify_play_form').on('submit', function (event) {
         event.preventDefault();
-    
+
         /**
          * AJAX CALL FOR PLAY
          */
-        
+
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
@@ -321,6 +320,9 @@ channel.listen('.player.paused', () => {
 
         player.getCurrentState().then(state => {
             
+            var position = state.position;
+            var track_uri = state.track_window.current_track.uri
+
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
 
@@ -330,10 +332,44 @@ channel.listen('.player.paused', () => {
             }
 
 
-            
-            player.resume();
 
-          });
+            player.resume().then(function (data) {
+
+                console.log("uri " + track_uri);
+    
+                $.ajax({
+                    url: "/party/" + party_code + "/play",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        "track_uri": track_uri,
+                        "position_ms": position
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        // DEBUGGING
+                        //console.log(data);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        /**
+                         * Error Handling
+                         */
+                        if (xhr.status == 404) {
+                            console.log("404 NOT FOUND");
+                        } else if (xhr.status == 500) {
+                            console.log("500 INTERNAL SERVER ERROR");
+                        } else {
+                            console.log("errore " + xhr.status);
+                        }
+                    }
+                });
+    
+            });;
+
+        });
 
         /*
         instance({
@@ -360,27 +396,27 @@ channel.listen('.player.paused', () => {
         
 
 */
-        
 
 
-    }); 
+
+    });
 
 
-    $('#spotify_prev_form').on('submit', function(event) {
+    $('#spotify_prev_form').on('submit', function (event) {
         event.preventDefault();
         player.previousTrack();
 
-    });     
+    });
 
-  
-    $('#spotify_next_form').on('submit', function(event) {
+
+    $('#spotify_next_form').on('submit', function (event) {
         event.preventDefault();
         player.nextTrack();
-    }); 
+    });
 
 
 
-    $('#spotify_pause_form').on('submit', function(event) {
+    $('#spotify_pause_form').on('submit', function (event) {
         event.preventDefault();
 
         /**
@@ -395,18 +431,50 @@ channel.listen('.player.paused', () => {
             },
             dataType: 'json',       
         });*/
-        player.pause();
-
-    }); 
+        
+        player.pause().then(() => {
+            $.ajax({
+                url: "/party/" + party_code + "/pause",
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+        });
+    });
 
 
 
     var slider = $("#volume_range");
-
-    slider.on('click', function() {
-        player.setVolume(slider.val() / 100);
-    });
-
+    var isDragging = false;
+    slider.mousedown(function () {
+            isDragging = false;
+        })
+        .mousemove(function () {
+            isDragging = true;
+            player.setVolume(slider.val() / 100)
+        })
+        .mouseup(function () {
+            isDragging = false;
+        });
 
 
 };

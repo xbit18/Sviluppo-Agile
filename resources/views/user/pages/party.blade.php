@@ -64,6 +64,7 @@
                 <div class="post-meta">
                   <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
                 </div>
+                @include('user._shared.player')
               </div>
 
               <p><i>Description: </i>{{ $party->description }}</p>
@@ -92,9 +93,6 @@
 
             </div>
           </div>
-
-                @include('user._shared.player')
-
         </div>
 
 

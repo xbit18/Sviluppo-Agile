@@ -36,7 +36,7 @@ Route::post('/party', 'PartyController@store')->name('party.store');
 Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
 Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
 
-Route::post('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
+Route::get('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
 Route::post('/party/{code}/play', 'PartyController@play')->name('party.play');
 Route::get('/parties/show', 'PartyController@index')->name('parties.index');
 
