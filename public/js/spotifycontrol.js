@@ -3,6 +3,7 @@
 /** -------Prendo il codice del party dall'URI ------**/
 
 var party_code = $('#party_code').attr('data-code');
+var user_code = $('#user_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
 
 /* Music Pause */
@@ -44,6 +45,9 @@ channel.joining((user) => {
 channel.leaving((leaving_user) => {
     //console.log('leaving')
     //console.log(user)
+
+    
+
     $('#joining-list li').each(function (index, user) {
         console.log(user);
         var partecipant_link = $(this).find('a');
@@ -53,6 +57,33 @@ channel.leaving((leaving_user) => {
             setTimeout(function () {
                 user.remove();
             }, 1000);
+
+            $.ajax({
+                url: "/party/" + party_code + "/leave/" + leaving_user.id,
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data);
+                    // DEBUGGING
+                    // console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+
         }
     });
 })

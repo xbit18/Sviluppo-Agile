@@ -23,16 +23,17 @@ class PartyChannel
      * @param  \App\User  $user
      * @return array|bool
      */
-    public function join(User $user)
+    public function join(User $user, $partyCode)
     {
         /** Per le party private **/
-        // $party = Party::where('code',$partyCode)->first();
 
-        // if($party->users->contains($user)){
-        //         return ['id' => $user->id, 'name' => $user->name];
-        // }else{
-        //     return false;
-        // }
+      
+            // if($party->users->contains($user)){
+            //         return ['id' => $user->id, 'name' => $user->name];
+            // }else{
+            //     return false;
+            // }
+
         return([
             'id' => $user->id,
             'name' => $user->name,

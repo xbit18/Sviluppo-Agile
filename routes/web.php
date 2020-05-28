@@ -31,14 +31,17 @@ Route::get('/', 'HomeController@index')->name('home');
 /**
  * PARTY MANAGEMENT
  */
+
 Route::get('/party/create', 'PartyController@create')->name('party.create');
 Route::post('/party', 'PartyController@store')->name('party.store');
 Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
 Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
-
+Route::get('/party/{code}/leave/{user_id}', 'PartyController@leave_party')->name('party.leave');
 Route::get('/party/{code}/pause', 'PartyController@pause')->name('party.pause');
 Route::post('/party/{code}/play', 'PartyController@play')->name('party.play');
+
 Route::get('/parties/show', 'PartyController@index')->name('parties.index');
+
 
 
 /**

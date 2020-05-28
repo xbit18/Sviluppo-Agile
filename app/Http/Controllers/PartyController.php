@@ -47,8 +47,10 @@ class PartyController extends Controller
      */
     public function show($code){
 
-
         $party = Party::where('code','=',$code)->first();
+
+        $user = Auth::user();
+        $user->participates()->attach($party->id);
 
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
@@ -329,4 +331,17 @@ class PartyController extends Controller
 
         return view('playback');
     }
+
+    public function leave_party($code, $user_id) {
+
+        $user = User::where('id', $user_id)->first();
+        $party = Party::where('code', $code)->first();
+
+        $user->participates()->detach($party->id);
+
+        return;
+        
+    }
+
+
 }

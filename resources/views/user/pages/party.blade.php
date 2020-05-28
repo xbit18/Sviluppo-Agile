@@ -58,6 +58,7 @@
 
               <div class="post-content">
                 <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
+                <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
                 <a href="#" class="post-date">{{ $party->created_at }}</a>
                 <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) (Hosting) @endif{{ $party->name }}</h2>
                 <p id="party_name" class="d-none">{{ $party->name }}</p>
