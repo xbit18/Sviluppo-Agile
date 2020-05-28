@@ -48,7 +48,7 @@ Route::get('/users/{email}/nome', 'UserController@get_name_by_email')->name('use
 Route::post('/party/{code}/invite/', 'PartyController@invite')->name('party.invite');
 Route::get('/song', 'PartyController@getSong');
 
-Route::get('/loginspotify', 'PartyController@load');
+Route::get('/loginspotify', 'PartyController@load')->name('spotify.login');
 Route::get('/logoutspotify', 'PartyController@logout');
 Route::get('/callback', 'PartyController@getAuthCode');
 Route::get('/callback/auth', 'PartyController@storeCode');

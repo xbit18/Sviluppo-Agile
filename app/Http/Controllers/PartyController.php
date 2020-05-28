@@ -83,8 +83,14 @@ class PartyController extends Controller
      * Mostra il form di creazione del party
      */
     public function create() {
+        $user = Auth::user();
+        if($user->access_token == NULL){
+           return redirect()->route('spotify.login');
+        }  
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         return view('user.pages.create_party', ['genre_list' => $genre_list]);
+        
+        
     }
 
     /**
@@ -140,7 +146,28 @@ class PartyController extends Controller
             $party->genre()->attach($id);
         }
 
-        return redirect()->route('me.parties.show');
+        $user = Auth::user();
+        $api = new SpotifyWebAPI();
+        $api->setAccessToken($user->access_token);
+
+         $playlist = $api->createPlaylist([
+            'name' => $party ->name,
+            'public' => false
+        ]);
+        $bool = $api->addPlaylistTracks($playlist->id,[
+            'spotify:track:4u7EnebtmKWzUH433cf5Qv',
+            'spotify:track:4pbJqGIASGPr0ZpGpnWkDn',
+            'spotify:track:2MuWTIM3b0YEAskbeeFE1i',
+            'spotify:track:3lWzVNe1yFZlkeBBzUuZYu',
+            'spotify:track:0sf12qNH5qcw8qpgymFOqD',
+            'spotify:track:2U12JbtnFSYa5Av5wEcEDX',
+            'spotify:track:6GpvHaqp0Yybx9P6YnodRD',
+            'spotify:track:54PxYcGpSUCmlpGdFGTaYR',
+            'spotify:track:3ZCTVFBt2Brf31RLEnCkWJ'
+        ]);
+            if($bool){
+                 return redirect()->route('me.parties.show');
+            }
 
     }
 
@@ -236,6 +263,7 @@ class PartyController extends Controller
 
 
 
+
     /**
      * Spotify API Interaction
      */
@@ -256,7 +284,8 @@ class PartyController extends Controller
                 'user-read-currently-playing',
                 'user-read-private',
                 'user-read-email',
-                'streaming'
+                'streaming',
+                'playlist-modify-private'
             ],
         ];
 
@@ -291,7 +320,7 @@ class PartyController extends Controller
     public function logout(){
 
         $me = Auth::user();
-        $me->access_token = "";
+        $me->access_token = NULL;
         $me->save();
 
         return redirect('/');
