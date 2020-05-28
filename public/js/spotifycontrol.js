@@ -335,8 +335,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             console.log(state);
 
             if(position && track_uri){
-            var position = state.position;
-            var track_uri = state.track_window.current_track.uri
+                var position = state.position;
+                var track_uri = state.track_window.current_track.uri
+            } else {
+                var position = 0;
             }
 
             if (!state) {
