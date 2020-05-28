@@ -1,4 +1,5 @@
 
+/* --------------------------- CHANNEL ------------------------ */
 
 /** -------Prendo il codice del party dall'URI ------**/
 
@@ -88,18 +89,10 @@ channel.leaving((leaving_user) => {
     });
 })
 
-/* Music Pause */
-
-/**
- * Per i partecipanti : ascolta l'evento paused
- */
-channel.listen('.player.paused', () => {
-    console.log('player paused')
-})
 
 
 
-
+/* --------------------------- WEB PLAYER ------------------------ */
 
 
 window.onSpotifyWebPlaybackSDKReady = () => {
@@ -148,6 +141,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.connect();
 
 
+/* --------------------------- INIZIALIZZAZIONE PLAYLIST ------------------------ */
 
 
     /**
@@ -231,6 +225,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
 
+/* --------------------------- COMANDI ------------------------ */
 
 
 
@@ -320,14 +315,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     });
 
-
-
-
-
-
-
-
-
     /**
      * BUTTONS CONTROLS
      */
@@ -342,17 +329,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
-        var actual_context_uri;
-        var actual_position;
-
-
         console.log(devId);
 
-
         player.getCurrentState().then(state => {
-            
+            console.log(state);
+
+            if(position && track_uri){
             var position = state.position;
             var track_uri = state.track_window.current_track.uri
+            }
 
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
@@ -361,8 +346,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
                 return;
             }
-
-
 
             player.resume().then(function (data) {
 
@@ -423,26 +406,89 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 }
             }
         });    
-
-        
-
 */
-
-
-
     });
 
 
     $('#spotify_prev_form').on('submit', function (event) {
         event.preventDefault();
-        player.previousTrack();
+        player.previousTrack()
+        .then(player.getCurrentState()
+        .then(state => {
 
-    });
+            var track_uri = state.track_window.current_track.uri
+            $.ajax({
+                url: "/party/" + party_code + "/play",
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "track_uri": track_uri,
+                    "position_ms": 0
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+        })
+        )
+    })
 
 
     $('#spotify_next_form').on('submit', function (event) {
         event.preventDefault();
-        player.nextTrack();
+        player.nextTrack()
+        .then(player.getCurrentState()
+        .then(state => {
+
+            var track_uri = state.track_window.current_track.uri
+            $.ajax({
+                url: "/party/" + party_code + "/play",
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "track_uri": track_uri,
+                    "position_ms": 0
+                },
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+        })
+        )
     });
 
 
