@@ -44,7 +44,7 @@ channel.joining((user) => {
  */
 channel.leaving((leaving_user) => {
     //console.log('leaving')
-    //console.log(user)
+    console.log(leaving_user)
     $('#joining-list li').each(function (index, user) {
         console.log(user);
         var partecipant_link = $(this).find('a');
@@ -129,6 +129,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
         console.log(devId);
+        console.log(data.position_ms);
         instance({
             url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
             method: 'PUT',
@@ -137,7 +138,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             },
             data: {
                 "uris": [data.track_uri],
-                "position_ms": 0
+                "position_ms": data.position_ms
             },
             dataType: 'json',
         }).then(function (data) {

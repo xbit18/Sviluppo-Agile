@@ -45,8 +45,7 @@ channel.joining((user) => {
  */
 channel.leaving((leaving_user) => {
     //console.log('leaving')
-    //console.log(user)
-
+console.log(leaving_user);
     
 
     $('#joining-list li').each(function (index, user) {
@@ -55,9 +54,6 @@ channel.leaving((leaving_user) => {
         console.log(partecipant_link);
         if (partecipant_link.attr('data-id') == leaving_user.id) {
             partecipant_link.text(partecipant_link.text() + " (leaving party...)");
-            setTimeout(function () {
-                user.remove();
-            }, 1000);
 
             $.ajax({
                 url: "/party/" + party_code + "/leave/" + leaving_user.id,
@@ -67,6 +63,8 @@ channel.leaving((leaving_user) => {
                 },
                 dataType: 'json',
                 success: function (data) {
+                    console.log(leaving_user)
+
                     // console.log(data);
                     // DEBUGGING
                     // console.log(data);
@@ -85,6 +83,9 @@ channel.leaving((leaving_user) => {
                 }
             });
 
+            setTimeout(function () {
+                user.remove();
+            }, 1000);
         }
     });
 })
@@ -106,7 +107,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     var devId;
 
     // Error handling
-    player.addListener('initialization_error', ({ message }) => { window.location.replace('/loginspotify') });
+    player.addListener('initialization_error', ({ message }) => { console.log(message) });
     player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('playback_error', ({ message }) => { console.error(message); });
@@ -332,9 +333,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         console.log(devId);
 
         player.getCurrentState().then(state => {
-            console.log(state);
 
-            if(position && track_uri){
+            if(state){
                 var position = state.position;
                 var track_uri = state.track_window.current_track.uri
             } else {
@@ -343,7 +343,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
-
                 $('.song_link').first().click();
 
                 return;
@@ -352,7 +351,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             player.resume().then(function (data) {
 
                 console.log("uri " + track_uri);
-    
+                console.log('position ' + position);
                 $.ajax({
                     url: "/party/" + party_code + "/play",
                     method: 'POST',
@@ -417,8 +416,11 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         player.previousTrack()
         .then(player.getCurrentState()
         .then(state => {
-
-            var track_uri = state.track_window.current_track.uri
+            var previous_tracks_length = state.track_window.previous_tracks.length;
+            if(previous_tracks_length > 0){
+                 var track_uri = state.track_window.previous_tracks[tracks_length-1].uri;
+            // console.log(track_uri, 'canzone da riprodurre');
+            // console.log(state);
             $.ajax({
                 url: "/party/" + party_code + "/play",
                 method: 'POST',
@@ -448,6 +450,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     }
                 }
             });
+            }
+           
         })
         )
     })
@@ -458,8 +462,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         player.nextTrack()
         .then(player.getCurrentState()
         .then(state => {
+            var next_tracks_length = state.track_window.next_tracks.length;
+            if(next_tracks_length == 0){
+                $('.song_link').first().click();
 
-            var track_uri = state.track_window.current_track.uri
+                return;
+            } else {
+                var track_uri = state.track_window.next_tracks[0].uri;
+            }
+            
             $.ajax({
                 url: "/party/" + party_code + "/play",
                 method: 'POST',

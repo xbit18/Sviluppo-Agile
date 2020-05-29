@@ -30,7 +30,7 @@ class PartyController extends Controller
         if(Auth::check()) {
 
             $me = Auth::user();
-            $my_parties = $me->parties;
+            $my_parties = $me->parties()->orderBy('created_at','DESC')->get();
 
             $my_parties->map(function ($party) {
                 $party->genre_id = $party->genre->first()->id;
@@ -52,12 +52,11 @@ class PartyController extends Controller
 
         $user = Auth::user();
 
-        if(!$party->users->where('id', $user->id)) { $user->participates()->attach($party->id); }
+        if(!$party->users->where('id', $user->id)->first()) { $user->participates()->toggle($party->id); }
 
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
-
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;
 
@@ -70,7 +69,7 @@ class PartyController extends Controller
      */
     public function index() {
         $parties = Party::all();
-
+        
         if(!$parties){
             return response(['error' => 'This party does not exist'], 404);
         }
@@ -78,8 +77,10 @@ class PartyController extends Controller
         $parties->map(function ($party) {
             $party->genre_id = $party->genre->first()->id;
         });
+        $parties->sortBy('id');
+        $parties_sorted =  $parties->reverse();
 
-        return view('user.pages.parties',  ['parties' => $parties]);
+        return view('user.pages.parties',  ['parties' => $parties_sorted]);
     }
 
 
@@ -257,7 +258,6 @@ class PartyController extends Controller
 
         $track_uri = $request->track_uri;
         $position_ms = $request->position_ms;
-
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerPlayed($party, $track_uri, $position_ms));//->toOthers();
 
@@ -276,7 +276,7 @@ class PartyController extends Controller
         $session = new Session(
             'e2a5fd9ef8654b19ac499e340f8290fe',
             '5fe477929f9a45aea98df7a59347f21a',
-            'http://127.0.0.1:8000/callback'
+            'http://25.58.122.117:8000/callback'
         );
 
 
@@ -306,7 +306,7 @@ class PartyController extends Controller
         $session = new Session(
             'e2a5fd9ef8654b19ac499e340f8290fe',
             '5fe477929f9a45aea98df7a59347f21a',
-            'http://127.0.0.1:8000/callback'
+            'http://25.58.122.117:8000/callback'
         );
 
         // Request a access token using the code from Spotify
@@ -368,7 +368,7 @@ class PartyController extends Controller
         $user = User::where('id', $user_id)->first();
         $party = Party::where('code', $code)->first();
 
-        $user->participates()->detach($party->id);
+        $user->participates()->toggle($party->id);
 
         return;
         
