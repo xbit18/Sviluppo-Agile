@@ -45,8 +45,8 @@ channel.joining((user) => {
  */
 channel.leaving((leaving_user) => {
     //console.log('leaving')
-console.log(leaving_user);
-    
+    console.log(leaving_user);
+
 
     $('#joining-list li').each(function (index, user) {
         console.log(user);
@@ -125,6 +125,54 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         if (!($('#artist-player').text() === artists))
             $('#artist-player').text(artists);
+
+        if (state) {
+            var position = state.position;
+            var track_uri = state.track_window.current_track.uri
+        } else {
+            var position = 0;
+        }
+        console.log(state.paused, 'estado del pausa')
+        if (!state.paused) {
+            player.resume().then(function (data) {
+
+                console.log("uri " + track_uri);
+                console.log('position ' + position);
+                $.ajax({
+                    url: "/party/" + party_code + "/play",
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        "track_uri": track_uri,
+                        "position_ms": position
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data);
+                        // DEBUGGING
+                        //console.log(data);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        /**
+                         * Error Handling
+                         */
+                        if (xhr.status == 404) {
+                            console.log("404 NOT FOUND");
+                        } else if (xhr.status == 500) {
+                            console.log("500 INTERNAL SERVER ERROR");
+                        } else {
+                            console.log("errore " + xhr.status);
+                        }
+                    }
+                });
+
+
+
+            });;
+        }
+
     });
 
     // Ready
@@ -142,7 +190,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.connect();
 
 
-/* --------------------------- INIZIALIZZAZIONE PLAYLIST ------------------------ */
+    /* --------------------------- INIZIALIZZAZIONE PLAYLIST ------------------------ */
 
 
     /**
@@ -226,7 +274,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
 
-/* --------------------------- COMANDI ------------------------ */
+    /* --------------------------- COMANDI ------------------------ */
 
 
 
@@ -322,69 +370,79 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     $('#spotify_play_form').on('submit', function (event) {
         event.preventDefault();
-
-        /**
-         * AJAX CALL FOR PLAY
-         */
-
-        var instance = axios.create();
-        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-
-        console.log(devId);
-
         player.getCurrentState().then(state => {
-
-            if(state){
-                var position = state.position;
-                var track_uri = state.track_window.current_track.uri
-            } else {
-                var position = 0;
-            }
-
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
                 $('.song_link').first().click();
 
                 return;
             }
+            player.resume()
+        })
+        })
+        
+        //     /**
+        //      * AJAX CALL FOR PLAY
+        //      */
 
-            player.resume().then(function (data) {
+        //     var instance = axios.create();
+        //     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
-                console.log("uri " + track_uri);
-                console.log('position ' + position);
-                $.ajax({
-                    url: "/party/" + party_code + "/play",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        "track_uri": track_uri,
-                        "position_ms": position
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
-                });
-    
-            });;
+        //     console.log(devId);
 
-        });
+        //     player.getCurrentState().then(state => {
+
+        //         if(state){
+        //             var position = state.position;
+        //             var track_uri = state.track_window.current_track.uri
+        //         } else {
+        //             var position = 0;
+        //         }
+
+        //         if (!state) {
+        //             console.error('User is not playing music through the Web Playback SDK');
+        //             $('.song_link').first().click();
+
+        //             return;
+        //         }
+
+        //         player.resume().then(function (data) {
+
+        //             console.log("uri " + track_uri);
+        //             console.log('position ' + position);
+        //             $.ajax({
+        //                 url: "/party/" + party_code + "/play",
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //                 },
+        //                 data: {
+        //                     "track_uri": track_uri,
+        //                     "position_ms": position
+        //                 },
+        //                 dataType: 'json',
+        //                 success: function (data) {
+        //                     console.log(data);
+        //                     // DEBUGGING
+        //                     //console.log(data);
+        //                 },
+        //                 error: function (xhr, ajaxOptions, thrownError) {
+        //                     /**
+        //                      * Error Handling
+        //                      */
+        //                     if (xhr.status == 404) {
+        //                         console.log("404 NOT FOUND");
+        //                     } else if (xhr.status == 500) {
+        //                         console.log("500 INTERNAL SERVER ERROR");
+        //                     } else {
+        //                         console.log("errore " + xhr.status);
+        //                     }
+        //                 }
+        //             });
+
+        //         });;
+
+        //     });
 
         /*
         instance({
@@ -408,164 +466,166 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             }
         });    
 */
-    });
+        // });
 
 
-    $('#spotify_prev_form').on('submit', function (event) {
-        event.preventDefault();
-        player.previousTrack()
-        .then(player.getCurrentState()
-        .then(state => {
-            var previous_tracks_length = state.track_window.previous_tracks.length;
-            if(previous_tracks_length > 0){
-                 var track_uri = state.track_window.previous_tracks[tracks_length-1].uri;
-            // console.log(track_uri, 'canzone da riprodurre');
-            // console.log(state);
-            $.ajax({
-                url: "/party/" + party_code + "/play",
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "track_uri": track_uri,
-                    "position_ms": 0
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-            }
-           
+        $('#spotify_prev_form').on('submit', function (event) {
+            event.preventDefault();
+            player.previousTrack()
+            // .then(player.getCurrentState()
+            // .then(state => {
+            //     var previous_tracks_length = state.track_window.previous_tracks.length;
+            //     if(previous_tracks_length > 0){
+            //          var track_uri = state.track_window.previous_tracks[tracks_length-1].uri;
+            //     // console.log(track_uri, 'canzone da riprodurre');
+            //     // console.log(state);
+            //     $.ajax({
+            //         url: "/party/" + party_code + "/play",
+            //         method: 'POST',
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         data: {
+            //             "track_uri": track_uri,
+            //             "position_ms": 0
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             console.log(data);
+            //             // DEBUGGING
+            //             //console.log(data);
+            //         },
+            //         error: function (xhr, ajaxOptions, thrownError) {
+            //             /**
+            //              * Error Handling
+            //              */
+            //             if (xhr.status == 404) {
+            //                 console.log("404 NOT FOUND");
+            //             } else if (xhr.status == 500) {
+            //                 console.log("500 INTERNAL SERVER ERROR");
+            //             } else {
+            //                 console.log("errore " + xhr.status);
+            //             }
+            //         }
+            //     });
+            //     }
+
+            // })
+            // )
         })
-        )
-    })
 
 
-    $('#spotify_next_form').on('submit', function (event) {
-        event.preventDefault();
-        player.nextTrack()
-        .then(player.getCurrentState()
-        .then(state => {
-            var next_tracks_length = state.track_window.next_tracks.length;
-            if(next_tracks_length == 0){
-                $('.song_link').first().click();
+        $('#spotify_next_form').on('submit', function (event) {
+            event.preventDefault();
+            player.nextTrack()
+            // .then(player.getCurrentState()
+            // .then(state => {
+            //     var next_tracks_length = state.track_window.next_tracks.length;
+            //     if(next_tracks_length == 0){
+            //         $('.song_link').first().click();
 
-                return;
-            } else {
-                var track_uri = state.track_window.next_tracks[0].uri;
-            }
-            
-            $.ajax({
-                url: "/party/" + party_code + "/play",
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "track_uri": track_uri,
-                    "position_ms": 0
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-        })
-        )
-    });
+            //         return;
+            //     } else {
+            //         var track_uri = state.track_window.next_tracks[0].uri;
+            //     }
 
-
-
-    $('#spotify_pause_form').on('submit', function (event) {
-        event.preventDefault();
-
-        /**
-         * AJAX CALL FOR PAUSE
-         */
-        /*
-        instance({
-            url: "https://api.spotify.com/v1/me/player/pause?device_id=" + devId,
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-            },
-            dataType: 'json',       
-        });*/
-        
-        player.pause().then(() => {
-            $.ajax({
-                url: "/party/" + party_code + "/pause",
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-        });
-    });
-
-
-
-    var slider = $("#volume_range");
-    var isDragging = false;
-    slider.mousedown(function () {
-            isDragging = false;
-        })
-        .mousemove(function () {
-            isDragging = true;
-            player.setVolume(slider.val() / 100)
-        })
-        .mouseup(function () {
-            isDragging = false;
+            //     $.ajax({
+            //         url: "/party/" + party_code + "/play",
+            //         method: 'POST',
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         data: {
+            //             "track_uri": track_uri,
+            //             "position_ms": 0
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             console.log(data);
+            //             // DEBUGGING
+            //             //console.log(data);
+            //         },
+            //         error: function (xhr, ajaxOptions, thrownError) {
+            //             /**
+            //              * Error Handling
+            //              */
+            //             if (xhr.status == 404) {
+            //                 console.log("404 NOT FOUND");
+            //             } else if (xhr.status == 500) {
+            //                 console.log("500 INTERNAL SERVER ERROR");
+            //             } else {
+            //                 console.log("errore " + xhr.status);
+            //             }
+            //         }
+            //     });
+            // })
+            // )
         });
 
 
-};
+
+        $('#spotify_pause_form').on('submit', function (event) {
+            event.preventDefault();
+            player.pause()
+            /**
+             * AJAX CALL FOR PAUSE
+             */
+            /*
+            instance({
+                url: "https://api.spotify.com/v1/me/player/pause?device_id=" + devId,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',       
+            });*/
+
+            // player.pause()
+
+            //.then(() => {
+            //     $.ajax({
+            //         url: "/party/" + party_code + "/pause",
+            //         method: 'GET',
+            //         headers: {
+            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //         },
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             console.log(data);
+            //             // DEBUGGING
+            //             //console.log(data);
+            //         },
+            //         error: function (xhr, ajaxOptions, thrownError) {
+            //             /**
+            //              * Error Handling
+            //              */
+            //             if (xhr.status == 404) {
+            //                 console.log("404 NOT FOUND");
+            //             } else if (xhr.status == 500) {
+            //                 console.log("500 INTERNAL SERVER ERROR");
+            //             } else {
+            //                 console.log("errore " + xhr.status);
+            //             }
+            //         }
+            //     });
+            // });
+        });
+
+
+
+        var slider = $("#volume_range");
+        var isDragging = false;
+        slider.mousedown(function () {
+            isDragging = false;
+        })
+            .mousemove(function () {
+                isDragging = true;
+                player.setVolume(slider.val() / 100)
+            })
+            .mouseup(function () {
+                isDragging = false;
+            });
+
+
+    };
 
