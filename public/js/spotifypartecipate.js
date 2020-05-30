@@ -4,6 +4,7 @@
 
 var party_code = $('#party_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
+var my_id = $('#my_id').data('id');
 
 /* Music Pause */
 
@@ -21,6 +22,7 @@ channel.here((users) => {
         new_partecipant.removeAttr('id');
         new_partecipant_link.attr('data-id', user.id);
         $('#joining-list').append(new_partecipant);
+
     });
 
 });
@@ -52,7 +54,6 @@ channel.leaving((leaving_user) => {
         if (partecipant_link.attr('data-id') == leaving_user.id) {
             partecipant_link.text(partecipant_link.text() + " (leaving party...)");
             setTimeout(function () {
-                channel.leave()
                 user.remove();
             }, 1000);
         }
@@ -60,7 +61,7 @@ channel.leaving((leaving_user) => {
 })
 
 
-/* Music Pause */
+
 
 
 
@@ -98,12 +99,44 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         if (!($('#artist-player').text() === artists))
             $('#artist-player').text(artists);
+
+
     });
 
     // Ready
     player.addListener('ready', ({ device_id }) => {
         console.log('Ready with Device ID', device_id);
         devId = device_id;
+
+        /** SINCRONIZAZZIONE DEL PLAYER CON QUELLO DELL'HOST **/
+
+        var privateChannel = Echo.private(`party-sync.${my_id}`);
+        
+        privateChannel.listen('.player.syncronize', function (data) {
+
+            /* Esco dal channel poiché non serve più essere connesso a esso*/
+            Echo.leave(`party-sync.${my_id}`);
+            
+            /* Sincronizzo */
+            var instance = axios.create();
+            delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+            console.log(data.position_ms, 'SYNCRONIZING');
+            instance({
+                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                data: {
+                    "uris": [data.track_uri],
+                    "position_ms": data.position_ms
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                
+            });
+         
+        });
     });
 
     // Not Ready
@@ -155,6 +188,21 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     channel.listen('.player.paused', (data) => {
         player.pause();
     });
+
+
+
+
+
+
+
+
+    /** Per i partecipanti: Se il partecipante è già in un party e tenta di accederne ad un altro
+     * viene buttato fuori dal primo party e si unisce al secondo
+     */
+
+
+
+
 
 
     var slider = $("#volume_range");

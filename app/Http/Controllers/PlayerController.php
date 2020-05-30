@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Events\PlayerPaused;
 use App\Events\PlayerPlayed;
+use App\Events\PlayerSync;
 use App\Party;
 
 class PlayerController extends Controller
@@ -27,7 +28,19 @@ class PlayerController extends Controller
         $track_uri = $request->track_uri;
         $position_ms = $request->position_ms;
         $party = Party::where('code',$code)->first();
-        broadcast(new PlayerPlayed($party, $track_uri, $position_ms));//->toOthers();
+        broadcast(new PlayerPlayed($party, $track_uri, $position_ms))->toOthers();
 
+    }
+
+   
+    
+    public function syncronize(Request $request, $code){
+
+        $track_uri = $request->track_uri;
+        $position_ms = $request->position_ms;
+        $user_id = $request->user_id;
+        $party = Party::where('code',$code)->first();
+        broadcast(new PlayerSync($party, $user_id, $track_uri, $position_ms))->toOthers();
+        return 'Sincronized';
     }
 }

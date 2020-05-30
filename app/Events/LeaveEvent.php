@@ -48,8 +48,8 @@ class LeaveEvent implements ShouldBroadcast
         return 'player.next';
     }
 
-    // public function broadcastWhen(){
-    //     $user_id = Auth::id();
-    //     return $this->party->user->id === $user_id;
-    // }
+     public function broadcastWhen(){
+         $user_id = Auth::id();
+         return $this->party->user->id === $user_id;
+     }
 }

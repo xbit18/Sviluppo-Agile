@@ -17,7 +17,7 @@ class SpotifyAuthController extends Controller
         $session = new Session(
             'e2a5fd9ef8654b19ac499e340f8290fe',
             '5fe477929f9a45aea98df7a59347f21a',
-            'http://25.58.122.117:8000/callback'
+            'http://127.0.0.1:8000/callback'
         );
 
 
@@ -48,7 +48,7 @@ class SpotifyAuthController extends Controller
         $session = new Session(
             'e2a5fd9ef8654b19ac499e340f8290fe',
             '5fe477929f9a45aea98df7a59347f21a',
-            'http://25.58.122.117:8000/callback'
+            'http://127.0.0.1:8000/callback'
         );
 
         // Request a access token using the code from Spotify

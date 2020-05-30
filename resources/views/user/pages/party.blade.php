@@ -120,6 +120,8 @@
               <!-- catagories list -->
               <ul id="joining-list" class="catagories-list">
               </ul>
+
+              <span id="my_id" class="d-none" data-id="{{Auth::user()->id}}"></span>
             </div>
 
             <!-- Single Widget Area -->

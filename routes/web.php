@@ -45,6 +45,7 @@ Route::get('/parties/show', 'PartyController@index')->name('parties.index');
 /* PLAYER MANAGEMENT */
 Route::get('/party/{code}/pause', 'PlayerController@pause')->name('party.pause');
 Route::post('/party/{code}/play', 'PlayerController@play')->name('party.play');
+Route::post('/party/{code}/syncronize', 'PlayerController@syncronize')->name('player.syncronize');
 
 
 /** Party Presences **/
