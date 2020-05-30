@@ -8,15 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Events\PlayerPaused;
-use App\Events\PlayerPlayed;
 use App\Genre;
 use App\Party;
 use App\User;
-use SpotifyWebAPI\Session;
+use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
 class PartyController extends Controller
 {
     public function __construct()
@@ -109,9 +106,6 @@ class PartyController extends Controller
      */
     public function create() {
         $user = Auth::user();
-        if($user->access_token == NULL){
-           return redirect()->route('spotify.login');
-        }  
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         return view('user.pages.create_party', ['genre_list' => $genre_list]);
         
@@ -132,57 +126,59 @@ class PartyController extends Controller
             'genre' =>'required|array'
         ]);
 
-        $genres = $request->genre;
-        $genre_ids = array();
-
-        /**
-         * Per ogni genere controllo se esiste
-         */
-        $validation = true;
-        foreach($genres as $genre_in) {
-            /**
-             * Ottimizzo memorizzando gli id dei generi durante la validazione
-             */
-            $genre = Genre::where('genre',$genre_in)->first();
-            if(!$genre) $validation = false;
-            else array_push($genre_ids, $genre->id);
-        }
-
-        if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
-
-        /**
-         * Genero un nuovo codice finchè sono certo che sia unico all'interno del db
-         */
-        do{
-            $code = Str::random(16);
-        }
-        while(Party::where('code', '=', $code)->exists());
-
-        $party = Party::create([
-            'user_id' => Auth::id(),
-            'name' => $request->name,
-            'mood' => $request->mood,
-            'type' => $request->type,
-            'source' => $request->source,
-            'description' => $request->desc,
-            'code' => $code,
-        ]);
-
-        foreach($genre_ids as $id) {
-            $party->genre()->attach($id);
-        }
-
-        /**
-         * Aggiunta della playlist
-         */
         $user = Auth::user();
         $api = new SpotifyWebAPI();
-        $api->setAccessToken($user->access_token);
-
-         $playlist = $api->createPlaylist([
-            'name' => $party ->name,
+  
+        try {
+            $api->setAccessToken($user->access_token);
+            $playlist = $api->createPlaylist([
+            'name' => $request->name,
             'public' => false
         ]);
+
+        $genres = $request->genre;
+            $genre_ids = array();
+    
+            /**
+             * Per ogni genere controllo se esiste
+             */
+            $validation = true;
+            foreach($genres as $genre_in) {
+                /**
+                 * Ottimizzo memorizzando gli id dei generi durante la validazione
+                 */
+                $genre = Genre::where('genre',$genre_in)->first();
+                if(!$genre) $validation = false;
+                else array_push($genre_ids, $genre->id);
+            }
+    
+            if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
+    
+            /**
+             * Genero un nuovo codice finchè sono certo che sia unico all'interno del db
+             */
+            do{
+                $code = Str::random(16);
+            }
+            while(Party::where('code', '=', $code)->exists());
+    
+            $party = Party::create([
+                'user_id' => Auth::id(),
+                'name' => $request->name,
+                'mood' => $request->mood,
+                'type' => $request->type,
+                'source' => $request->source,
+                'description' => $request->desc,
+                'code' => $code,
+            ]);
+    
+            foreach($genre_ids as $id) {
+                $party->genre()->attach($id);
+            }
+    
+            /**
+             * Aggiunta della playlist
+             */
 
         /**
          * Popolazione delle tracce
@@ -200,7 +196,11 @@ class PartyController extends Controller
         ]);
         if($bool){
                 return redirect()->route('me.parties.show');
+        } 
+        } catch (SpotifyWebApiException $e){
+            return redirect()->route('spotify.login');
         }
+        
 
     }
 
@@ -256,140 +256,6 @@ class PartyController extends Controller
         return redirect()->back();
     }
 
-
-    public function getSong() {
-        //$path = storage_path().$song->path.".mp3";
-        $path = public_path() . "\audio\dummy-audio.mp3";
-        $user = Auth::user();
-        if($user) {
-            $response = new BinaryFileResponse($path);
-            BinaryFileResponse::trustXSendfileTypeHeader();
-            return $response;
-        }
-        abort(400);
-    }
-
-    /* ------------------- EVENTS ------------------ */
-
-    public function pause($code){
-        /*
-        Prendo il model Party e lo mando all'evento
-        */
-        $party = Party::where('code',$code)->first();
-        broadcast(new PlayerPaused($party))->toOthers();
-    }
-
-    public function play(Request $request, $code){
-        /*
-            Prendo il model Party e lo mando all'evento
-        */
-
-        $track_uri = $request->track_uri;
-        $position_ms = $request->position_ms;
-        $party = Party::where('code',$code)->first();
-        broadcast(new PlayerPlayed($party, $track_uri, $position_ms));//->toOthers();
-
-    }
-
-
-
-
-
-
-    /**
-     * Spotify API Interaction
-     */
-    public function load()
-    {
-        $session = new Session(
-            'e2a5fd9ef8654b19ac499e340f8290fe',
-            '5fe477929f9a45aea98df7a59347f21a',
-            'http://25.58.122.117:8000/callback'
-        );
-
-
-        $options = [
-            'scope' => [
-                'playlist-read-private',
-                'user-modify-playback-state',
-                'user-read-playback-state',
-                'user-read-currently-playing',
-                'user-read-private',
-                'user-read-email',
-                'streaming',
-                'playlist-modify-private'
-            ],
-        ];
-
-        header('Location: ' . $session->getAuthorizeUrl($options));
-        die();
-
-    }
-
-    public function getAuthCode(Request $request){
-
-        /**
-         * Spotify Session Parameters
-         */
-        $session = new Session(
-            'e2a5fd9ef8654b19ac499e340f8290fe',
-            '5fe477929f9a45aea98df7a59347f21a',
-            'http://25.58.122.117:8000/callback'
-        );
-
-        // Request a access token using the code from Spotify
-        $session->requestAccessToken($_GET['code']);
-
-        $accessToken = $session->getAccessToken();
-        $user = Auth::user();
-        $user->access_token = $accessToken;
-        $user->save();
-
-        // Store the access token somewhere. In a database for example.
-        return redirect()->back();
-    }
-
-    public function logout(){
-
-        $me = Auth::user();
-        $me->access_token = NULL;
-        $me->save();
-
-        return redirect('/');
-        /*$user = User::all()->first();
-        if(!$user) return redirect('/');
-
-        $user->delete();
-        return redirect('/');
-        */
-    }
-
-
-    public function playpause($state)
-    {
-        $api = new SpotifyWebAPI();
-
-        $user = User::all()->first();
-        // Fetch the saved access token from somewhere. A database for example.
-        $api->setAccessToken($user->access_token);
-
-        if($state == 'play'){
-            $api->play();
-        }
-
-        if($state == 'pause'){
-            $api->pause();
-        }
-
-        return redirect()->back();
-    }
-
-    public function page(){
-        $user = User::all()->first();
-        if(!$user) return redirect('/');
-
-        return view('playback');
-    }
 
     public function leave_party($code, $user_id) {
 

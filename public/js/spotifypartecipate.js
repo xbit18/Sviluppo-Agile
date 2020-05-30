@@ -52,11 +52,13 @@ channel.leaving((leaving_user) => {
         if (partecipant_link.attr('data-id') == leaving_user.id) {
             partecipant_link.text(partecipant_link.text() + " (leaving party...)");
             setTimeout(function () {
+                channel.leave()
                 user.remove();
             }, 1000);
         }
     });
 })
+
 
 /* Music Pause */
 

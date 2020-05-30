@@ -17,8 +17,16 @@
 
   @include('user.includes.footer')
 
+  @if(session('spotifyLogIn'))
+  <span class="d-none" id="spotifyLogIn">
+  
+  </span>
+  @endif
+
   @include('user.includes.scripts')
 
+  
+  
 </body>
 
 </html>

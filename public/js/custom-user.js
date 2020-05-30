@@ -7,6 +7,13 @@ $( document ).ready( function() {
         timer: 3000
     });
 
+    if($('#spotifyLogIn').length){
+        Toast.fire({
+            type: 'success',
+            title: 'The Spotify Token has been refreshed'
+            });
+    }
+
     $('#add_people_to_list').on('submit', function(event) {
         event.preventDefault();
 
