@@ -1,13 +1,12 @@
 
 /* --------------------------- CHANNEL ------------------------ */
 
-/** -------Prendo il codice del party dall'URI ------**/
+/** -------Prendo il codice del party dall'URI e il mio ID utente ------**/
 
 var party_code = $('#party_code').attr('data-code');
 var user_code = $('#user_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
 
-/* Music Pause */
 /**
  * Comunica a tutti i partecipanti del canale quando un utente si unisce
  */

@@ -24,6 +24,14 @@ class PartyController extends Controller
         $this->middleware(['auth','verified']);
     }
 
+    /**
+     * Methods for User Views
+     */
+
+
+    /**
+     * Mostra i party creati dall'utente autenticato
+     */ 
     public function get_parties_by_user() {
 
         // Controllo (anche se non necessario) se l'utente è loggato
@@ -44,6 +52,8 @@ class PartyController extends Controller
 
     /**
      * Mostra un party in base al codice
+     * Gestisce l'inserimento nel database nella tabella partecipanti
+     * al momento della join.
      */
     public function show($code){
 
@@ -52,11 +62,21 @@ class PartyController extends Controller
 
         $user = Auth::user();
 
-        if(!$party->users->where('id', $user->id)->first()) { $user->participates()->toggle($party->id); }
+        /** L'utente sta partecipando ad un altro party (Errore Duplicati) */
+        if( !$user->participates->isEmpty() ) { 
+            $user->participates()->detach(); 
+        }
+
+        /** L'utente è gia nel party */
+        if(!$party->users->where('id', $user->id)->first()) { 
+            $user->participates()->toggle($party->id); 
+        }
+
 
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
+
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;
 
@@ -65,7 +85,7 @@ class PartyController extends Controller
     }
 
     /**
-     * Mostra i party creati
+     * Mostra i party attualmente sul sistema dal più recente
      */
     public function index() {
         $parties = Party::all();
@@ -85,7 +105,7 @@ class PartyController extends Controller
 
 
     /**
-     * Mostra il form di creazione del party
+     * Mostra la view di creazione del party
      */
     public function create() {
         $user = Auth::user();
@@ -99,7 +119,8 @@ class PartyController extends Controller
     }
 
     /**
-     * Effettua la creazione del party
+     * Effettua la creazione del party, quindi anche la creazione della playlist
+     * con lo stesso nome del party sull'account spotify
      */
     public function store(Request $request){
 
@@ -151,6 +172,9 @@ class PartyController extends Controller
             $party->genre()->attach($id);
         }
 
+        /**
+         * Aggiunta della playlist
+         */
         $user = Auth::user();
         $api = new SpotifyWebAPI();
         $api->setAccessToken($user->access_token);
@@ -159,6 +183,10 @@ class PartyController extends Controller
             'name' => $party ->name,
             'public' => false
         ]);
+
+        /**
+         * Popolazione delle tracce
+         */
         $bool = $api->addPlaylistTracks($playlist->id,[
             'spotify:track:4u7EnebtmKWzUH433cf5Qv',
             'spotify:track:4pbJqGIASGPr0ZpGpnWkDn',
@@ -170,9 +198,9 @@ class PartyController extends Controller
             'spotify:track:54PxYcGpSUCmlpGdFGTaYR',
             'spotify:track:3ZCTVFBt2Brf31RLEnCkWJ'
         ]);
-            if($bool){
-                 return redirect()->route('me.parties.show');
-            }
+        if($bool){
+                return redirect()->route('me.parties.show');
+        }
 
     }
 
