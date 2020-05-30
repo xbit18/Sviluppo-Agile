@@ -36,12 +36,19 @@ Route::get('/party/create', 'PartyController@create')->name('party.create');
 Route::post('/party', 'PartyController@store')->name('party.store');
 Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
 Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
-Route::get('/party/{code}/leave/{user_id}', 'PartyController@leave_party')->name('party.leave');
-Route::get('/party/{code}/pause', 'PlayerController@pause')->name('party.pause');
-Route::post('/party/{code}/play', 'PlayerController@play')->name('party.play');
+
 
 Route::get('/parties/show', 'PartyController@index')->name('parties.index');
 
+
+
+/* PLAYER MANAGEMENT */
+Route::get('/party/{code}/pause', 'PlayerController@pause')->name('party.pause');
+Route::post('/party/{code}/play', 'PlayerController@play')->name('party.play');
+
+
+/** Party Presences **/
+Route::get('/party/{code}/leave/{user_id}', 'PresenceController@leave_party')->name('party.leave');
 
 
 /**
