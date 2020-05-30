@@ -5,7 +5,7 @@ $( document ).ready( function() {
         position: 'top-end',
         showConfirmButton: false,
         timer: 3000
-      });
+    });
 
     $('#add_people_to_list').on('submit', function(event) {
         event.preventDefault();
