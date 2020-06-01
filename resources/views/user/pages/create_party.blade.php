@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="partymood">Party Mood</label>
-                                    <input type="tet" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood" required />
+                                    <input type="text" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood" required />
                                     <small id="partymood_help" class="form-text text-muted">The Party Mood suggests the party theme</small>
                                 </div>
                                 <div class="form-group">
@@ -74,7 +74,7 @@
                                 <div class="form-group">
                                     <label class="description" for="source">Music Source </label>
                                     <select class="form-control form-control-sm" id="source" name="source">
-                                        <option>YouTube</option>
+                                        <option>Spotify</option>
                                     </select>
                                 </div>
 
@@ -96,7 +96,7 @@
                                 <button type="submit" class="btn poca-btn">Create</button>
                             </form>
 
-                            
+
 
                         </div>
 

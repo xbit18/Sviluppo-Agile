@@ -1,93 +1,12 @@
 
 /* --------------------------- CHANNEL ------------------------ */
 
-/** -------Prendo il codice del party dall'URI ------**/
+/** -------Prendo il codice del party dall'URI e il mio ID utente ------**/
 
 var party_code = $('#party_code').attr('data-code');
 var user_code = $('#user_code').attr('data-code');
 var channel = Echo.join(`party.${party_code}`);
-
-/* Music Pause */
-/**
- * Comunica a tutti i partecipanti del canale quando un utente si unisce
- */
-channel.here((users) => {
-    console.log(users);
-    $('#joining-list').empty();
-    $.each(users, function (index, user) {
-        console.log(user);
-        var new_partecipant = $('#partecipant-prototype').clone();
-        new_partecipant_link = new_partecipant.find('a');
-        new_partecipant_link.text(user.name);
-        new_partecipant.removeAttr('id');
-        new_partecipant_link.attr('data-id', user.id);
-        $('#joining-list').append(new_partecipant);
-    });
-
-});
-
-/**
- *  Action a utente entrante
- */
-channel.joining((user) => {
-    //console.log('joining')
-    //console.log(user)
-    var new_partecipant = $('#partecipant-prototype').clone();
-    new_partecipant_link = new_partecipant.find('a');
-    new_partecipant.removeAttr('id');
-    new_partecipant_link.text(user.name);
-    new_partecipant_link.attr('data-id', user.id);
-    $('#joining-list').append(new_partecipant);
-})
-
-/**
- *  Comunica a tutti che un utente lascia il canale
- */
-channel.leaving((leaving_user) => {
-    //console.log('leaving')
-    //console.log(user)
-
-    
-
-    $('#joining-list li').each(function (index, user) {
-        console.log(user);
-        var partecipant_link = $(this).find('a');
-        console.log(partecipant_link);
-        if (partecipant_link.attr('data-id') == leaving_user.id) {
-            partecipant_link.text(partecipant_link.text() + " (leaving party...)");
-            setTimeout(function () {
-                user.remove();
-            }, 1000);
-
-            $.ajax({
-                url: "/party/" + party_code + "/leave/" + leaving_user.id,
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (data) {
-                    // console.log(data);
-                    // DEBUGGING
-                    // console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-
-        }
-    });
-})
+var paused = true;
 
 
 
@@ -106,24 +25,99 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     var devId;
 
     // Error handling
-    player.addListener('initialization_error', ({ message }) => { window.location.replace('/loginspotify') });
+    player.addListener('initialization_error', ({ message }) => { console.log(message) });
     player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
     // Playback status updates
     player.addListener('player_state_changed', state => {
-        console.log(state);
-        if (!($('#title-player').text() === state.track_window.current_track.name))
-            $('#title-player').text(state.track_window.current_track.name);
+        // console.log(state);
 
-        var artists = "";
-        $.each(state.track_window.current_track.artists, function (index, artist) {
-            artists += artist.name;
-        });
 
-        if (!($('#artist-player').text() === artists))
-            $('#artist-player').text(artists);
+        if (state) {
+
+            if (!($('#title-player').text() === state.track_window.current_track.name)) {
+                $('#title-player').text(state.track_window.current_track.name);
+
+                var artists = "";
+                $.each(state.track_window.current_track.artists, function (index, artist) {
+                    artists += artist.name;
+                });
+
+            }
+
+            if (!($('#artist-player').text() === artists)) {
+                $('#artist-player').text(artists);
+            }
+            var position = state.position;
+            var track_uri = state.track_window.current_track.uri
+        } else {
+            var position = 0;
+        }
+
+        console.log(state.paused, 'paused boolean')
+        console.log('hola');
+        if (!state.paused) {
+            // console.log("uri " + track_uri);
+            // console.log('position ' + position);
+            $.ajax({
+                url: "/party/" + party_code + "/play",
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "track_uri": track_uri,
+                    "position_ms": position
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+        } else if (state.paused) {
+            $.ajax({
+                url: "/party/" + party_code + "/pause",
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("errore " + xhr.status);
+                    }
+                }
+            });
+        }
+
     });
 
     // Ready
@@ -140,8 +134,145 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     // Connect to the player!
     player.connect();
 
+    /* -------------------CHANNELS LISTENERS ----------------------------------*/
+    /**
+     * 
+ * Comunica a tutti i partecipanti del canale quando un utente si unisce
+ */
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+        });
 
-/* --------------------------- INIZIALIZZAZIONE PLAYLIST ------------------------ */
+    });
+
+    /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+
+
+        setTimeout(function () {
+
+            if (!paused) {
+                console.log('syncronizing');
+
+                player.getCurrentState().then(state => {
+                    var position = state.position;
+                    var track_uri = state.track_window.current_track.uri
+                    $.ajax({
+                        url: "/party/" + party_code + "/syncronize",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "user_id": user.id,
+                            "track_uri": track_uri,
+                            "position_ms": position
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+
+                            // console.log(data);
+                            // DEBUGGING
+                            // console.log(data);
+                        },
+                        error: function (e) {
+                            console.log(e)
+                        }
+                        //function (xhr, ajaxOptions, thrownError) {
+                        //     /**
+                        //      * Error Handling
+                        //      */
+                        //     if (xhr.status == 404) {
+                        //         console.log("404 NOT FOUND");
+                        //     } else if (xhr.status == 500) {
+                        //         console.log("500 INTERNAL SERVER ERROR");
+                        //     } else {
+                        //         console.log("errore " + xhr.status);
+                        //     }
+                        // }
+                    });
+                })
+            }
+
+        }, 4000)
+
+    })
+
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user);
+
+
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.text(partecipant_link.text() + " (leaving party...)");
+
+                $.ajax({
+                    url: "/party/" + party_code + "/leave/" + leaving_user.id,
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(leaving_user)
+
+                        // console.log(data);
+                        // DEBUGGING
+                        // console.log(data);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        /**
+                         * Error Handling
+                         */
+                        if (xhr.status == 404) {
+                            console.log("404 NOT FOUND");
+                        } else if (xhr.status == 500) {
+                            console.log("500 INTERNAL SERVER ERROR");
+                        } else {
+                            console.log("errore " + xhr.status);
+                        }
+                    }
+                });
+
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
+
+
+
+
+    /* --------------------------- INIZIALIZZAZIONE PLAYLIST ------------------------ */
 
 
     /**
@@ -206,7 +337,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         console.log(data);
 
                         $.each(data.data.items, function (index, item) {
-                            var song_item = $('#song-prototype').clone();
+                            // OLD
+                            /* var song_item = $('#song-prototype').clone();
                             song_item.removeClass('d-none');
                             song_item_link = song_item.find('a');
                             song_item_link.text(' - ' + item.track.name);
@@ -215,7 +347,33 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                             song_item_link.attr('data-number', index);
                             song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
                             song_item_link.addClass('song_link');
-                            $('#party-song-list').append(song_item);
+                            $('#party-song-list').append(song_item); */
+
+                            // NEW
+                            console.log(item);
+                            var item_s = $('#playlist_song_prototype').clone();
+                            
+                            item_s.find('h5').text(item.track.name);
+                            
+
+                            var artists = "";
+                            $.each(item.track.artists, function (index, artist) {
+                                artists += artist.name;
+                            });
+
+                            item_s.find('p').text(artists);
+
+                            var thumb = item_s.find('img');
+                            thumb.attr('src', item.track.album.images[0].url);
+                            
+                            item_s.children('div').children('div').children('small').text(item.track.album.name);
+                            item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(item.track.duration_ms));
+                            item_s.attr('data-id', item.track.id);
+                            item_s.attr('data-uri', item.track.uri);
+                            item_s.attr('data-number', index);
+                            item_s.attr('data-playlist-uri', my_party_playlist.uri);
+                            item_s.addClass('song_link');
+                            $('#party_playlist').append(item_s);
                         });
 
                     })
@@ -224,8 +382,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+      }
 
-/* --------------------------- COMANDI ------------------------ */
+
+
+    /* --------------------------- COMANDI ------------------------ */
 
 
 
@@ -235,7 +400,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
 
-        console.log('clicked');
+        // console.log('clicked');
 
         /**
          * AJAX CALL FOR PLAY THAT SONG
@@ -280,7 +445,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         }).then(function (data) {
 
             console.log("uri " + track_uri);
-
+            paused = false;
             $.ajax({
                 url: "/party/" + party_code + "/play",
                 method: 'POST',
@@ -321,183 +486,205 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     $('#spotify_play_form').on('submit', function (event) {
         event.preventDefault();
-
-        /**
-         * AJAX CALL FOR PLAY
-         */
-
-        var instance = axios.create();
-        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-
-        console.log(devId);
-
         player.getCurrentState().then(state => {
-            console.log(state);
-
-            if(position && track_uri){
-                var position = state.position;
-                var track_uri = state.track_window.current_track.uri
-            } else {
-                var position = 0;
-            }
-
             if (!state) {
                 console.error('User is not playing music through the Web Playback SDK');
-
                 $('.song_link').first().click();
 
                 return;
             }
+            paused = false;
+            player.resume()
+        })
+    })
 
-            player.resume().then(function (data) {
+    //     /**
+    //      * AJAX CALL FOR PLAY
+    //      */
 
-                console.log("uri " + track_uri);
-    
-                $.ajax({
-                    url: "/party/" + party_code + "/play",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        "track_uri": track_uri,
-                        "position_ms": position
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
-                });
-    
-            });;
+    //     var instance = axios.create();
+    //     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
-        });
+    //     console.log(devId);
 
-        /*
-        instance({
-            url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-            },
-            data: {},
-            dataType: 'json',
-            success: function(data){
-            },
-            error:function (xhr, ajaxOptions, thrownError){ 
-                if(xhr.status == 404) {
-                    console.log("404 NOT FOUND");
-                }else if(xhr.status == 500) {
-                    console.log("500 INTERNAL SERVER ERROR");
-                }else{
-                    console.log("errore");
-                }
+    //     player.getCurrentState().then(state => {
+
+    //         if(state){
+    //             var position = state.position;
+    //             var track_uri = state.track_window.current_track.uri
+    //         } else {
+    //             var position = 0;
+    //         }
+
+    //         if (!state) {
+    //             console.error('User is not playing music through the Web Playback SDK');
+    //             $('.song_link').first().click();
+
+    //             return;
+    //         }
+
+    //         player.resume().then(function (data) {
+
+    //             console.log("uri " + track_uri);
+    //             console.log('position ' + position);
+    //             $.ajax({
+    //                 url: "/party/" + party_code + "/play",
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //                 },
+    //                 data: {
+    //                     "track_uri": track_uri,
+    //                     "position_ms": position
+    //                 },
+    //                 dataType: 'json',
+    //                 success: function (data) {
+    //                     console.log(data);
+    //                     // DEBUGGING
+    //                     //console.log(data);
+    //                 },
+    //                 error: function (xhr, ajaxOptions, thrownError) {
+    //                     /**
+    //                      * Error Handling
+    //                      */
+    //                     if (xhr.status == 404) {
+    //                         console.log("404 NOT FOUND");
+    //                     } else if (xhr.status == 500) {
+    //                         console.log("500 INTERNAL SERVER ERROR");
+    //                     } else {
+    //                         console.log("errore " + xhr.status);
+    //                     }
+    //                 }
+    //             });
+
+    //         });;
+
+    //     });
+
+    /*
+    instance({
+        url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        },
+        data: {},
+        dataType: 'json',
+        success: function(data){
+        },
+        error:function (xhr, ajaxOptions, thrownError){ 
+            if(xhr.status == 404) {
+                console.log("404 NOT FOUND");
+            }else if(xhr.status == 500) {
+                console.log("500 INTERNAL SERVER ERROR");
+            }else{
+                console.log("errore");
             }
-        });    
+        }
+    });    
 */
-    });
+    // });
 
 
     $('#spotify_prev_form').on('submit', function (event) {
         event.preventDefault();
         player.previousTrack()
-        .then(player.getCurrentState()
-        .then(state => {
+        // .then(player.getCurrentState()
+        // .then(state => {
+        //     var previous_tracks_length = state.track_window.previous_tracks.length;
+        //     if(previous_tracks_length > 0){
+        //          var track_uri = state.track_window.previous_tracks[tracks_length-1].uri;
+        //     // console.log(track_uri, 'canzone da riprodurre');
+        //     // console.log(state);
+        //     $.ajax({
+        //         url: "/party/" + party_code + "/play",
+        //         method: 'POST',
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         data: {
+        //             "track_uri": track_uri,
+        //             "position_ms": 0
+        //         },
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             console.log(data);
+        //             // DEBUGGING
+        //             //console.log(data);
+        //         },
+        //         error: function (xhr, ajaxOptions, thrownError) {
+        //             /**
+        //              * Error Handling
+        //              */
+        //             if (xhr.status == 404) {
+        //                 console.log("404 NOT FOUND");
+        //             } else if (xhr.status == 500) {
+        //                 console.log("500 INTERNAL SERVER ERROR");
+        //             } else {
+        //                 console.log("errore " + xhr.status);
+        //             }
+        //         }
+        //     });
+        //     }
 
-            var track_uri = state.track_window.current_track.uri
-            $.ajax({
-                url: "/party/" + party_code + "/play",
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "track_uri": track_uri,
-                    "position_ms": 0
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-        })
-        )
+        // })
+        // )
     })
 
 
     $('#spotify_next_form').on('submit', function (event) {
         event.preventDefault();
         player.nextTrack()
-        .then(player.getCurrentState()
-        .then(state => {
+        // .then(player.getCurrentState()
+        // .then(state => {
+        //     var next_tracks_length = state.track_window.next_tracks.length;
+        //     if(next_tracks_length == 0){
+        //         $('.song_link').first().click();
 
-            var track_uri = state.track_window.current_track.uri
-            $.ajax({
-                url: "/party/" + party_code + "/play",
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "track_uri": track_uri,
-                    "position_ms": 0
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-        })
-        )
+        //         return;
+        //     } else {
+        //         var track_uri = state.track_window.next_tracks[0].uri;
+        //     }
+
+        //     $.ajax({
+        //         url: "/party/" + party_code + "/play",
+        //         method: 'POST',
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         data: {
+        //             "track_uri": track_uri,
+        //             "position_ms": 0
+        //         },
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             console.log(data);
+        //             // DEBUGGING
+        //             //console.log(data);
+        //         },
+        //         error: function (xhr, ajaxOptions, thrownError) {
+        //             /**
+        //              * Error Handling
+        //              */
+        //             if (xhr.status == 404) {
+        //                 console.log("404 NOT FOUND");
+        //             } else if (xhr.status == 500) {
+        //                 console.log("500 INTERNAL SERVER ERROR");
+        //             } else {
+        //                 console.log("errore " + xhr.status);
+        //             }
+        //         }
+        //     });
+        // })
+        // )
     });
 
 
 
     $('#spotify_pause_form').on('submit', function (event) {
         event.preventDefault();
-
+        paused = true;
+        player.pause()
         /**
          * AJAX CALL FOR PAUSE
          */
@@ -510,34 +697,36 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             },
             dataType: 'json',       
         });*/
-        
-        player.pause().then(() => {
-            $.ajax({
-                url: "/party/" + party_code + "/pause",
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (data) {
-                    console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
-        });
+
+        // player.pause()
+
+        // .then(() => {
+        //     $.ajax({
+        //         url: "/party/" + party_code + "/pause",
+        //         method: 'GET',
+        //         headers: {
+        //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             console.log(data);
+        //             // DEBUGGING
+        //             //console.log(data);
+        //         },
+        //         error: function (xhr, ajaxOptions, thrownError) {
+        //             /**
+        //              * Error Handling
+        //              */
+        //             if (xhr.status == 404) {
+        //                 console.log("404 NOT FOUND");
+        //             } else if (xhr.status == 500) {
+        //                 console.log("500 INTERNAL SERVER ERROR");
+        //             } else {
+        //                 console.log("errore " + xhr.status);
+        //             }
+        //         }
+        //     });
+        // });
     });
 
 
@@ -545,8 +734,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     var slider = $("#volume_range");
     var isDragging = false;
     slider.mousedown(function () {
-            isDragging = false;
-        })
+        isDragging = false;
+    })
         .mousemove(function () {
             isDragging = true;
             player.setVolume(slider.val() / 100)

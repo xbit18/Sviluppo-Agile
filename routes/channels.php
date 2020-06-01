@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Broadcast;
 use App\Broadcasting\PartyChannel;
+use App\Broadcasting\SyncronizeChannel;
+
 /*
 |--------------------------------------------------------------------------
 | Broadcast Channels
@@ -18,6 +20,8 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('party.{partyCode}', PartyChannel::class);
+
+Broadcast::channel('party-sync.{user_id}', SyncronizeChannel::class);
 
 
 

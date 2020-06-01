@@ -2,13 +2,12 @@
 <html lang="en">
 
 <head>
-  
+
   @include('user.includes.head')
 
 </head>
 
 <body>
-  
   @include('user.includes.preloader')
 
   @include('user.includes.header')
@@ -17,7 +16,21 @@
 
   @include('user.includes.footer')
 
+  @if(session('spotifyLogIn'))
+  <span class="d-none" id="spotifyLogIn">
+
+  </span>
+  @endif
+
+  @if(session('spotifyLogOut'))
+  <span class="d-none" id="spotifyLogOut">
+
+  </span>
+  @endif
+
   @include('user.includes.scripts')
+
+
 
 </body>
 
