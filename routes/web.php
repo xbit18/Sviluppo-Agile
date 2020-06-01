@@ -68,3 +68,30 @@ Route::get('/callback/auth', 'PartyController@storeCode');
 Route::get('/seemail', function(){
     return view('invite');
 });
+
+/**
+ * Admin routes
+ */
+Route::get('/admin','AdminController@index');
+Route::get('/admin/users','AdminController@users');
+Route::get('/admin/new_user','AdminController@user_create');
+Route::post('/admin/new_user','AdminController@user_store');
+
+Route::get('/admin/elements', function(){
+    return view('admin.elements');
+});
+Route::get('/admin/panels', function(){
+    return view('admin.panels');
+});
+Route::get('/admin/widgets', function(){
+    return view('admin.widgets');
+});
+Route::get('/admin/charts', function(){
+    return view('admin.charts');
+});
+Route::get('/admin/login', function(){
+    return view('admin.login');
+});
+Route::get('/admin/new_user', function(){
+    return view('admin.forms.user.new_user');
+});
