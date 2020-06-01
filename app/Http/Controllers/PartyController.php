@@ -130,7 +130,7 @@ class PartyController extends Controller
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
-        //$party->name = $request->name;                Da decidere
+        /**$party->name = $request->name;                Da decidere*/
 
 
         $genres = $request->genre;
@@ -162,6 +162,9 @@ class PartyController extends Controller
          */
         if($party->isDirty()) $party->save();
 
+        /**
+         * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
+         */
         return redirect('/party/show/'.$party->code);
     }
 
