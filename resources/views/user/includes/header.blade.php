@@ -32,9 +32,10 @@
 
                 @auth
                 <!-- Auth Links -->
-                @if(Auth::user()->email=='static@e.it')
-                        <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="/admin">Admin Panel</a></li>
+                    @if(Auth::user()->email=='static@e.it')
+                        <li><a href="/admin">Admin Panel</a></li>
                     @endif
+                    
                     <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="{{ route('me.parties.show') }}">My Parties</a></li>
                     <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create</a></li>
                     <li class="{{ Route::currentRouteName() == 'parties.index' ? 'current-item' : '' }}" ><a href="{{ route('parties.index') }}">Participate</a></li>
@@ -51,6 +52,13 @@
                           </li>
                       </ul>
                     </li>
+                    <li><a href="#"><i class="fa fa-spotify" aria-hidden="true"></i> Spotify</a>
+                      <ul class="dropdown">
+                        <li ><a href="{{ route('spotify.login') }}">Access / Refresh</a></li>
+                        <li ><a href="{{ route('spotify.logout') }}">Exit</a></li>
+                      </ul>
+                    </li>
+                    
                 @endauth
 
                 @guest

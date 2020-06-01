@@ -14,6 +14,13 @@ $( document ).ready( function() {
             });
     }
 
+    if($('#spotifyLogOut').length){
+        Toast.fire({
+            type: 'success',
+            title: 'The Spotify Token has been deleted'
+        });
+    }
+
     $('#add_people_to_list').on('submit', function(event) {
         event.preventDefault();
 

@@ -54,21 +54,27 @@
 
             <!-- Post Details Text -->
             <div class="post-details-text">
-              <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="mb-30" alt="">
-
-              <div class="post-content">
-                <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
-                <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
-                <a href="#" class="post-date">{{ $party->created_at }}</a>
-                <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) (Hosting) @endif{{ $party->name }}</h2>
-                <p id="party_name" class="d-none">{{ $party->name }}</p>
-                <div class="post-meta">
-                  <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
+              <div class="row">
+                <div class="col-sm-3">
+                  <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="col-sm-3 mb-30 party_img" alt="">
                 </div>
-                @include('user._shared.player')
+                
+
+                <div class="post-content col-sm-9 ">
+                  <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
+                  <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
+                  <a href="#" class="post-date">{{ $party->created_at }}</a>
+                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <a href="#" title="Party Settings"><i class="fa fa-cogs" aria-hidden="true"></i></a> @endif{{ $party->name }}</h2>
+                  <p id="party_name" class="d-none">{{ $party->name }}</p>
+                  <div class="post-meta">
+                    <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
+                  </div>
+                  
+                </div>
               </div>
 
-              <p><i>Description: </i>{{ $party->description }}</p>
+              @include('user._shared.player')
+              <p class="mt-30"><i>Description: </i>{{ $party->description }}</p>
 
               <h5>Music Source: {{ $party->source }}</h5>
 

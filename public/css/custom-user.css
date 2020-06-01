@@ -49,3 +49,14 @@ body {
 
     
   }
+
+  .album_img {
+      max-width: 100%;
+      border-radius: 5px;
+  }
+
+  .party_img {
+      max-width: 100%;
+      height: auto;
+      margin: 1em;
+  }

@@ -74,7 +74,7 @@
                                 <div class="form-group">
                                     <label class="description" for="source">Music Source </label>
                                     <select class="form-control form-control-sm" id="source" name="source">
-                                        <option>YouTube</option>
+                                        <option>Spotify</option>
                                     </select>
                                 </div>
 

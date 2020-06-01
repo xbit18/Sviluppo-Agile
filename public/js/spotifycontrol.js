@@ -337,7 +337,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         console.log(data);
 
                         $.each(data.data.items, function (index, item) {
-                            var song_item = $('#song-prototype').clone();
+                            // OLD
+                            /* var song_item = $('#song-prototype').clone();
                             song_item.removeClass('d-none');
                             song_item_link = song_item.find('a');
                             song_item_link.text(' - ' + item.track.name);
@@ -346,13 +347,46 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                             song_item_link.attr('data-number', index);
                             song_item_link.attr('data-playlist-uri', my_party_playlist.uri);
                             song_item_link.addClass('song_link');
-                            $('#party-song-list').append(song_item);
+                            $('#party-song-list').append(song_item); */
+
+                            // NEW
+                            console.log(item);
+                            var item_s = $('#playlist_song_prototype').clone();
+                            
+                            item_s.find('h5').text(item.track.name);
+                            
+
+                            var artists = "";
+                            $.each(item.track.artists, function (index, artist) {
+                                artists += artist.name;
+                            });
+
+                            item_s.find('p').text(artists);
+
+                            var thumb = item_s.find('img');
+                            thumb.attr('src', item.track.album.images[0].url);
+                            
+                            item_s.children('div').children('div').children('small').text(item.track.album.name);
+                            item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(item.track.duration_ms));
+                            item_s.attr('data-id', item.track.id);
+                            item_s.attr('data-uri', item.track.uri);
+                            item_s.attr('data-number', index);
+                            item_s.attr('data-playlist-uri', my_party_playlist.uri);
+                            item_s.addClass('song_link');
+                            $('#party_playlist').append(item_s);
                         });
 
                     })
 
             });
     });
+
+
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+      }
 
 
 

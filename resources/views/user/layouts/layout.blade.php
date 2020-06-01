@@ -8,7 +8,6 @@
 </head>
 
 <body>
-
   @include('user.includes.preloader')
 
   @include('user.includes.header')
@@ -19,6 +18,12 @@
 
   @if(session('spotifyLogIn'))
   <span class="d-none" id="spotifyLogIn">
+
+  </span>
+  @endif
+
+  @if(session('spotifyLogOut'))
+  <span class="d-none" id="spotifyLogOut">
 
   </span>
   @endif

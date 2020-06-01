@@ -37,6 +37,7 @@ class SpotifyAuthController extends Controller
         header('Location: ' . $session->getAuthorizeUrl($options));
         die();
 
+
     }
 
 
@@ -58,12 +59,11 @@ class SpotifyAuthController extends Controller
         $user = Auth::user();
         $user->access_token = $accessToken;
         $user->save();
-        session([
+        /*session([
             'spotifySession' => $session
-        ]);
+        ]);*/
         // Store the access token somewhere. In a database for example.
-
-        return redirect()->back()->with('spotifyLogIn', true);
+        return redirect(url()->previous())->with('spotifyLogIn', true);
     }
 
     public function logout(){
@@ -72,7 +72,7 @@ class SpotifyAuthController extends Controller
         $me->access_token = NULL;
         $me->save();
 
-        return redirect('/');
+        return redirect()->back()->with('spotifyLogOut', true);
         /*$user = User::all()->first();
         if(!$user) return redirect('/');
 
