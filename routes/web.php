@@ -54,6 +54,8 @@ Route::group(['middleware' => ['auth']], function () {
     /** Party Presences **/
     Route::get('/party/{code}/leave/{user_id}', 'PresenceController@leave_party')->name('party.leave');
 
+    /**Get songs by Genre**/
+    Route::get('/playlist/populate/{party_id}','PartyController@getSongsByGenre')->name('playlist.populate');
 
     /**
      * Invite routes

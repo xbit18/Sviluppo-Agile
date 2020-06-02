@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\Invite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,8 @@ use App\User;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use function MongoDB\BSON\toJSON;
+
 class PartyController extends Controller
 {
     public function __construct()
@@ -250,17 +253,9 @@ class PartyController extends Controller
         /**
          * Popolazione delle tracce
          */
-        $bool = $api->addPlaylistTracks($playlist->id,[
-            'spotify:track:4u7EnebtmKWzUH433cf5Qv',
-            'spotify:track:4pbJqGIASGPr0ZpGpnWkDn',
-            'spotify:track:2MuWTIM3b0YEAskbeeFE1i',
-            'spotify:track:3lWzVNe1yFZlkeBBzUuZYu',
-            'spotify:track:0sf12qNH5qcw8qpgymFOqD',
-            'spotify:track:2U12JbtnFSYa5Av5wEcEDX',
-            'spotify:track:6GpvHaqp0Yybx9P6YnodRD',
-            'spotify:track:54PxYcGpSUCmlpGdFGTaYR',
-            'spotify:track:3ZCTVFBt2Brf31RLEnCkWJ'
-        ]);
+        $songsByGenre = $this->getSongsByGenre($party->code);
+
+        $bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
         if($bool){
                 return redirect()->route('me.parties.show');
         }
@@ -323,7 +318,28 @@ class PartyController extends Controller
         return redirect()->back();
     }
 
+    public function getSongsByGenre($party_code)
+    {
+        $genres = Party::where('code','=',$party_code)->first()->genre;
+        $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
 
+        foreach($genres as $genre){
+            $URI .= strtolower($genre->genre).',';
+        }
+
+        $user_token = Auth::user()->access_token;
+
+        $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
+
+        $tracks = array();
+        $tracks = $response['tracks'];
+
+        $tracks_uris = array();
+        foreach ($tracks as $track) {
+            $tracks_uris[] = $track['uri'];
+        }
+        return $tracks_uris;
+    }
 
 
 
