@@ -155,7 +155,115 @@
     -moz-box-shadow: 0px 0px 7px 0px rgba(40,40,40,1);
     box-shadow: 0px 0px 7px 0px rgba(40,40,40,1);
    }
-   
-   .title_track {
 
-   }
+   .album_img {
+        max-width: 100%;
+        border-radius: 5px;
+    }
+
+    .poca-music-content {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+   
+
+    /**
+    fix mobile bugs
+    */
+
+    @media (max-width: 1199px) { 
+
+        .player-button-adders {
+          width: 4em;
+        }
+
+        .player-button-play {
+          width: 4em;
+        }
+
+        .player-button-stop {
+          width: 4em;
+        }
+
+        .poca-music-area .poca-music-content-play {
+          padding: 2em;
+        }
+
+    }
+
+
+   @media (max-width: 768px) { 
+
+        .album_img {
+          max-width: 100%;
+          border-radius: 5px;
+        }
+
+        .post-details-text {
+          -ms-flex: unset;
+          flex: unset;
+          max-width: 90%;
+          width: 90%;
+        }
+
+        .party_img_container {
+          padding: 0;
+        }
+
+        .poca-music-area .poca-music-content-play {
+          padding: 0.5em;
+        }
+
+        .album_img_container {
+          padding: 2%;
+          width: 50%;
+        }
+
+        /* La durata della canzone */
+        #party_playlist a div div div small {
+          display: none;
+        }
+
+        .title_song {
+          justify-content: center !important;
+        }
+
+        .song_row {
+          justify-content: center;
+        }
+
+        .mobile-vol-lab {
+          display: inline !important;
+        }
+
+        .desktop-vol-lab {
+          display: none;
+        }
+
+        .player-button-adders {
+          font-weight: 100; 
+          padding: 0.1em;
+          padding-left: 0.5em;
+          padding-right: 0.5em;
+          border: none;
+          width: inherit;
+          border-radius: inherit;
+        }
+
+        .player-button-play {
+          width: 3em;
+        }
+
+        .player-button-stop {
+          width: 3em;
+        }
+        
+        .poca-blockquote {
+          justify-content: center;
+        }
+
+        .post-categories {
+          justify-content: center !important;
+        }
+
+    }

@@ -55,7 +55,7 @@
             <!-- Post Details Text -->
             <div class="post-details-text">
               <div class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-3 party_img_container">
                   <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="col-sm-3 mb-30 party_img" alt="">
                 </div>
 
