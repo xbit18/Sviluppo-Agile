@@ -14,6 +14,8 @@ use App\User;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Validator;
+
 class PartyController extends Controller
 {
     public function __construct()
@@ -74,10 +76,11 @@ class PartyController extends Controller
             return response(['error' => 'This party does not exist'], 404);
         }
 
+        $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;
 
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres]);
+        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list]);
 
     }
 
@@ -118,12 +121,46 @@ class PartyController extends Controller
         /**
          * Valida i campi della richiesta
          */
-        $validatedData = $request->validate([
+        $rules = array(
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
             'desc' => 'required|string',
-            'genre' =>'required|array'
-        ]);
+            'genre' =>'required|array|max:5'
+        );
+
+        $error = Validator::make($request->all(), $rules);
+
+        if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
+
+        $genres = $request->genre;
+
+        //$genre_ids = array();
+
+        /**
+         * Faccio prima tutte le validazioni così evito operazioni inutili
+         * Per ogni genere controllo se esiste
+         */
+        $validation = true;
+        foreach($genres as $genre_in) {
+            /**
+             * Ottimizzo memorizzando gli id dei generi durante la validazione
+             * 
+             * Ottimizzazione usando direttamente gli id e ed evitando tutte le iterazioni
+             */
+            
+            if(!Genre::find($genre_in)) return redirect()->back()->withErrors(['genre' => 'Invalid Genre ' . $genre_in]);
+            //$genre = Genre::where('genre',$genre_in)->first();
+            //if(!$genre) $validation = false;
+            //else array_push($genre_ids, $genre_in);
+        }
+
+        //if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
+
+
+
 
 
         $party = Party::where('code','=',$code)->first();
@@ -133,27 +170,9 @@ class PartyController extends Controller
         /**$party->name = $request->name;                Da decidere*/
 
 
-        $genres = $request->genre;
-        $genre_ids = array();
-
-        /**
-         * Per ogni genere controllo se esiste
-         */
-        $validation = true;
-        foreach($genres as $genre_in) {
-            /**
-             * Ottimizzo memorizzando gli id dei generi durante la validazione
-             */
-            $genre = Genre::where('genre',$genre_in)->first();
-            if(!$genre) $validation = false;
-            else array_push($genre_ids, $genre->id);
-        }
-
-        if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
-
         $party->genre()->detach();
 
-        foreach($genre_ids as $id) {
+        foreach($genres as $id) {
             $party->genre()->attach($id);
         }
 
@@ -165,7 +184,9 @@ class PartyController extends Controller
         /**
          * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
          */
-        return redirect('/party/show/'.$party->code);
+        //return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+
+        return response()->json(['success' => 'Party Updated Successfully']);
     }
 
     /**
@@ -190,7 +211,7 @@ class PartyController extends Controller
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
             'desc' => 'required|string',
-            'genre' =>'required|array'
+            'genre' =>'required|array|max:5'
         ]);
 
         $user = Auth::user();

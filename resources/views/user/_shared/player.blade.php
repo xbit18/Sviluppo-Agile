@@ -11,8 +11,14 @@
         <span id="artist-player" class="music-published-date">Artist</span>
         <h3 id="title-player" class="title_track"><i class="fa fa-caret-right mr-1" aria-hidden="true"></i> Play your music</h3>
         <div class="music-meta-data">
-            <p>By <a href="#" class="music-author">Admin</a> | <a href="#" class="music-catagory">Tutorials</a> | <a href="#" class="music-duration">00:02:56</a></p>
+            <p>By <a href="#" class="music-author">Admin</a> | <a href="#" class="music-duration">0:00</a> | <a href="#" class="total-duration">0:00</a></p>
         </div>
+
+        @if(Auth::user()->id == $party->user->id)  
+        <div id="timeline_container">
+            <input type="range" min="0" value="0" class="slider" id="timeline"> 
+        </div>
+        @endif
         
         <!-- Music Player -->
         <div class="row justify-content-center">
