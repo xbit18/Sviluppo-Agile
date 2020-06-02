@@ -883,6 +883,18 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             item_s.attr('data-playlist-uri', my_party_playlist.uri);
             item_s.addClass('song_link');
             $('#party_playlist').append(item_s);
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 6000
+            });
+
+            Toast.fire({
+                type: 'success',
+                title: 'The song has been added to the Playlist!'
+                });
         })
         .catch(function(error){
             console.log(error);
