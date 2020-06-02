@@ -8,13 +8,99 @@ $( document ).ready( function() {
 var party_code = $('#party_code').attr('data-code');
 var user_code = $('#user_code').attr('data-code');
 var slider = $("#volume_range");
+var timeline = $('#timeline');
+var duration_text = $('.music-duration');
+var timer, running = false;
 var channel = Echo.join(`party.${party_code}`);
 var paused = true;
 
 
 
+function millisToMinutesAndSeconds(millis) {
+    var minutes = Math.floor(millis / 60000);
+    var seconds = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+  }
+
+/**
+ * EDITING DEL PARTY DINAMICO
+ */
+
+$('#editPartyForm').on('submit', function(event) {
+    event.preventDefault();
+    
+    $.ajax({
+        url: "/party/update/" + party_code,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        method: "POST",
+        data: new FormData(this),
+        contentType: false,
+        cache: false,
+        processData: false,
+        dataType: "json",
+        success: function(data){
+            var html = '';
+            if(data.errors)
+            {
+                html = '<div class="alert alert-danger">';
+                for(var count = 0; count < data.errors.length; count++)
+                {
+                    html += '<p>' + data.errors[count] + '</p>';
+                }
+                html += '</div>';
+                $('#forErrors').html(html); 
+            }
+            if(data.success)
+            {
+                html = '<div class="alert alert-success" role="alert"><h4 class="alert-heading">Done!</h4><p>';
+                html += data.success;
+                html += '</p></div>';
+                $('#forErrors').html(html); 
+                location.reload();
+            }
+        },
+        error: function (xhr) {
+            /**
+             * Error Handling
+             */
+            console.log(xhr);
+            if (xhr.status == 404) {
+                console.log("404 NOT FOUND");
+            } else if (xhr.status == 500) {
+                console.log("500 INTERNAL SERVER ERROR");
+            } else {
+                console.log("errore " + xhr.status);
+            }
+        }
+    });
+
+});
+
+
 
 /* --------------------------- WEB PLAYER ------------------------ */
+
+
+function increment_timeline(data) {
+    console.log('funzione chiamata');
+    if(data) {
+        if(!running) {
+            running = true;
+            timer = setInterval( () => { 
+                //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
+                timeline.val( parseInt(timeline.val()) + 1000 );
+                duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
+                console.log('incrementing ' + timeline.val()); 
+            },1000);
+        }
+    } else {
+        console.log('clearing');
+        clearInterval(timer);
+        running = false;
+    }
+}
 
 
 window.onSpotifyWebPlaybackSDKReady = () => {
@@ -40,6 +126,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         if (state) {
 
+            /**
+             * Settaggio della timeline
+             */
+            var dur = state.track_window.current_track.duration_ms;
+            $('.total-duration').text( millisToMinutesAndSeconds( dur ) );
+            
+            timeline.attr('max', dur);
+
             if (!($('#title-player').text() === state.track_window.current_track.name)) {
                 $('#title-player').text(state.track_window.current_track.name);
 
@@ -59,9 +153,22 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             var position = 0;
         }
 
+
+
+        
+
+        
+
+
+
+
+
+
         console.log(state.paused, 'paused boolean')
         console.log('hola');
         if (!state.paused) {
+            if(position == 0) timeline.val(0);
+            increment_timeline(true);
             // console.log("uri " + track_uri);
             // console.log('position ' + position);
             $.ajax({
@@ -94,6 +201,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 }
             });
         } else if (state.paused) {
+            increment_timeline(false);
             $.ajax({
                 url: "/party/" + party_code + "/pause",
                 method: 'GET',
@@ -154,7 +262,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             new_partecipant_link.attr('data-id', user.id);
             $('#joining-list').append(new_partecipant);
         });
-
     });
 
     /**
@@ -404,11 +511,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-      }
+   
 
 
 
@@ -737,37 +840,76 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
-    /**
-     * Devo usare la sintassi pure js : hammer js da problemi con selettore $
-     */
-    var slide2 = document.getElementById('volume_range');
+        /**
+         * Devo usare la sintassi pure js : hammer js da problemi con selettore $
+         */
+        var slide2 = document.getElementById('volume_range');
 
-    var mc = new Hammer.Manager(slide2);
-    mc.add( new Hammer.Tap({ event: 'singletap' }) );
-    mc.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
-    mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+        var mc = new Hammer.Manager(slide2);
+        mc.add( new Hammer.Tap({ event: 'singletap' }) );
+        mc.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
+        mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
 
-    mc.on("singletap pan swipe", function(ev) {
-        player.setVolume(slider.val() / 100)
-    });
-    
-    
-
-    /**
-     * Compatibility with Desktop Browsers
-     */
-    var isDragging = false;
-    slider.mousedown(function () {
-        isDragging = false;
-    })
-        .mousemove(function () {
-            isDragging = true;
+        mc.on("singletap pan swipe", function(ev) {
             player.setVolume(slider.val() / 100)
-        })
-        .mouseup(function () {
-            isDragging = false;
         });
+        
+        
 
+        /**
+         * Compatibility with Desktop Browsers
+         */
+        var isDragging = false;
+        slider.mousedown(function () {
+            isDragging = false;
+        })
+            .mousemove(function () {
+                isDragging = true;
+                player.setVolume(slider.val() / 100)
+            })
+            .mouseup(function () {
+                isDragging = false;
+            });
+
+
+
+
+
+
+
+
+        /**
+         * COMPATIBILITà MOBILE
+         * Devo usare la sintassi pure js : hammer js da problemi con selettore $
+         */
+        var timeline_mob = document.getElementById('timeline');
+
+        var mc = new Hammer.Manager(timeline_mob);
+        mc.add( new Hammer.Tap({ event: 'singletap' }) );
+        mc.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
+        mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+
+        mc.on("singletap pan swipe", function(ev) {
+            // SKIP LOGIC
+            player.seek(timeline.val()).then(() => {
+                console.log('Changed position mob!');
+              });
+        }); 
+        /**
+         * Compatibility with Desktop Browsers
+         */
+
+        
+        var isDragTime = false;
+        timeline.click(function () {
+
+            player.seek(timeline.val()).then(() => {
+                console.log('Changed position!');
+              });
+              
+        });
+          
+    
        
         /* ADD SONGS DYNAMICALLY */
     $('#searchSong').on('keyup',function(e){

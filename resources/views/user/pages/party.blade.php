@@ -64,7 +64,7 @@
                   <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
                   <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
                   <a href="#" class="post-date">{{ $party->created_at }}</a>
-                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <a href="{{ route('party.edit', [ 'code' => $party->code]) }}" title="Party Settings"><i class="fa fa-cogs" aria-hidden="true"></i></a> @endif{{ $party->name }}</h2>
+                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn setting-button" data-toggle="modal" data-target="#editPartyModal"><i class="fa fa-cogs" aria-hidden="true"></i></button> @endif{{ $party->name }}</h2>
                   <p id="party_name" class="d-none">{{ $party->name }}</p>
                   <div class="post-meta">
                     <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
@@ -73,7 +73,7 @@
                 </div>
               </div>
 
-              @include('user._shared.player')
+              
               <p class="mt-30"><i>Description: </i>{{ $party->description }}</p>
 
               <h5>Music Source: {{ $party->source }}</h5>
@@ -84,23 +84,41 @@
                   <i class="fa fa-quote-left" aria-hidden="true"></i>
                 </div>
                 <div class="text">
-                  <h5>Mood : <b>{{ $party->mood }}</b></h5>
+                  <h5><b>{{ $party->mood }}</b></h5>
                 </div>
               </blockquote>
 
-              <!-- Post Catagories -->
+              <!-- Single Widget Area -->
+              <div class="single-widget-area tags-widget mb-80">
+                <ul class="tags-list">
+                      @foreach($party->genre as $genre)
+                      <li><a href="#">{{ $genre->genre }}</a></li>
+                      @endforeach
+                </ul>
+              </div>
+
+              {{-- <!-- Post Catagories 
               <div class="post-catagories d-flex align-items-center">
                 <h6>Genres:</h6>
                 <ul class="d-flex flex-wrap align-items-center">
                     @foreach($party->genre as $genre)
-                    <li><a href="#">{{ $genre->genre }}</a></li>
+                    <li><a href="#"><i class="fa fa-play mr-1" aria-hidden="true"></i> {{ $genre->genre }}</a></li>
                     @endforeach
                 </ul>
               </div>
-
-                {{-- <div class="welcome-btn-group">
+                
+                <div class="welcome-btn-group">
                     <a href="{{ route('party.edit', [ 'code' => $party->code]) }}" class="btn poca-btn m-2 ml-0 active" data-animation="fadeInUp" data-delay="200ms">Edit Party</a>
-                </div> --}}
+                </div> 
+
+                @if(Auth::user()->id == $party->user->id) 
+                <button type="button" class="btn poca-btn m-2 ml-0 active" data-toggle="modal" data-target="#editPartyModal">
+                  Edit Party
+                </button>
+                @endif -->
+                --}}
+
+                @include('user._shared.player')
 
             </div>
           </div>
@@ -220,6 +238,97 @@
     </div>
   </section>
   <!-- ***** Blog Details Area End ***** -->
+
+  <!-- Button trigger modal -->
+  
+
+  <!-- Modal -->
+  <div class="modal fade" id="editPartyModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalTitle">Edit your party's settings!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
+                  
+    <div class="container">
+        <div class="row justify-content-center">
+
+                <div class="card-body">
+                    <div class="contact-form">
+                        <div class="contact-heading">
+                            <h2>Edit your party</h2>
+                            <!-- <h5></h5> -->
+                        </div>
+                        <form method="POST" action="{{ route('party.update', [ 'code' => $party->code]) }}" id="editPartyForm">
+                            @csrf
+                            <div class="form-group">
+                                <label for="partymood">Party Mood</label>
+                                <input type="text" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood" required value="{{$party->mood}}"/>
+                                <small id="partymood_help" class="form-text text-muted">The Party Mood suggests the party theme</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="description" for="partytype">Party Type</label>
+                                <select class="form-control form-control-sm" id="partytype" name="type">
+                                    @if($party->type === 'Battle')
+                                    <option value="Battle" selected>BATTLE <small>(pick two songs and let users vote for one of them)</small></option>
+                                    <option value="Democracy">DEMOCRACY <small>(play the playlist’s most voted song)</small></option>
+                                    @else
+                                    <option value="Battle">BATTLE <small>(pick two songs and let users vote for one of them)</small></option>
+                                    <option value="Democracy" selected>DEMOCRACY <small>(play the playlist’s most voted song)</small></option>
+                                    @endif
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="description" for="partygenre">Party Genre <small>(You can choise multiple genres)</small></label>
+                                <select class="form-control form-control-sm" id="partygenre" name="genre[]" multiple="multiple">
+                                    @foreach($genre_list as $genre)
+                                        <option value="{{ $genre->id }}"
+                                                    @if ($party->genre->contains($genre))
+                                                    selected="selected"
+                                                    @endif
+                                        >{{ $genre->genre }}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="description" for="source">Music Source </label>
+                                <select class="form-control form-control-sm" id="source" name="source">
+                                    <option>Spotify</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="desc">Party Description</label>
+                                <textarea class="form-control" rows="5" id="desc" name="desc">{{ $party->description }}</textarea>
+                            </div>
+
+                            <div id="forErrors"></div>
+
+                            <button type="submit" class="btn poca-btn">Save Changes</button>
+                        </form>
+
+                    </div>
+
+                </div>
+        </div>
+    </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   @endisset
 
