@@ -51,7 +51,7 @@
                 <em class="fa fa-navicon">&nbsp;</em> Users Management <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><em class="fa fa-plus"></em></span>
             </a>
             <ul class="children collapse" id="sub-item-1">
-                <li><a class="" href="/admin/new_user">
+                <li><a class="" href="/admin/user/new">
                         <span class="fa fa-arrow-right">&nbsp;</span> Add a new user
                     </a></li>
                 <li><a class="" href="/admin/users">

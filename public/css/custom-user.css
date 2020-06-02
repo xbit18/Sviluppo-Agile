@@ -51,6 +51,15 @@ body {
     border: none;
 }
 
+.result{
+    transition: all ease-in-out 1s;
+}
+
+.item:hover{
+    cursor: pointer;
+    transition: all ease-in-out .2s;
+    transform: scale(1.2,1.2);
+}
 
 
 /**

@@ -52,8 +52,11 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     /** Party Presences **/
+    Route::get('party/{code}/join/{user_id}', 'PresenceController@join_party')->name('party.join');
     Route::get('/party/{code}/leave/{user_id}', 'PresenceController@leave_party')->name('party.leave');
 
+    /**Get songs by Genre**/
+    Route::get('/playlist/populate/{party_id}','PartyController@getSongsByGenre')->name('playlist.populate');
 
     /**
      * Invite routes
@@ -76,9 +79,15 @@ Route::group(['middleware' => ['auth']], function () {
      * Admin routes
      */
     Route::get('/admin','AdminController@index');
-    Route::get('/admin/users','AdminController@users');
-    Route::get('/admin/new_user','AdminController@user_create');
-    Route::post('/admin/new_user','AdminController@user_store');
+    /**
+     * Admin users *
+     */
+    Route::get('/admin/users','AdminController@users')->name('users.index');;
+    Route::post('/admin/user/delete','AdminController@user_delete');
+    Route::get('/admin/user/{id}/edit','AdminController@user_edit');
+    Route::get('/admin/user/new','AdminController@user_create');
+    Route::post('/admin/user/store','AdminController@user_store');
+    Route::post('/admin/user/update','AdminController@user_update');
 
     Route::get('/admin/elements', function(){
         return view('admin.elements');
