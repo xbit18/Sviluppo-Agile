@@ -30,6 +30,16 @@ body {
     font-family: cursive !important;
 }
 
+
+
+.party_img {
+    max-width: 100%;
+    height: auto;
+    margin: 1em;
+}
+
+
+
 /**
 *   SOVRASCRITTURA MOBILE
 */
@@ -50,13 +60,24 @@ body {
     
   }
 
-  .album_img {
-      max-width: 100%;
-      border-radius: 5px;
+  @media (max-width: 768px) { 
+    .post-share {
+        display: none;
+    }
+
+    .podcast-details-content {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .party_img {
+        margin: 0;
+        padding: 0;
+        padding-bottom: 1em;
+    }  
+
+    
   }
 
-  .party_img {
-      max-width: 100%;
-      height: auto;
-      margin: 1em;
-  }
+
+  
