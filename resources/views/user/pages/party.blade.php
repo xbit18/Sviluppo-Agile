@@ -55,7 +55,7 @@
             <!-- Post Details Text -->
             <div class="post-details-text">
               <div class="row">
-                <div class="col-sm-3 party_img_container">
+                <div class="col-sm-3">
                   <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="col-sm-3 mb-30 party_img" alt="">
                 </div>
 
@@ -115,7 +115,7 @@
 
             <!-- Single Widget Area -->
             <div class="single-widget-area search-widget-area mb-80">
-              <form action="#" method="post">
+              <form action="#" method="" autocomplete="off">
                 <input id="searchSong" type="search" name="search" class="form-control" placeholder="Search ...">
                 <button type="submit"><i class="fa fa-search"></i></button>
               </form>

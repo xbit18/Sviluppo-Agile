@@ -148,7 +148,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         $.each(users, function (index, user) {
             console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
-            new_partecipant_link = new_partecipant.find('a');
+            let new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.text(user.name);
             new_partecipant.removeAttr('id');
             new_partecipant_link.attr('data-id', user.id);
@@ -768,13 +768,19 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             isDragging = false;
         });
 
-
+       
         /* ADD SONGS DYNAMICALLY */
-    $('#searchSong').on('keydown',function(e){
+    $('#searchSong').on('keyup',function(e){
 
         var song_name = $('#searchSong').val();
         song_name = encodeURIComponent(song_name.trim());
-        var result =  $('#result').empty();        
+        var result = $('#result');
+
+        if(song_name.length == 0){
+            result.fadeOut("normal",function(){
+                result.empty();
+            });
+        }
 
         if(song_name.length > 0){
 
@@ -782,7 +788,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
             instance({
-            url: `https://api.spotify.com/v1/search?q=${song_name}&type=track,artist&limit=10`,
+            url: `https://api.spotify.com/v1/search?q=${song_name}&type=track,artist&limit=5`,
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + token,
@@ -791,7 +797,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         })
         .then(function (data) {
-            tracks = data.data.tracks.items;
+            result.empty();   
+            let tracks = data.data.tracks.items;
             console.log(tracks);
 
             $.each(tracks, function (index, element) { 
@@ -806,7 +813,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
                let artists = "";
                 $.each(element.artists, function (index, artist) {
-                    artists += artist.name;
+                    artists += artist.name +' ';
                 });
 
                 content.children('div').last().children().first().text(artists);
@@ -814,24 +821,79 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
                 item.attr('data-id', element.id);
                 item.attr('data-uri', element.uri)
+                item.attr('data-duration', element.duration_ms)
                 item.attr('data-number', index)
+                item.addClass('item');
                 item.removeAttr('id');
-                result.append(item);
-            
+                result.append(item).hide().fadeIn();            
                
 
             });
    
-        });
-
+        })
+        .catch(function(error){
+            console.log(error);
+        })
         }
-        
-
-        
-
     })
 
+
+    $(document).on('click','.item',function(event){
+        event.preventDefault();
+        let track_uri = $(this).data('uri');
+        let track_id = $(this).data('id');
+        let track_img_src = $(this).children('div').children('div').first().find('img').attr('src');
+        let track_duration = $(this).data('duration');
+        let track_artists = $(this).children('div').children('div').last().children('div').last().children().first().text();
+        let track_album = $(this).children('div').children('div').last().children('div').last().children().last().text();
+        let track_name = $(this).children('div').first().find('h6').text();
+
+
+
+        var instance = axios.create();
+        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+       
+        instance({
+        url: `https://api.spotify.com/v1/playlists/${my_party_playlist.id}/tracks`,
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        },
+        data: {
+            'uris' : [track_uri]
+        },
+        dataType: 'json',
+        })
+        .then(function(response){
+
+            var item_s = $('#playlist_song_prototype').clone();
+            let index = $('#party_playlist').children().last().data('number');
+            item_s.find('h5').text(track_name);
+            
+            item_s.find('p').text(track_artists);
+
+            var thumb = item_s.find('img');
+            thumb.attr('src', track_img_src);
+            
+            item_s.children('div').children('div').children('small').text(track_album);
+            item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
+            item_s.attr('data-id', track_id);
+            item_s.attr('data-uri', track_uri);
+            item_s.attr('data-number', index + 1);
+            item_s.attr('data-playlist-uri', my_party_playlist.uri);
+            item_s.addClass('song_link');
+            $('#party_playlist').append(item_s);
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+    })
+
+
+
+    
+/** END SDK PLAYER */
 };
 
-
+/** END DOCUMENT READY */
 })
