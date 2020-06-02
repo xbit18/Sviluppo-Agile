@@ -1,10 +1,13 @@
-
+$( document ).ready( function() {
+    'use strict';
+  
 /* --------------------------- CHANNEL ------------------------ */
 
 /** -------Prendo il codice del party dall'URI e il mio ID utente ------**/
 
 var party_code = $('#party_code').attr('data-code');
 var user_code = $('#user_code').attr('data-code');
+var slider = $("#volume_range");
 var channel = Echo.join(`party.${party_code}`);
 var paused = true;
 
@@ -444,25 +447,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 },
                 "position_ms": 0
             },
-            dataType: 'json',
-            success: function (data) {
-                // DEBUGGING
-                //console.log(data);
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                /**
-                 * Error Handling
-                 */
-                if (xhr.status == 404) {
-                    console.log("404 NOT FOUND");
-                } else if (xhr.status == 500) {
-                    console.log("500 INTERNAL SERVER ERROR");
-                } else {
-                    console.log("errore");
-                }
-            }
+            dataType: 'json'
         }).then(function (data) {
 
+            player.setVolume(slider.val() / 100);
             console.log("uri " + track_uri);
             paused = false;
             $.ajax({
@@ -749,8 +737,25 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
+    /**
+     * Devo usare la sintassi pure js : hammer js da problemi con selettore $
+     */
+    var slide2 = document.getElementById('volume_range');
 
-    var slider = $("#volume_range");
+    var mc = new Hammer.Manager(slide2);
+    mc.add( new Hammer.Tap({ event: 'singletap' }) );
+    mc.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
+    mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+
+    mc.on("singletap pan swipe", function(ev) {
+        player.setVolume(slider.val() / 100)
+    });
+    
+    
+
+    /**
+     * Compatibility with Desktop Browsers
+     */
     var isDragging = false;
     slider.mousedown(function () {
         isDragging = false;
@@ -829,4 +834,4 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 };
 
 
-
+})

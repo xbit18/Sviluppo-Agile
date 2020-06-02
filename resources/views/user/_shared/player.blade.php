@@ -9,16 +9,16 @@
             <button id="add_to_party_btn" type="submit" class="btn">Add</button>
         </form> --}}
         <span id="artist-player" class="music-published-date">Artist</span>
-        <h3 id="title-player" class="title_track">Play your music</h3>
+        <h3 id="title-player" class="title_track"><i class="fa fa-caret-right mr-1" aria-hidden="true"></i> Play your music</h3>
         <div class="music-meta-data">
-        <p>By <a href="#" class="music-author">Admin</a> | <a href="#" class="music-catagory">Tutorials</a> | <a href="#" class="music-duration">00:02:56</a></p>
+            <p>By <a href="#" class="music-author">Admin</a> | <a href="#" class="music-catagory">Tutorials</a> | <a href="#" class="music-duration">00:02:56</a></p>
         </div>
         
         <!-- Music Player -->
-        <div class="row">
-
-            <div class="col-sm-9 player-buttons-container">
+        <div class="row justify-content-center">
             @if(Auth::user()->id == $party->user->id)   
+            <div class="col-sm-9 player-buttons-container">
+            
                 <form class="d-inline" id="spotify_prev_form" action="#">
                     <button class="btn player-button-adders" id="prev-song" type="submit"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
                 </form> 
@@ -32,14 +32,16 @@
                     <button class="btn player-button-adders" id="next-song" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
                 </form> 
             
-            @endif
+            
             </div>
-            <div class="col-sm-3 slidecontainer">
+            @endif
+            <div class="@if(Auth::user()->id == $party->user->id) col-sm-3 @endif slidecontainer">
                 <div class="row">
                     <div class="col-sm-3">
-                        <label ><i class="fa fa-volume-up" aria-hidden="true"></i></label>
+                        <label class="desktop-vol-lab"><i class="fa fa-volume-up" aria-hidden="true"></i></label>
                     </div>
                     <div class="col-sm-9">
+                        <label class="d-none mobile-vol-lab mr-2"><i class="fa fa-volume-up" aria-hidden="true"></i></label>
                         <input type="range" min="0" max="100" value="50" class="slider" id="volume_range">  
                     </div>
                 </div>
@@ -62,12 +64,12 @@
 
         <div class="d-none">    
             <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="row">
-                    <div class="col-sm-3">
+                <div class="row song_row">
+                    <div class="col-sm-3 album_img_container">
                         <img class="album_img"/>
                     </div>
                     <div class="col-sm-9">
-                        <div class="d-flex w-100 justify-content-between" >
+                        <div class="d-flex w-100 justify-content-between title_song" >
                             <h5 class="mb-1"></h5>
                             <small></small>
                         </div>
