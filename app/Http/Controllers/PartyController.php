@@ -58,7 +58,7 @@ class PartyController extends Controller
         $party = Party::where('code','=',$code)->first();
 
         $user = Auth::user();
-        
+
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }

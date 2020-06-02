@@ -764,5 +764,69 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         });
 
 
+        /* ADD SONGS DYNAMICALLY */
+    $('#searchSong').on('keydown',function(e){
+
+        var song_name = $('#searchSong').val();
+        song_name = encodeURIComponent(song_name.trim());
+        var result =  $('#result').empty();        
+
+        if(song_name.length > 0){
+
+            var instance = axios.create();
+            delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+            instance({
+            url: `https://api.spotify.com/v1/search?q=${song_name}&type=track,artist&limit=10`,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            dataType: 'json',
+
+        })
+        .then(function (data) {
+            tracks = data.data.tracks.items;
+            console.log(tracks);
+
+            $.each(tracks, function (index, element) { 
+
+               let item = $('#song-prototype').clone();
+               let img = item.children('div').children('div').first().find('img');
+               img.attr('src',element.album.images[0].url);
+                
+               let content = item.children('div').children('div').last();
+               content.children('div').first().find('h6').text(element.name);
+               content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
+
+               let artists = "";
+                $.each(element.artists, function (index, artist) {
+                    artists += artist.name;
+                });
+
+                content.children('div').last().children().first().text(artists);
+                content.children('div').last().children().last().text(element.album.name)
+
+                item.attr('data-id', element.id);
+                item.attr('data-uri', element.uri)
+                item.attr('data-number', index)
+                item.removeAttr('id');
+                result.append(item);
+            
+               
+
+            });
+   
+        });
+
+        }
+        
+
+        
+
+    })
+
 };
+
+
 
