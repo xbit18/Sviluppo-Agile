@@ -41,6 +41,5 @@ class PlayerController extends Controller
         $user_id = $request->user_id;
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerSync($party, $user_id, $track_uri, $position_ms))->toOthers();
-        return 'Sincronized';
     }
 }

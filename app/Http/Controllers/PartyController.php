@@ -58,18 +58,7 @@ class PartyController extends Controller
         $party = Party::where('code','=',$code)->first();
 
         $user = Auth::user();
-
-        /** L'utente sta partecipando ad un altro party (Errore Duplicati) */
-        if( !$user->participates->isEmpty() ) {
-            $user->participates()->detach();
-        }
-
-        /** L'utente è gia nel party */
-        if(!$party->users->where('id', $user->id)->first()) {
-            $user->participates()->toggle($party->id);
-        }
-
-
+        
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }

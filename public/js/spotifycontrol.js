@@ -167,7 +167,22 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         new_partecipant_link.attr('data-id', user.id);
         $('#joining-list').append(new_partecipant);
 
-
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/join/" + user.id,
+            data: "data",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(user.name + 'presenza registrata')
+            },
+            error: function(e){
+                console.log(e)
+            }
+        });
+        
         setTimeout(function () {
 
             if (!paused) {
@@ -248,18 +263,22 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         // DEBUGGING
                         // console.log(data);
                     },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
+                     error: function(e){
+                         console.log(e)
+                     }
+                     
+                    //function (xhr, ajaxOptions, thrownError) {
+                    //     /**
+                    //      * Error Handling
+                    //      */
+                    //     if (xhr.status == 404) {
+                    //         console.log("404 NOT FOUND");
+                    //     } else if (xhr.status == 500) {
+                    //         console.log("500 INTERNAL SERVER ERROR");
+                    //     } else {
+                    //         console.log("errore " + xhr.status);
+                    //     }
+                    // }
                 });
 
                 setTimeout(function () {

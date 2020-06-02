@@ -64,7 +64,7 @@
                   <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
                   <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
                   <a href="#" class="post-date">{{ $party->created_at }}</a>
-                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <a href="#" title="Party Settings"><i class="fa fa-cogs" aria-hidden="true"></i></a> @endif{{ $party->name }}</h2>
+                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <a href="{{ route('party.edit', [ 'code' => $party->code]) }}" title="Party Settings"><i class="fa fa-cogs" aria-hidden="true"></i></a> @endif{{ $party->name }}</h2>
                   <p id="party_name" class="d-none">{{ $party->name }}</p>
                   <div class="post-meta">
                     <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
@@ -98,9 +98,9 @@
                 </ul>
               </div>
 
-                <div class="welcome-btn-group">
+                {{-- <div class="welcome-btn-group">
                     <a href="{{ route('party.edit', [ 'code' => $party->code]) }}" class="btn poca-btn m-2 ml-0 active" data-animation="fadeInUp" data-delay="200ms">Edit Party</a>
-                </div>
+                </div> --}}
 
             </div>
           </div>

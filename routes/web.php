@@ -52,8 +52,8 @@ Route::group(['middleware' => ['auth']], function () {
 
 
     /** Party Presences **/
+    Route::get('party/{code}/join/{user_id}', 'PresenceController@join_party')->name('party.join');
     Route::get('/party/{code}/leave/{user_id}', 'PresenceController@leave_party')->name('party.leave');
-
 
     /**
      * Invite routes
