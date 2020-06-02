@@ -266,6 +266,12 @@ class PartyController extends Controller
 
     }
 
+    /**
+     * Invia una mail a tutti gli utenti selezionati con il link per accedere al party
+     * @param Request $request
+     * @param $code
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function invite(Request $request, $code) {
 
         /**
@@ -318,6 +324,11 @@ class PartyController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * Ritorna un array di Spotify track URIs in base ai generi del party
+     * @param $party_code
+     * @return array
+     */
     public function getSongsByGenre($party_code)
     {
         $genres = Party::where('code','=',$party_code)->first()->genre;
