@@ -37,6 +37,9 @@
         </div>
     </div>
     @foreach($users as $user)
+        @php
+        $id= $user->id;
+        @endphp
     <div class="panel panel-container">
         <div class="row">
             <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
@@ -64,15 +67,28 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
-                    <i class="fa fa-xl fa-edit"></i>
+                      <a href="/admin/user/{{$id}}/edit"> <i class="fa fa-xl fa-edit"></i> </a>
                 </div>
             </div>
+
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
-                    <i class="fa fa-xl fa-user-times"></i>
+                    @if($id == 1)
+                        <p style="color: red">
+                        can't delete
+                        </p>
+                    @else
+                    <form id="delete-form-{{$id}}"method="POST" action="/admin/user/delete">
+                        @csrf
+                    <a href="/admin/user/delete"
+                       onclick="event.preventDefault(); document.getElementById('delete-form-{{$id}}').submit();">
+                        <em class="fa fa-xl fa-user-times color-red" ></em> </a>
+                        <input name="id" value="{{$user->id}}" hidden >
+                    @endif
+                    </form>
                 </div>
             </div>
-        </div>
+
     </div>
 
     @endforeach
