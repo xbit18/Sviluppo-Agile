@@ -45,7 +45,7 @@ function millisToMinutesAndSeconds(millis) {
     item_s.attr('data-number', index + 1);
     item_s.attr('data-playlist-uri', my_party_playlist.uri);
     item_s.addClass('song_link');
-    console.log(item_s);
+    //console.log(item_s);
     playlist_dom.append(item_s);
   }
 
@@ -94,6 +94,7 @@ $('#editPartyForm').on('submit', function(event) {
             /**
              * Error Handling
              */
+            console.log('party update error');
             console.log(xhr);
             if (xhr.status == 404) {
                 console.log("404 NOT FOUND");
@@ -113,7 +114,7 @@ $('#editPartyForm').on('submit', function(event) {
 
 
 function increment_timeline(data) {
-    console.log('funzione chiamata');
+    //console.log('funzione increment timeline chiamata');
     if(data) {
         if(!running) {
             running = true;
@@ -121,7 +122,7 @@ function increment_timeline(data) {
                 //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
                 timeline.val( parseInt(timeline.val()) + 1000 );
                 duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
-                console.log('incrementing ' + timeline.val()); 
+                //console.log('incrementing ' + timeline.val()); 
                 var v = ( timeline.val() ) / actual_dur;
 
                 timeline.css('background-image', [
@@ -146,7 +147,7 @@ function increment_timeline(data) {
             },1000);
         }
     } else {
-        console.log('clearing');
+        //console.log('clearing');
         clearInterval(timer);
         running = false;
     }
@@ -215,8 +216,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
 
-        console.log(state.paused, 'paused boolean')
-        console.log('hola');
+        //console.log(state.paused, 'paused boolean')
+        //console.log('hola');
         if (!state.paused) {
             if(position == 0) timeline.val(0);
             increment_timeline(true);
@@ -234,7 +235,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     "position_ms": position
                 },
                 dataType: 'json',
-                success: function (data) {
+                success: function () {
+                    console.log('success play');
                     // console.log(data);
                     // DEBUGGING
                     //console.log(data);
@@ -243,6 +245,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     /**
                      * Error Handling
                      */
+                    console.log('party/code/play error');
+                    console.log(xhr);
                     if (xhr.status == 404) {
                         console.log("404 NOT FOUND");
                     } else if (xhr.status == 500) {
@@ -261,7 +265,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 dataType: 'json',
-                success: function (data) {
+                success: function () {
+                    console.log('success pause');
                     // console.log(data);
                     // DEBUGGING
                     //console.log(data);
@@ -270,6 +275,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     /**
                      * Error Handling
                      */
+                    console.log('party/code/pause error');
+                    console.log(xhr);
                     if (xhr.status == 404) {
                         console.log("404 NOT FOUND");
                     } else if (xhr.status == 500) {
@@ -303,10 +310,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
  * Comunica a tutti i partecipanti del canale quando un utente si unisce
  */
     channel.here((users) => {
-        console.log(users);
+        //console.log(users);
         $('#joining-list').empty();
         $.each(users, function (index, user) {
-            console.log(user);
+            //console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             let new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.text(user.name);
@@ -675,8 +682,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
          */
 
 
-        var p_uri = $(this).attr('data-uri');
-        console.log(p_uri);
+        var p_uri = $(this).attr('data-playlist-uri');
+        //console.log(p_uri);
         var p_numb = $(this).attr('data-number');
 
         var track_uri = $(this).attr('data-uri');
@@ -688,9 +695,12 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 'Authorization': 'Bearer ' + token,
             },
             data: {
-                "uris": [p_uri],
-                "position_ms": 0
-            },
+                    "context_uri": p_uri,
+                    "offset": {
+                      "position": p_numb
+                    },
+                    "position_ms": 0
+                  },
             dataType: 'json'
         }).then(function (data) {
 
@@ -839,6 +849,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     $('#spotify_prev_form').on('submit', function (event) {
         event.preventDefault();
+
         player.previousTrack()
         // .then(player.getCurrentState()
         // .then(state => {
@@ -1033,7 +1044,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         mc.on("singletap pan swipe", function(ev) {
             // SKIP LOGIC
             player.seek(timeline.val()).then(() => {
-                console.log('Changed position mob!');
+                //console.log('Changed position mob!');
               });
         }); 
         /**
@@ -1045,7 +1056,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         timeline.click(function () {
 
             player.seek(timeline.val()).then(() => {
-                console.log('Changed position!');
+                ///console.log('Changed position!');
               });
               
         });
@@ -1114,6 +1125,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
    
         })
         .catch(function(error){
+            console.log('search error: ');
             console.log(error);
         })
         }
@@ -1185,6 +1197,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 });
         })
         .catch(function(error){
+            console.log('adding song error');
             console.log(error);
         })
     })
