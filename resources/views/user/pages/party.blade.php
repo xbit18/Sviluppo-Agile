@@ -55,8 +55,8 @@
             <!-- Post Details Text -->
             <div class="post-details-text">
               <div class="row">
-                <div class="col-sm-3">
-                  <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="col-sm-3 mb-30 party_img" alt="">
+                <div class="col-sm-3 party_img_container">
+                  <img id="party_img_genre" src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" class="col-sm-3 mb-30 party_img" alt="">
                 </div>
 
 
@@ -64,7 +64,8 @@
                   <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
                   <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
                   <a href="#" class="post-date">{{ $party->created_at }}</a>
-                  <h2 class="text-uppercase">@if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn setting-button" data-toggle="modal" data-target="#editPartyModal"><i class="fa fa-cogs" aria-hidden="true"></i></button> @endif{{ $party->name }}</h2>
+                  @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn setting-button" data-toggle="modal" data-target="#editPartyModal"><i class="fa fa-cogs" aria-hidden="true"></i></button> @endif
+                  <h2 class="text-uppercase">{{ $party->name }}</h2>
                   <p id="party_name" class="d-none">{{ $party->name }}</p>
                   <div class="post-meta">
                     <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
@@ -301,7 +302,7 @@
                             <div class="form-group">
                                 <label class="description" for="source">Music Source </label>
                                 <select class="form-control form-control-sm" id="source" name="source">
-                                    <option>Spotify</option>
+                                    <option value="Spotify">Spotify</option>
                                 </select>
                             </div>
 
@@ -336,7 +337,7 @@
     <div id="deleteSongModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteSongForm" method="post" class="form-horizontal" enctype="multipart/form-data">
+                <form id="deleteSongForm" method="post" class="form-horizontal">
                     <div class="modal-header">						
                         <h4 class="modal-title">Delete Song</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

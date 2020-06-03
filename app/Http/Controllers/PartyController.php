@@ -116,7 +116,8 @@ class PartyController extends Controller
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
             'desc' => 'required|string',
-            'genre' =>'required|array|max:5'
+            'source' => 'required|string',
+            'genre' =>'required|array|max:5',
         );
 
         $error = Validator::make($request->all(), $rules);
@@ -158,6 +159,7 @@ class PartyController extends Controller
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
+        $party->source = $request->source;
         /**$party->name = $request->name;                Da decidere*/
 
 
