@@ -36,12 +36,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/party/create', 'PartyController@create')->name('party.create');
     Route::post('/party', 'PartyController@store')->name('party.store');
-    Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.party.show');
+    Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
     Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
     Route::get('party/edit/{code}', 'PartyController@edit')->name('party.edit');
     Route::post('/party/update/{code}','PartyController@update')->name('party.update');
 
-    Route::get('/party/show', 'PartyController@index')->name('party.index');
+    Route::get('/parties/show', 'PartyController@index')->name('parties.index');
 
 
 
@@ -80,27 +80,15 @@ Route::group(['middleware' => ['auth']], function () {
      */
     Route::get('/admin','AdminController@index');
     /**
-     * Admin users
+     * Admin users *
      */
-    Route::get('/admin/users','AdminController@users')->name('users.index');
+    Route::get('/admin/users','AdminController@users')->name('users.index');;
     Route::post('/admin/user/delete','AdminController@user_delete');
     Route::get('/admin/user/{id}/edit','AdminController@user_edit');
     Route::get('/admin/user/new','AdminController@user_create');
     Route::post('/admin/user/store','AdminController@user_store');
     Route::post('/admin/user/update','AdminController@user_update');
-    /**
-     * Admin party
-     */
-    Route::get('/admin/parties','AdminController@parties')->name('admin.party.index');
-    Route::post('/admin/party/delete','AdminController@party_delete');
-    Route::get('/admin/party/{id}/edit','AdminController@party_edit');
-    Route::get('/admin/party/new','AdminController@party_create');
-    Route::post('/admin/party/store','AdminController@party_store')->name('admin.party.store');;
-    Route::post('/admin/party/update','AdminController@party_update')->name('admin.party.update');
 
-    /**
-     * Other admin routs
-     */
     Route::get('/admin/elements', function(){
         return view('admin.elements');
     });
