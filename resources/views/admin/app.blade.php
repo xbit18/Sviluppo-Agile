@@ -28,7 +28,7 @@
     </div><!-- /.container-fluid -->
 </nav>
 
-<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar" style="color: white">
     <div class="profile-sidebar">
         <div class="profile-userpic">
             <img src="/img/admin.png" class="img-responsive" alt="">
@@ -45,9 +45,9 @@
             <input type="text" class="form-control" placeholder="Search">
         </div>
     </form>
-    <ul class="nav menu">
+    <ul class="nav menu" >
         <li class="active"><a href="/admin"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
-        <li class="parent "><a data-toggle="collapse" href="#sub-item-1">
+        <li class="parent "><a data-toggle="collapse" href="#sub-item-1" style="color: white">
                 <em class="fa fa-navicon">&nbsp;</em> Users Management <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><em class="fa fa-plus"></em></span>
             </a>
             <ul class="children collapse" id="sub-item-1">
@@ -59,14 +59,14 @@
                     </a></li>
             </ul>
         </li>
-        <li class="parent "><a data-toggle="collapse" href="#sub-item-2">
+        <li class="parent "><a data-toggle="collapse" href="#sub-item-2" style="color: white">
                 <em class="fa fa-navicon">&nbsp;</em> Parties Management <span data-toggle="collapse" href="#sub-item-2" class="icon pull-right"><em class="fa fa-plus"></em></span>
             </a>
             <ul class="children collapse" id="sub-item-2">
-                <li><a class="" href="">
-                        <span class="fa fa-arrow-right">&nbsp;</span> Modify a party
+                <li><a class="" href="/admin/party/new">
+                        <span class="fa fa-arrow-right">&nbsp;</span> Create a new party
                     </a></li>
-                <li><a class="" href="">
+                <li><a class="" href="/admin/parties">
                         <span class="fa fa-arrow-right">&nbsp;</span> Show all parties
                     </a></li>
             </ul>
@@ -75,6 +75,7 @@
             @csrf
         </form>
             <a href="{{ route('logout') }}"
+               style="color: white"
                onclick="event.preventDefault();
             document.getElementById('logout-form').submit();"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
     </ul>

@@ -7,6 +7,7 @@
             <h1 class="page-header">All users</h1>
         </div>
     </div>
+
     <div class="panel panel-container" style="background-color: #F1F4F7">
         <div class="row">
             <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
