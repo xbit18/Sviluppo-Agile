@@ -77,7 +77,11 @@
                     <div class="col-sm-9">
                         <div class="d-flex w-100 justify-content-between title_song" >
                             <h5 class="mb-1"></h5>
-                            <small></small>
+                            <small> 
+                                <button class="btn btn-danger _delete">
+                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                </button>
+                            </small>
                         </div>
                         <p class="mb-1"></p>
                         <small></small>
@@ -94,3 +98,4 @@
     
 </div>
 <p id="mytoken" class="d-none">{{ Auth::user()->access_token }}</p>
+

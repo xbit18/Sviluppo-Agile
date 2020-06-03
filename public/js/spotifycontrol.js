@@ -22,6 +22,33 @@ function millisToMinutesAndSeconds(millis) {
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
 
+
+  function append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album) {
+    var item_s = $('#playlist_song_prototype').clone();
+    var index = -1;
+    if( $('#party_playlist').children().last().data('number') >= 0) index = $('#party_playlist').children().last().data('number');
+    //let index = $('#party_playlist').children().last().data('number');
+    item_s.find('h5').text(track_name);
+    
+    item_s.find('p').text(track_artists);
+
+    var thumb = item_s.find('img');
+    thumb.attr('src', track_img_src);
+    
+    item_s.children('div').children('div').children('small').text(track_album);
+    //item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
+    item_s.children('div').children('div').children('div').children('small').children('button').attr('data-id', track_id);
+    item_s.attr('data-id', track_id);
+    item_s.attr('data-uri', track_uri);
+    item_s.attr('data-number', index + 1);
+    item_s.attr('data-playlist-uri', my_party_playlist.uri);
+    item_s.addClass('song_link');
+    console.log(item_s);
+    $('#party_playlist').append(item_s);
+  }
+
+
+
 /**
  * EDITING DEL PARTY DINAMICO
  */
@@ -139,7 +166,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
                 var artists = "";
                 $.each(state.track_window.current_track.artists, function (index, artist) {
-                    artists += artist.name;
+                    artists += " " + artist.name;
                 });
 
             }
@@ -478,16 +505,23 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                             song_item_link.addClass('song_link');
                             $('#party-song-list').append(song_item); */
 
+                            var artists = "";
+                            $.each(item.track.artists, function (index, artist) {
+                                artists += " " + artist.name;
+                            });
+
+                            append_song(my_party_playlist, item.track.id, item.track.uri, item.track.name, artists, item.track.album.images[0].url, item.track.album.name);
+
                             // NEW
-                            console.log(item);
-                            var item_s = $('#playlist_song_prototype').clone();
+                            //console.log(item);
+                            /*var item_s = $('#playlist_song_prototype').clone();
                             
                             item_s.find('h5').text(item.track.name);
                             
 
                             var artists = "";
                             $.each(item.track.artists, function (index, artist) {
-                                artists += artist.name;
+                                artists += " " + artist.name;
                             });
 
                             item_s.find('p').text(artists);
@@ -502,7 +536,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                             item_s.attr('data-number', index);
                             item_s.attr('data-playlist-uri', my_party_playlist.uri);
                             item_s.addClass('song_link');
-                            $('#party_playlist').append(item_s);
+                            $('#party_playlist').append(item_s);*/
                         });
 
                     })
@@ -520,10 +554,39 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
     /**
+     * Delete songs controls
+     */
+
+    var song_id;
+
+    $(document).on('click', '._delete', function(){
+        song_id = $(this).attr('data-id');
+        $('#deleteSongModal').modal('show');
+    });
+
+    $('#deleteSongModal').on('submit', function(event) {
+        event.preventDefault();
+        
+        /**
+         * Logica eliminazione canzone dalla playlist
+         */
+
+    });
+
+
+
+
+
+    /**
      * Listener alle canzoni
      */
     $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
+
+        console.log(event.target);
+
+        // Se ho cliccato su elimina non deve partire
+        if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
 
         // console.log('clicked');
 
@@ -1008,6 +1071,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         })
         .then(function(response){
 
+            append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album)
+
+            /*
             var item_s = $('#playlist_song_prototype').clone();
             let index = $('#party_playlist').children().last().data('number');
             item_s.find('h5').text(track_name);
@@ -1019,13 +1085,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             
             item_s.children('div').children('div').children('small').text(track_album);
             item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
+            item_s.children('div').children('div').children('div').children('small').children('a').attr('data-id', track_id);
             item_s.attr('data-id', track_id);
             item_s.attr('data-uri', track_uri);
             item_s.attr('data-number', index + 1);
             item_s.attr('data-playlist-uri', my_party_playlist.uri);
             item_s.addClass('song_link');
             $('#party_playlist').append(item_s);
-
+            */
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -1043,6 +1110,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         })
     })
 
+
+
+
+    
 
 
     
