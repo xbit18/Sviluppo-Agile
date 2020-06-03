@@ -98,6 +98,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/party/store','AdminController@party_store')->name('admin.party.store');;
     Route::post('/admin/party/update','AdminController@party_update')->name('admin.party.update');
 
+
     /**
      * Other admin routs
      */
