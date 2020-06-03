@@ -19,7 +19,7 @@ class CreatePartiesTable extends Migration
             $table->text('name');
             $table->text('mood');
             $table->enum('type',['Battle','Democracy']);
-            $table->enum('source',['Youtube','Spotify','SoundCloud']);
+            $table->enum('source',['Youtube']);
             $table->text('description');
             $table->string('code')->unique();
             $table->timestamps();

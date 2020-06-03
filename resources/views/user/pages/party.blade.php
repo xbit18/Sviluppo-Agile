@@ -301,7 +301,7 @@
                             <div class="form-group">
                                 <label class="description" for="source">Music Source </label>
                                 <select class="form-control form-control-sm" id="source" name="source">
-                                    <option>Spotify</option>
+                                    <option value="Spotify">Spotify</option>
                                 </select>
                             </div>
 

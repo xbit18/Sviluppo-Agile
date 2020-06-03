@@ -12,6 +12,8 @@ var timeline = $('#timeline');
 var duration_text = $('.music-duration');
 var timer, running = false;
 var channel = Echo.join(`party.${party_code}`);
+// var snapshot_id;
+var playlist_dom = $('#party_playlist');
 var paused = true;
 
 
@@ -26,7 +28,7 @@ function millisToMinutesAndSeconds(millis) {
   function append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album) {
     var item_s = $('#playlist_song_prototype').clone();
     var index = -1;
-    if( $('#party_playlist').children().last().data('number') >= 0) index = $('#party_playlist').children().last().data('number');
+    if( playlist_dom.children().last().data('number') >= 0) index = playlist_dom.children().last().data('number');
     //let index = $('#party_playlist').children().last().data('number');
     item_s.find('h5').text(track_name);
     
@@ -37,14 +39,14 @@ function millisToMinutesAndSeconds(millis) {
     
     item_s.children('div').children('div').children('small').text(track_album);
     //item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
-    item_s.children('div').children('div').children('div').children('small').children('button').attr('data-id', track_id);
+    item_s.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track_uri);
     item_s.attr('data-id', track_id);
     item_s.attr('data-uri', track_uri);
     item_s.attr('data-number', index + 1);
     item_s.attr('data-playlist-uri', my_party_playlist.uri);
     item_s.addClass('song_link');
     console.log(item_s);
-    $('#party_playlist').append(item_s);
+    playlist_dom.append(item_s);
   }
 
 
@@ -119,7 +121,7 @@ function increment_timeline(data) {
                 //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
                 timeline.val( parseInt(timeline.val()) + 1000 );
                 duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
-                console.log('incrementing ' + timeline.val()); 
+                // console.log('incrementing ' + timeline.val()); 
             },1000);
         }
     } else {
@@ -546,7 +548,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
    
-
+  
 
 
     /* --------------------------- COMANDI ------------------------ */
@@ -557,21 +559,71 @@ window.onSpotifyWebPlaybackSDKReady = () => {
      * Delete songs controls
      */
 
-    var song_id;
+    var song_uri;
+    var song_position;
+    var parent;
 
     $(document).on('click', '._delete', function(){
-        song_id = $(this).attr('data-id');
+        song_uri = $(this).attr('data-uri');
+        parent = $(this).parents('a')
+        song_position = parent.data('number');
+        console.log(song_position);
         $('#deleteSongModal').modal('show');
+        
     });
 
     $('#deleteSongModal').on('submit', function(event) {
         event.preventDefault();
-        
-        /**
+
+         /**
          * Logica eliminazione canzone dalla playlist
          */
 
-    });
+        var instance = axios.create();
+        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+        instance({
+        url: `https://api.spotify.com/v1/playlists/${my_party_playlist.id}/tracks`,
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        },
+        dataType: 'json',
+        contentType: 'application/json',
+        data: {
+               "tracks": [
+                   {
+                       "uri": song_uri,
+                       "positions": [song_position]
+                   }
+               ],
+                // "snapshot_id": snapshot_id
+            }
+        })
+        .then(function(){
+            // snapshot_id = response.data.snapshot_id;
+
+            $('#deleteSongModal').modal('hide');
+            parent.fadeOut("slow",function(){
+                parent.remove()
+            })
+            console.log(song_position,' posizione control');
+            $.each(playlist_dom.children(), function (index, element) {
+                    if( $(element).data('number') > song_position){
+                        let current_index = $(element).data('number');
+                        console.log(current_index, 'current index');
+                        $(element).data('number',parseInt(current_index)-1);
+                        $(element).attr('data-number',parseInt(current_index)-1);
+                        console.log($(element).data('number'),'new index');
+                    } 
+            });
+
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+           
+    })
 
 
 
@@ -595,7 +647,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
          */
 
 
-        var p_uri = $(this).attr('data-playlist-uri');
+        var p_uri = $(this).attr('data-uri');
+        console.log(p_uri);
         var p_numb = $(this).attr('data-number');
 
         var track_uri = $(this).attr('data-uri');
@@ -607,10 +660,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 'Authorization': 'Bearer ' + token,
             },
             data: {
-                "context_uri": p_uri,
-                "offset": {
-                    "position": p_numb
-                },
+                "uris": [p_uri],
                 "position_ms": 0
             },
             dataType: 'json'
@@ -1004,7 +1054,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         .then(function (data) {
             result.empty();   
             let tracks = data.data.tracks.items;
-            console.log(tracks);
 
             $.each(tracks, function (index, element) { 
 
@@ -1070,6 +1119,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         dataType: 'json',
         })
         .then(function(response){
+            // snapshot_id = response.data.snapshot_id;
+            // console.log(snapshot_id);
 
             append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album)
 
