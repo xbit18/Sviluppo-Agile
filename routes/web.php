@@ -36,12 +36,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/party/create', 'PartyController@create')->name('party.create');
     Route::post('/party', 'PartyController@store')->name('party.store');
-    Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.party.show');
+    Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
     Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
     Route::get('party/edit/{code}', 'PartyController@edit')->name('party.edit');
-    Route::post('/party/update/{code}','PartyController@update')->name('party.update');
+    Route::post('/party/update/{code}','PartyController@update')->name('parties.update');
 
-    Route::get('/party/show', 'PartyController@index')->name('party.index');
+    Route::get('/party/show', 'PartyController@index')->name('parties.index');
 
 
 
