@@ -12,8 +12,8 @@ var timeline = $('#timeline');
 var duration_text = $('.music-duration');
 var timer, running = false;
 var channel = Echo.join(`party.${party_code}`);
+var actual_dur = 0;
 var paused = true;
-
 
 
 function millisToMinutesAndSeconds(millis) {
@@ -120,6 +120,27 @@ function increment_timeline(data) {
                 timeline.val( parseInt(timeline.val()) + 1000 );
                 duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
                 console.log('incrementing ' + timeline.val()); 
+                var v = ( timeline.val() ) / actual_dur;
+
+                timeline.css('background-image', [
+                    '-webkit-gradient(',
+                      'linear, ',
+                      'left top, ',
+                      'right top, ',
+                      'color-stop(' + v + ', #1DB954), ',
+                      'color-stop(' + v + ', #535353)',
+                    ')'
+                ].join(''));
+                timeline.css('background-image', [
+                    '-moz-linear-gradient(',
+                      'linear, ',
+                      'left top, ',
+                      'right top, ',
+                      'color-stop(' + v + ', #1DB954), ',
+                      'color-stop(' + v + ', #535353)',
+                    ')'
+                ].join(''));
+                
             },1000);
         }
     } else {
@@ -175,7 +196,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 $('#artist-player').text(artists);
             }
             var position = state.position;
-            var track_uri = state.track_window.current_track.uri
+            var track_uri = state.track_window.current_track.uri;
+            actual_dur = parseInt(state.track_window.current_track.duration_ms);
         } else {
             var position = 0;
         }
@@ -196,6 +218,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         if (!state.paused) {
             if(position == 0) timeline.val(0);
             increment_timeline(true);
+            
             // console.log("uri " + track_uri);
             // console.log('position ' + position);
             $.ajax({
@@ -471,9 +494,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 // DEBUGGING
                 console.log('data playlists');
                 console.log(data);
+
+                
                 $.each(data.data.items, function (index, playlist) {
                     if (playlist.name.toLowerCase() === party_name.toLowerCase()) my_party_playlist = playlist;
                 });
+
+                if(my_party_playlist.images[0]) $('#party_img_genre').attr('src', my_party_playlist.images[0].url);
+                
                 console.log(my_party_playlist);
                 /**
                  * Ho preso la playlist

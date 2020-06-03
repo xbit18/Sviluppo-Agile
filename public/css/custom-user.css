@@ -38,17 +38,21 @@ body {
     margin: 1em;
 }
 
+.party_img_container {
+    padding-left: 0 !important;
+}
+
 .setting-button {
     padding: 0px;
     font-size: 1em;
     max-width: 2em;
     min-width: 2em;
     border-radius: 1px;
-    height: 100%;
     text-align: center;
     padding-bottom: .1em;
     PADDING-TOP: .2em;
     border: none;
+    font-size: 2em;
 }
 
 .result{
@@ -59,6 +63,11 @@ body {
     cursor: pointer;
     transition: all ease-in-out .2s;
     transform: scale(1.2,1.2);
+}
+
+
+ #partygenre {
+    min-height: 10em;
 }
 
 
