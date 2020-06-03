@@ -15,7 +15,11 @@ var channel = Echo.join(`party.${party_code}`);
 // var snapshot_id;
 var playlist_dom = $('#party_playlist');
 var actual_dur = 0;
+var actual_track;
+var playlist_uri;
 var paused = true;
+var act_pos;
+var auto_changed = false;
 
 
 function millisToMinutesAndSeconds(millis) {
@@ -177,6 +181,84 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         if (state) {
 
+            
+            if(state.track_window.current_track.uri != actual_track) {
+                /**
+                 * La traccia è sicuramente cambiata
+                 */
+                
+                console.error('actual_track ' + actual_track);
+                console.error('state.track_window.current_track ' + state.track_window.current_track.uri);
+                console.log('traccia cambiata');
+                console.error(state);
+
+                /*
+                if(state.track_window.previous_tracks && state.track_window.previous_tracks.length && ( state.track_window.previous_tracks[0].uri == actual_track || state.track_window.previous_tracks[1].uri == actual_track ) ) {
+                    act_pos++;
+                } else if(state.track_window.next_tracks && state.track_window.next_tracks[0].uri == actual_track) {
+                    act_pos--;
+                }
+                */
+                /*
+                actual_track = state.track_window.current_track.uri;
+
+                if(!auto_changed)  {
+                    instance({
+                        url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        data: {
+                                "context_uri": playlist_uri,
+                                "offset": {
+                                "position": act_pos
+                                },
+                                "position_ms": 0
+                            },
+                        dataType: 'json'
+                        }).then(function (data) {
+                            
+                            auto_changed = true;
+                            player.setVolume(slider.val() / 100);
+                            console.log("uri " + track_uri + ", pos " + act_pos);
+                            paused = false;
+                            $.ajax({
+                                url: "/party/" + party_code + "/play",
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                data: {
+                                    "track_uri": track_uri,
+                                    "position_ms": 0
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    console.log(data);
+                                    // DEBUGGING
+                                    //console.log(data);
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    if (xhr.status == 404) {
+                                        console.log("404 NOT FOUND");
+                                    } else if (xhr.status == 500) {
+                                        console.log("500 INTERNAL SERVER ERROR");
+                                    } else {
+                                        console.log("errore " + xhr.status);
+                                    }
+                                }
+                            });
+                
+                        });
+                    /*}
+                    else {
+                        auto_changed = false;
+                    }*/
+                
+            }
+
+            console.log(state);
             /**
              * Settaggio della timeline
              */
@@ -221,6 +303,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         if (!state.paused) {
             if(position == 0) timeline.val(0);
             increment_timeline(true);
+
+            console.log('position ' + act_pos);
             
             // console.log("uri " + track_uri);
             // console.log('position ' + position);
@@ -670,6 +754,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
 
+
+
+
         console.log(event.target);
 
         // Se ho cliccato su elimina non deve partire
@@ -686,7 +773,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         //console.log(p_uri);
         var p_numb = $(this).attr('data-number');
 
+        
+
         var track_uri = $(this).attr('data-uri');
+
+        act_pos = p_numb;
+        actual_track = track_uri;
+        playlist_uri = p_uri;
 
         instance({
             url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
@@ -1161,6 +1254,23 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         .then(function(response){
             // snapshot_id = response.data.snapshot_id;
             // console.log(snapshot_id);
+
+
+            instance({
+                url: `https://api.spotify.com/v1/me/player/queue?uri=` + track_uri,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                data: {
+                    'uri' : track_uri,
+                    'device_id' : devId,
+                },
+                dataType: 'json',
+                })
+            .then(function(response){
+                console.log('canzone aggiunta alla coda')
+            });
 
             append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album)
 

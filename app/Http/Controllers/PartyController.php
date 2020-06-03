@@ -116,8 +116,7 @@ class PartyController extends Controller
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
             'desc' => 'required|string',
-            'source' => 'required|string',
-            'genre' =>'required|array|max:5',
+            'genre' =>'required|array|max:5'
         );
 
         $error = Validator::make($request->all(), $rules);
@@ -139,10 +138,10 @@ class PartyController extends Controller
         foreach($genres as $genre_in) {
             /**
              * Ottimizzo memorizzando gli id dei generi durante la validazione
-             *
+             * 
              * Ottimizzazione usando direttamente gli id e ed evitando tutte le iterazioni
              */
-
+            
             if(!Genre::find($genre_in)) return redirect()->back()->withErrors(['genre' => 'Invalid Genre ' . $genre_in]);
             //$genre = Genre::where('genre',$genre_in)->first();
             //if(!$genre) $validation = false;
@@ -159,7 +158,6 @@ class PartyController extends Controller
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
-        $party->source = $request->source;
         /**$party->name = $request->name;                Da decidere*/
 
 
@@ -251,7 +249,6 @@ class PartyController extends Controller
                 'source' => $request->source,
                 'description' => $request->desc,
                 'code' => $code,
-                'playlist_id' => $playlist->id
             ]);
 
             foreach($genre_ids as $id) {
@@ -265,7 +262,7 @@ class PartyController extends Controller
         /**
          * Popolazione delle tracce
          */
-        $songsByGenre = $this->getSongsByGenre($party->code, null);
+        $songsByGenre = $this->getSongsByGenre($party->code);
 
         $bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
         if($bool){
@@ -336,38 +333,18 @@ class PartyController extends Controller
         return redirect()->back();
     }
 
-    public function populateParty(Request $request){
-        $api = new SpotifyWebAPI();
-        $user = Auth::user();
-        $party = Party::where('code','=',$request->party_code)->first();
-        if($party->playlist_id == null) return;
-        try {
-            $api->setAccessToken($user->access_token);
-            $songs = $this->getSongsByGenre(null, $request->genre_id);
-            $bool = $api->addPlaylistTracks($party->playlist_id, $songs);
-        } catch (SpotifyWebApiException $e){
-            return redirect()->route('spotify.login');
-        }
-        return redirect()->back();
-    }
-
     /**
      * Ritorna un array di Spotify track URIs in base ai generi del party
      * @param $party_code
      * @return array
      */
-    public function getSongsByGenre($party_code = null, $genre_id = null)
+    public function getSongsByGenre($party_code)
     {
+        $genres = Party::where('code','=',$party_code)->first()->genre;
         $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
-        if($party_code == null && $genre_id == null) return null;
-        if($genre_id != null){
-            $genre = Genre::findOrFail($genre_id);
-            $URI .= strtolower($genre->genre);
-        } else {
-            $genres = Party::where('code', '=', $party_code)->first()->genre;
-            foreach($genres as $genre){
-                $URI .= strtolower($genre->genre).',';
-            }
+
+        foreach($genres as $genre){
+            $URI .= strtolower($genre->genre).',';
         }
 
         $user_token = Auth::user()->access_token;
