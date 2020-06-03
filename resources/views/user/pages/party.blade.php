@@ -74,7 +74,24 @@
                 </div>
               </div>
 
-              
+                <form method="POST" action="{{ route('playlist.populate') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label class="description" for="partygenre">Party Genre</label>
+                        <select class="form-control form-control-sm" name="genre_id">
+                            @foreach($genre_list as $genre)
+                                <option value="{{ $genre->id }}"
+                                        @if ($party->genre->contains($genre))
+                                        selected="selected"
+                                    @endif
+                                >{{ $genre->genre }}</option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" value="{{ $party->code }}" name="party_code">
+                        <input class="btn mt-2" type="submit" value="Conferma">
+                    </div>
+                </form>
+
               <p class="mt-30"><i>Description: </i>{{ $party->description }}</p>
 
               <h5>Music Source: {{ $party->source }}</h5>
@@ -98,7 +115,7 @@
                 </ul>
               </div>
 
-              {{-- <!-- Post Catagories 
+              {{-- <!-- Post Catagories
               <div class="post-catagories d-flex align-items-center">
                 <h6>Genres:</h6>
                 <ul class="d-flex flex-wrap align-items-center">
@@ -107,12 +124,12 @@
                     @endforeach
                 </ul>
               </div>
-                
+
                 <div class="welcome-btn-group">
                     <a href="{{ route('party.edit', [ 'code' => $party->code]) }}" class="btn poca-btn m-2 ml-0 active" data-animation="fadeInUp" data-delay="200ms">Edit Party</a>
-                </div> 
+                </div>
 
-                @if(Auth::user()->id == $party->user->id) 
+                @if(Auth::user()->id == $party->user->id)
                 <button type="button" class="btn poca-btn m-2 ml-0 active" data-toggle="modal" data-target="#editPartyModal">
                   Edit Party
                 </button>
@@ -138,7 +155,7 @@
                 <input id="searchSong" type="search" name="search" class="form-control" placeholder="Search ...">
                 <button type="submit"><i class="fa fa-search"></i></button>
               </form>
-             
+
               <div class="d-none">
                 <div id="song-prototype" class="list-group-item list-group-item-action flex-column align-items-start p-0">
                   <div class="row align-items-center">
@@ -148,7 +165,7 @@
                     <div class="col-sm-9">
                       <div class="d-flex w-100 justify-content-between">
                         <h6>Nome canzone</h6>
-                        <small class="mr-1">2:23</small> 
+                        <small class="mr-1">2:23</small>
                       </div>
                       <div class="d-flex w-100 justify-content-between">
                         <small>Artista</small>
@@ -161,7 +178,7 @@
 
               <div id="result"></div>
 
-              
+
 
             </div>
 
@@ -241,7 +258,7 @@
   <!-- ***** Blog Details Area End ***** -->
 
   <!-- Button trigger modal -->
-  
+
 
   <!-- Modal -->
   <div class="modal fade" id="editPartyModal" tabindex="-1" role="dialog" aria-labelledby="editModalTitle" aria-hidden="true">
@@ -254,8 +271,8 @@
           </button>
         </div>
         <div class="modal-body">
-          
-                  
+
+
     <div class="container">
         <div class="row justify-content-center">
 
@@ -332,17 +349,17 @@
   </div>
 
 
-  
+
     <!-- Delete Modal HTML -->
     <div id="deleteSongModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="deleteSongForm" method="post" class="form-horizontal">
-                    <div class="modal-header">						
+                    <div class="modal-header">
                         <h4 class="modal-title">Delete Song</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
-                    <div class="modal-body">					
+                    <div class="modal-body">
                         <p>The song will be deleted from party playlist. Are you sure?</p>
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
@@ -353,7 +370,7 @@
                 </form>
             </div>
         </div>
-    </div> 
+    </div>
   @endisset
 
 
