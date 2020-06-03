@@ -32,12 +32,12 @@
 
                 @auth
                 <!-- Auth Links -->
-                    @if(Auth::user()->email=='static@e.it')
+                    @if(Auth::user()->id==1)
                         <li><a href="/admin">Admin Panel</a></li>
                     @endif
-                    
-                   
-                    
+
+
+
                     <li><a href="#"><i class="fa fa-users mr-1" aria-hidden="true"></i> Party </a>
                       <ul class="dropdown">
                         <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="{{ route('me.parties.show') }}">My Parties</a></li>
@@ -63,8 +63,8 @@
 
                           </li>
                       </ul>
-                    </li> 
-                    
+                    </li>
+
                 @endauth
 
                 @guest
