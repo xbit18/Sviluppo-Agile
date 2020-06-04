@@ -138,10 +138,10 @@ class PartyController extends Controller
         foreach($genres as $genre_in) {
             /**
              * Ottimizzo memorizzando gli id dei generi durante la validazione
-             * 
+             *
              * Ottimizzazione usando direttamente gli id e ed evitando tutte le iterazioni
              */
-            
+
             if(!Genre::find($genre_in)) return redirect()->back()->withErrors(['genre' => 'Invalid Genre ' . $genre_in]);
             //$genre = Genre::where('genre',$genre_in)->first();
             //if(!$genre) $validation = false;
@@ -249,6 +249,7 @@ class PartyController extends Controller
                 'source' => $request->source,
                 'description' => $request->desc,
                 'code' => $code,
+                'playlist_id' => $playlist->id
             ]);
 
             foreach($genre_ids as $id) {
