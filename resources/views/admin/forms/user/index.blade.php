@@ -7,7 +7,13 @@
             <h1 class="page-header">All users</h1>
         </div>
     </div>
-
+    @if (\Session::has('success'))
+        <div class="alert alert-success">
+            <ul>
+                <li>{!! \Session::get('success') !!}</li>
+            </ul>
+        </div>
+    @endif
     <div class="panel panel-container" style="background-color: #F1F4F7">
         <div class="row">
             <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
@@ -81,11 +87,25 @@
                     @else
                     <form id="delete-form-{{$id}}"method="POST" action="/admin/user/delete">
                         @csrf
-                    <a href="/admin/user/delete"
-                       onclick="event.preventDefault(); document.getElementById('delete-form-{{$id}}').submit();">
-                        <em class="fa fa-xl fa-user-times color-red" ></em> </a>
+                        <em onclick="deleteFunc{{$id}}()" class="fa fa-xl fa-user-times color-red" style="cursor: pointer" ></em>
+                        <script>
+                            function deleteFunc{{$id}}() {
+                                var x = confirm('Do you really want to delete {{$user->email}} user ?')
+                                if(x == true){
+                                    document.getElementById('delete-form-{{$id}}').submit(); }
+                            }
+                        </script>
                         <input name="id" value="{{$user->id}}" hidden >
                     @endif
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>

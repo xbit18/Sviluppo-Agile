@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
+use SpotifyWebAPI\SpotifyWebAPIException;
 
 class AdminController extends Controller
 {
@@ -40,19 +42,36 @@ class AdminController extends Controller
     {
         $a= new AdminController;
         $a->verify();
+        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            $emailErr = "Invalid email format";
+            return \Redirect::back()->withErrors([$emailErr]);
+        }
+        if (User::where('email',$request->email)->first()) {
+            $emailErr = "this mail is already used";
+            return \Redirect::back()->withErrors([$emailErr]);
+        }
         $user= new User();
             $user->name=$request['name'];
             $user->email=$request['email'];
             $user->email_verified_at = date('Y-m-d');
             $user->password= Hash::make($request['password']);
             $user->save();
-        return view('admin.index');
+        return redirect()->route('users.index')->with('success', 'User '. $request->email.' created!');
 
     }
     protected function user_update(Request $request)
     {
         $a= new AdminController;
         $a->verify();
+        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
+            $emailErr = "Invalid email format";
+            return \Redirect::back()->withErrors([$emailErr]);
+        }
+        if (User::where('email',$request->email)->first()) {
+            $emailErr = "this mail is already used";
+            return \Redirect::back()->withErrors([$emailErr]);
+        }
+
         $user= User::findOrFail($request->id);
         $user->name=$request['name'];
         $user->email=$request['email'];
@@ -62,7 +81,7 @@ class AdminController extends Controller
         }
 
         $user->save();
-        return redirect()->route('users.index');
+        return redirect()->route('users.index')->with('success', 'User '. $request->email.' updated!');
 
     }
 
@@ -80,8 +99,9 @@ class AdminController extends Controller
         $a= new AdminController;
         $a->verify();
         $user=User::findOrFail($request->id);
+        $email=$user->email;
         $user->delete();
-        return back();
+        return back()->with('success', 'User '. $email.' deleted!');
     }
     /**
      * party controllers
@@ -98,29 +118,30 @@ class AdminController extends Controller
         $a= new AdminController;
         $a->verify();
         $party=Party::findOrFail($request->id);
+        $code=$party->code;
         $party->delete();
-        return back();
+        return back()->with('success', 'Party '. $code.' deleted!');
     }
 
     function party_create(){
         $a= new AdminController;
         $a->verify();
-        return view('admin.forms.party.create');
+        return view('admin.forms.party.create')->with('success', 'Party Created without the playlist ');
     }
 
     protected function party_store(Request $request)
     {
-        $a= new AdminController;
+        $a = new AdminController;
         $a->verify();
-        $user= new User();
+        $user = new User();
         $validatedData = $request->validate([
             'email' => 'required|string',
             'name' => 'required|string',
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
             'desc' => 'required|string',
-            'genre' =>'required|array|max:5'
-    ]);
+            'genre' => 'required|array|max:5'
+        ]);
         $genres = $request->genre;
         $genre_ids = array();
 
@@ -128,24 +149,24 @@ class AdminController extends Controller
          * Per ogni genere controllo se esiste
          */
         $validation = true;
-        foreach($genres as $genre_in) {
+        foreach ($genres as $genre_in) {
             /**
              * Ottimizzo memorizzando gli id dei generi durante la validazione
              */
-            $genre = Genre::where('genre',$genre_in)->first();
-            if(!$genre) $validation = false;
+            $genre = Genre::where('genre', $genre_in)->first();
+            if (!$genre) $validation = false;
             else array_push($genre_ids, $genre->id);
         }
 
-        if(!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
+        if (!$validation) return \Redirect::back()->withErrors(['genre' => 'Invalid Genre']);
 
-        $email=$request->email;
+        $email = $request->email;
         $user = User::where('email', $request->email)->first();
 
-        if($user == null ) return \Redirect::back()->withErrors(['user '.$email.' not found']);
+        if ($user == null) return \Redirect::back()->withErrors(['user ' . $email . ' not found']);
 
         $code = Str::random(16);
-        $user_id=$user->id;
+        $user_id = $user->id;
         $party = Party::create([
             'user_id' => $user_id,
             'name' => $request->name,
@@ -155,12 +176,27 @@ class AdminController extends Controller
             'description' => $request->desc,
             'code' => $code,
         ]);
-        foreach($genre_ids as $id) {
+        foreach ($genre_ids as $id) {
             $party->genre()->attach($id);
         }
-        return view('admin.index');
-    }
 
+        try {
+            $api = new SpotifyWebAPI();
+            $api->setAccessToken($user->access_token);
+            $playlist = $api->createPlaylist([
+                'name' => $request->name,
+                'public' => false
+            ]);
+            $p = new PartyController();
+            $songsByGenre = $p->getSongsByGenre($party->code);
+            $bool = $api->addPlaylistTracks($playlist->id, $songsByGenre);
+            if ($bool) {
+                return redirect()->route('admin.party.index')->with('success', 'Party Created with the playlist');
+            }
+        } catch (SpotifyWebApiException $e) {
+            return redirect()->route('admin.party.index')->with('success', 'Party Created WITHOUT the playlist ');
+        }
+    }
     protected function party_edit($id)
     {
         $a= new AdminController;
@@ -229,7 +265,7 @@ class AdminController extends Controller
             $party->genre()->attach($id);
         }
         if($party->isDirty()) $party->save();
-        return redirect()->route('admin.party.index');
+        return redirect()->route('admin.party.index')->with('success', 'Party '. $party->code.' updated!');;
 
     }
 

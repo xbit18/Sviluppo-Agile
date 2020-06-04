@@ -25,6 +25,15 @@
                         <label>Password</label>
                         <input type="password" class="form-control" placeholder="password" name="password">
                     </div>
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                 <button type="submit" class="btn btn-primary">Create now</button>
                 </form>
         </div>
