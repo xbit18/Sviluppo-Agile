@@ -28,8 +28,15 @@ class AdminController extends Controller
     function users(){
         $a= new AdminController;
         $a->verify();
-        $users = User::paginate(10);
-        return view('admin.forms.user.index',compact('users'));
+        if(request('email')!=null) {
+            $key = request('email');
+            $users = User::where('email', $key)->get();
+            return view('admin.forms.user.index',compact('users'));
+        }
+        else {
+            $users = User::paginate(10);
+            return view('admin.forms.user.index',compact('users'));
+        }
     }
 
     function user_create(){
@@ -110,8 +117,15 @@ class AdminController extends Controller
     function parties(){
         $a= new AdminController;
         $a->verify();
-        $parties = Party::paginate(10);
-        return view('admin.forms.party.index',compact('parties'));
+        if(request('name')!=null) {
+            $key = request('name');
+            $parties = Party::where('name', $key)->get();
+            return view('admin.forms.party.index',compact('parties'));
+        }
+        else {
+            $parties = Party::paginate(10);
+            return view('admin.forms.party.index',compact('parties'));
+            }
     }
     protected function party_delete(Request $request)
     {
