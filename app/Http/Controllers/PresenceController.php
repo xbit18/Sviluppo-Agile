@@ -13,6 +13,8 @@ class PresenceController extends Controller
         $user = User::where('id', $user_id)->first();
         $party = Party::where('code', $code)->first();
         $user->participates()->sync($party->id);
+
+        return $user->participates;
     }
 
 
@@ -23,7 +25,7 @@ class PresenceController extends Controller
 
         $user->participates()->detach();
 
-        return;
+        return $user->participates;
         
     }
 }

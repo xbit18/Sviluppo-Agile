@@ -33,6 +33,7 @@ class PartyTest extends TestCase
             'type' => 'Democracy',
             'source' => 'Spotify',
             'description' => 'Prova Description',
+            'playlist_id' => null,
             'code' => $this->code
         ]);
         $this->party->genre()->attach(4);
@@ -151,6 +152,48 @@ class PartyTest extends TestCase
 
         // Redirezionamento verso back
         $response->assertStatus(302);
+
+    }
+
+    /** @test */
+    public function user_can_join() {
+
+        
+        $user_part = factory(User::class)->create();
+        $user_part->name = 'Participant';
+        $user_part->email = 'participant@example.com';
+        $user_part->markEmailAsVerified();
+
+        // ENTRA L'HOST
+        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+
+        // ENTRA IL PARTECIPANTE
+        $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
+        
+        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+
+        $response->assertSee($this->party->code);
+
+    }
+
+    /** @test */
+    public function user_can_leave() {
+
+        $user_part = factory(User::class)->create();
+        $user_part->name = 'Participant';
+        $user_part->email = 'participant@example.com';
+        $user_part->markEmailAsVerified();
+
+        // ENTRA L'HOST
+        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+
+        // ENTRA IL PARTECIPANTE
+        $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
+        
+        $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/leave/' . $user_part->id);
+
+        $response->assertDontSee($this->party->code);
 
     }
 
