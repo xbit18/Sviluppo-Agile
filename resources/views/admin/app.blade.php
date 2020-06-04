@@ -40,14 +40,22 @@
         <div class="clear"></div>
     </div>
     <div class="divider"></div>
+    @if(!empty($users) or !empty($parties))
     <form role="search">
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search">
+            @if(!empty($users))
+            <input type="text" class="form-control" placeholder="Search by email" name="email">
+                <input type="submit" hidden>
+                @else
+                <input type="text" class="form-control" placeholder="Search by name" name="name">
+                <input type="submit" hidden>
+                @endif
         </div>
     </form>
+    @endif
     <ul class="nav menu" >
-        <li class="active"><a href="/admin"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
-        <li class="parent "><a data-toggle="collapse" href="#sub-item-1" style="color: white">
+        <li class="{{Request::getPathInfo() === '/admin' ? 'active' : 'parent'}}"><a href="/admin"  style="color: white"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+        <li class="{{(Request::getPathInfo() ==='/admin/user/new' or Request::getPathInfo() === '/admin/users') ? 'active parent': 'parent'}}"><a data-toggle="collapse" href="#sub-item-1" style="color: white">
                 <em class="fa fa-navicon">&nbsp;</em> Users Management <span data-toggle="collapse" href="#sub-item-1" class="icon pull-right"><em class="fa fa-plus"></em></span>
             </a>
             <ul class="children collapse" id="sub-item-1">
@@ -59,7 +67,7 @@
                     </a></li>
             </ul>
         </li>
-        <li class="parent "><a data-toggle="collapse" href="#sub-item-2" style="color: white">
+        <li class="{{(Request::getPathInfo() ==='/admin/party/new' or Request::getPathInfo() === '/admin/parties') ? 'active parent': 'parent'}}"><a data-toggle="collapse" href="#sub-item-2" style="color: white">
                 <em class="fa fa-navicon">&nbsp;</em> Parties Management <span data-toggle="collapse" href="#sub-item-2" class="icon pull-right"><em class="fa fa-plus"></em></span>
             </a>
             <ul class="children collapse" id="sub-item-2">
