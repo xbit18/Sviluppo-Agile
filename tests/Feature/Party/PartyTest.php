@@ -31,7 +31,7 @@ class PartyTest extends TestCase
             'name' => 'Prova Nome',
             'mood' => 'Prova Mood',
             'type' => 'Democracy',
-            'source' => 'Youtube',
+            'source' => 'Spotify',
             'description' => 'Prova Description',
             'code' => $this->code
         ]);
@@ -72,6 +72,48 @@ class PartyTest extends TestCase
     }
 
     /** @test **/
+    public function party_is_updated()
+    {
+        /**
+         * Creo un party
+         */
+        $code = Str::random(16);
+
+        $party = Party::create([
+            'user_id' => $this->user->id,
+            'name' => 'Prova Nome',
+            'mood' => 'Prova Mood',
+            'type' => 'Democracy',
+            'source' => 'Spotify',
+            'description' => 'Prova Description',
+            'code' => $code
+        ]);
+        $this->party->genre()->attach(4);
+
+        /**
+         * Modifico il party con dei parametri specifici
+         */
+        $this->withoutExceptionHandling();
+        $response = $this->actingAs($this->user)->post('/party/update/'.$code,[
+            'mood' => 'Mood aggiornato',
+            'type' => 'Democracy',
+            'desc' => "Descrizione aggiornata",
+            'genre' => array(67), //id associato al genere Jazz
+        ]);
+
+        $response = $this->actingAs($this->user)->get('/party/show/'.$code);
+
+        /**
+         * Controllo che i campi del party siano stati aggiornati e restituiti alla view con successo
+         */
+
+        $response->assertSee('Mood aggiornato')
+                 ->assertSee('Democracy')
+                 ->assertSee('Descrizione aggiornata')
+                 ->assertSee('<li><a href="#">Jazz</a></li>',false);
+    }
+
+    /** @test **/
 
     public function party_link_with_code_works(){
 
@@ -95,7 +137,7 @@ class PartyTest extends TestCase
 
     /** @test */
     public function user_can_invite_people() {
-        
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
@@ -116,9 +158,9 @@ class PartyTest extends TestCase
     /*
      * Non possiamo eseguire più questo test perche non abbiamo errori in questo caso
      * ma semplicemente non viene inviata una email
-     *    
+     *
     public function user_cannot_invite_fake_people() {
-        
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
@@ -137,13 +179,13 @@ class PartyTest extends TestCase
 
     /** @test */
     public function user_cannot_manipulate_invite_field() {
-        
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
         $user->markEmailAsVerified();
 
-        //INVALIDO L'EMAIL 
+        //INVALIDO L'EMAIL
         $data_invite = [
             'invite_list' => '(' . $user->name . 'de - ' . $user->email . 'cde)',
         ];
@@ -200,7 +242,7 @@ class PartyTest extends TestCase
             'mood' => 'ProvaMood',
             'type' => 'Battle',
             'code' => 'ederWGcVCp0ASTqx',
-            'source' => 'Youtube',
+            'source' => 'Spotify',
             'desc' => "description"
         ];
     }
