@@ -12,9 +12,13 @@
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
+        "jwilsson/spotify-web-api-php": "^3.4",
         "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
-        "laravel/ui": "^2.0"
+        "laravel/ui": "^2.0",
+        "predis/predis": "^1.1",
+      "ext-json": "*",
+        "ext-mongodb": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

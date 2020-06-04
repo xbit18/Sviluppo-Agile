@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
+use App\Broadcasting\PartyChannel;
+use App\Broadcasting\SyncronizeChannel;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +18,10 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('party.{partyCode}', PartyChannel::class);
+
+Broadcast::channel('party-sync.{user_id}', SyncronizeChannel::class);
+
+
+

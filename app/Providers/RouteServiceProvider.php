@@ -23,6 +23,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     public const HOME = '/';
     public const VERIFY = '/email/verify';
+    public const SPOTIFYLOGIN = '/loginspotify';
 
     /**
      * Define your route model bindings, pattern filters, etc.

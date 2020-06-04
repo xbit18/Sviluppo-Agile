@@ -31,8 +31,9 @@ class PartyTest extends TestCase
             'name' => 'Prova Nome',
             'mood' => 'Prova Mood',
             'type' => 'Democracy',
-            'source' => 'Youtube',
+            'source' => 'Spotify',
             'description' => 'Prova Description',
+            'playlist_id' => null,
             'code' => $this->code
         ]);
         $this->party->genre()->attach(4);
@@ -68,7 +69,49 @@ class PartyTest extends TestCase
          * La frase Party created succesfully è stata tolta
          * Controllo che stia redirezionando verso il link giusto
          */
-        $response->assertSee('Redirecting to http://localhost/me/party/show');
+        $response->assertSee('Redirecting to');
+    }
+
+    /** @test **/
+    public function party_is_updated()
+    {
+        /**
+         * Creo un party
+         */
+        $code = Str::random(16);
+
+        $party = Party::create([
+            'user_id' => $this->user->id,
+            'name' => 'Prova Nome',
+            'mood' => 'Prova Mood',
+            'type' => 'Democracy',
+            'source' => 'Spotify',
+            'description' => 'Prova Description',
+            'code' => $code
+        ]);
+        $this->party->genre()->attach(4);
+
+        /**
+         * Modifico il party con dei parametri specifici
+         */
+        $this->withoutExceptionHandling();
+        $response = $this->actingAs($this->user)->post('/party/update/'.$code,[
+            'mood' => 'Mood aggiornato',
+            'type' => 'Democracy',
+            'desc' => "Descrizione aggiornata",
+            'genre' => array(67), //id associato al genere Jazz
+        ]);
+
+        $response = $this->actingAs($this->user)->get('/party/show/'.$code);
+
+        /**
+         * Controllo che i campi del party siano stati aggiornati e restituiti alla view con successo
+         */
+
+        $response->assertSee('Mood aggiornato')
+                 ->assertSee('Democracy')
+                 ->assertSee('Descrizione aggiornata')
+                 ->assertSee('<li><a href="#">Jazz</a></li>',false);
     }
 
     /** @test **/
@@ -90,14 +133,12 @@ class PartyTest extends TestCase
 
         $response = $this->actingAs($this->user)->get('/party/show/'.$this->code);
 
-        $response->assertJson([
-            'error' => 'This party does not exist',
-        ]);
+        $response->assertStatus(404);
     }
 
     /** @test */
     public function user_can_invite_people() {
-        
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
@@ -109,18 +150,60 @@ class PartyTest extends TestCase
 
         $response = $this->actingAs($user)->post('/party/ederWGcVCp0ASTqx/invite', $data_invite);
 
-        $response->assertJson([ 
-            [
-                "name" => "Bryant",
-                "email" => "bryantsarabia@example.com"
-            ]
-         ]);
+        // Redirezionamento verso back
+        $response->assertStatus(302);
 
     }
 
     /** @test */
-    public function user_cannot_invite_fake_people() {
+    public function user_can_join() {
+
         
+        $user_part = factory(User::class)->create();
+        $user_part->name = 'Participant';
+        $user_part->email = 'participant@example.com';
+        $user_part->markEmailAsVerified();
+
+        // ENTRA L'HOST
+        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+
+        // ENTRA IL PARTECIPANTE
+        $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
+        
+        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+
+        $response->assertSee($this->party->code);
+
+    }
+
+    /** @test */
+    public function user_can_leave() {
+
+        $user_part = factory(User::class)->create();
+        $user_part->name = 'Participant';
+        $user_part->email = 'participant@example.com';
+        $user_part->markEmailAsVerified();
+
+        // ENTRA L'HOST
+        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+
+        // ENTRA IL PARTECIPANTE
+        $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
+        
+        $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/leave/' . $user_part->id);
+
+        $response->assertDontSee($this->party->code);
+
+    }
+
+    /** @test */
+    /*
+     * Non possiamo eseguire più questo test perche non abbiamo errori in questo caso
+     * ma semplicemente non viene inviata una email
+     *
+    public function user_cannot_invite_fake_people() {
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
@@ -135,16 +218,17 @@ class PartyTest extends TestCase
         $response->assertJson([]);
 
     }
+    */
 
     /** @test */
     public function user_cannot_manipulate_invite_field() {
-        
+
         $user = factory(User::class)->create();
         $user->name = 'Bryant';
         $user->email = 'bryantsarabia@example.com';
         $user->markEmailAsVerified();
 
-        //INVALIDO L'EMAIL 
+        //INVALIDO L'EMAIL
         $data_invite = [
             'invite_list' => '(' . $user->name . 'de - ' . $user->email . 'cde)',
         ];
@@ -201,7 +285,7 @@ class PartyTest extends TestCase
             'mood' => 'ProvaMood',
             'type' => 'Battle',
             'code' => 'ederWGcVCp0ASTqx',
-            'source' => 'Youtube',
+            'source' => 'Spotify',
             'desc' => "description"
         ];
     }

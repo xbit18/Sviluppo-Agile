@@ -25,16 +25,33 @@
             <!-- Nav Start -->
             <div class="classynav">
               <ul id="nav">
-                
+
                 <!-- Generic Links -->
                 <li class="{{ Route::currentRouteName() == 'home' ? 'current-item' : '' }}" ><a href="{{ route('home') }}">Home</a></li>
 
 
-                @auth 
+                @auth
                 <!-- Auth Links -->
-                    <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="{{ route('me.parties.show') }}">My Parties</a></li>
-                    <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create</a></li>
-                    <li><a href="#">{{ Auth::user()->name }}</a>
+                    @if(Auth::user()->id==1)
+                        <li><a href="/admin">Admin Panel</a></li>
+                    @endif
+
+
+
+                    <li><a href="#"><i class="fa fa-users mr-1" aria-hidden="true"></i> Party </a>
+                      <ul class="dropdown">
+                        <li class="{{ Route::currentRouteName() == 'me.parties.show' ? 'current-item' : '' }}" ><a href="{{ route('me.parties.show') }}">My Parties</a></li>
+                        <li class="{{ Route::currentRouteName() == 'party.create' ? 'current-item' : '' }}" ><a href="{{ route('party.create') }}">Create</a></li>
+                        <li class="{{ Route::currentRouteName() == 'parties.index' ? 'current-item' : '' }}" ><a href="{{ route('parties.index') }}">Participate</a></li>
+                      </ul>
+                    </li>
+                    <li><a href="#"><i class="fa fa-spotify mr-1" aria-hidden="true"></i> Spotify </a>
+                      <ul class="dropdown">
+                        <li ><a href="{{ route('spotify.login') }}">Access / Refresh</a></li>
+                        <li ><a href="{{ route('spotify.logout') }}">Exit</a></li>
+                      </ul>
+                    </li>
+                    <li><a href="#">{{ Auth::user()->name }} </a>
                       <ul class="dropdown">
                         <li>
                             <a href="{{ route('logout') }}"
@@ -43,10 +60,11 @@
                                 {{ __('Logout') }}
                             </a>
 
-                            
+
                           </li>
                       </ul>
                     </li>
+
                 @endauth
 
                 @guest
@@ -59,7 +77,7 @@
                   @csrf
               </form>
 
-              <!-- 
+              <!--
               Top Search Area - Per il momento non ci serve  -->
               <div class="top-search-area">
                 <form action="index.html" method="post">
@@ -67,9 +85,9 @@
                   <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
               </div>
-              
 
-              <!-- 
+
+              <!--
               Top Social Area - Per il momento non ci serve -->
               <div class="top-social-area">
                 <a href="#" class="fa fa-facebook" aria-hidden="true"></a>

@@ -64,7 +64,7 @@ class UserTest extends TestCase
             'email' => $this->user->email,
             'password' => $this->password
         ]);
-        $response->assertRedirect('/');
+        $response->assertRedirect('/loginspotify');
         $this->assertAuthenticatedAs($this->user);
 
     }
