@@ -23,7 +23,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span></button>
-            <a class="nav-brand" href=""><img src="{{ asset('img/core-img/logo2.png')}}" alt=""></a>
+            <a class="nav-brand" href="/"><img src="{{ asset('img/core-img/logo2.png')}}" alt=""></a>
         </div>
     </div><!-- /.container-fluid -->
 </nav>
