@@ -133,7 +133,7 @@ class PartyTest extends TestCase
 
         $response = $this->actingAs($this->user)->get('/party/show/'.$this->code);
 
-        $response->assertStatus(500);
+        $response->assertStatus(404);
     }
 
     /** @test */

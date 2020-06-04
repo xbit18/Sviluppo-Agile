@@ -26,6 +26,15 @@
             <label>Password</label>
             <input type="password" class="form-control" value="passwordnoncambiata" name="password" >
         </div>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <button type="submit" class="btn btn-primary">Update</button>
         if you don't change your password, it stays the same
     </form>
