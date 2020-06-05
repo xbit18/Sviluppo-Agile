@@ -68,6 +68,10 @@
                                 <label for="desc">Party Description</label>
                                 <textarea class="form-control" rows="5" id="desc" name="desc">{{ $party->description }}</textarea>
                             </div>
+                            <div class="form-group">
+                                <label for="playlist_id">Playlist id</label>
+                                <input class="form-control small" rows="5" id="playlist_id" name="playlist_id" placeholder='fill to assign a playlist id' value="{{ $party->playlist_id }}">
+                            </div>
 
                             @if ($errors->any())
                                 <div class="alert alert-danger">

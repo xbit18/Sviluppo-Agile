@@ -349,18 +349,43 @@ class PartyController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function populateParty(Request $request){
+        $uris = $this->getSongsByGenre(null, $request->genre_id);
+        $playlist_id = Party::where('code','=',$request->party_code)->first()->playlist_id;
+        $api = new SpotifyWebAPI();
+        $api->setAccessToken(Auth::user()->access_token);
+        $bool = $api->addPlaylistTracks($playlist_id,$uris);
+        if($bool){
+            return redirect()->back();
+        }
+        return ;
+    }
+
+    /**
      * Ritorna un array di Spotify track URIs in base ai generi del party
      * @param $party_code
      * @return array
      */
-    public function getSongsByGenre($party_code)
+    public function getSongsByGenre($party_code, $genre_id)
     {
-        $genres = Party::where('code','=',$party_code)->first()->genre;
+
         $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
 
-        foreach($genres as $genre){
-            $URI .= strtolower($genre->genre).',';
+        if($genre_id == null && $party_code == null){ return ;}
+        if($genre_id != null){
+            $genre = strtolower(Genre::findOrFail($genre_id)->genre);
+            $URI .= $genre;
+        } else {
+            $genres = Party::where('code','=',$party_code)->first()->genre;
+            foreach($genres as $genre){
+                $URI .= strtolower($genre->genre).',';
+            }
         }
+
+
 
         $user_token = Auth::user()->access_token;
 
