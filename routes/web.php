@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Events\MusicPaused;
 
 
 /*
@@ -43,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/party/show', 'PartyController@index')->name('parties.index');
     Route::get('/party/{code}/getNextTrack', 'TrackController@getMostVotedSong')->name('party.nextTrack');
+    Route::post('/party/{code}/tracks/', 'TrackController@addTrackToPlaylist')->name('party.addTrack');
     Route::delete('/party/{code}/tracks/{track_uri}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
 
 

@@ -32,4 +32,22 @@ class TrackController extends Controller
         }
         abort(401);
     }
+
+    public function addTrackToPlaylist(Request $request, $code){
+
+        $party = Party::where('code', $code)->first();
+
+        if(Auth::user()->id == $party->user->id ) {
+
+            $party->tracks()->create([
+                'track_uri' => $request->track_uri
+            ]);
+
+            return response()->json(['message' => 'song added']);
+
+        }
+
+        abort(401);
+
+    }
 }

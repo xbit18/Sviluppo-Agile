@@ -71,7 +71,7 @@ $( document ).ready( function() {
 
 
 
-    function populate_song_link(item, track) {
+    function populate_song_link(item, track, bool) {
         //console.log('sono in populate')
         //console.log(item)
         //console.log(track)
@@ -95,6 +95,10 @@ $( document ).ready( function() {
         //item.attr('data-number', index + 1);
         //item.attr('data-playlist-uri', my_party_playlist.uri);
         item.addClass('song_link');
+
+        if(bool){
+            return item;
+        }
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -530,6 +534,223 @@ $( document ).ready( function() {
             }
               
         });
+
+              /*----------------------- CERCARE UNA CANZONE --------------------*/
+    $('#searchSong').on('keyup',function(e){
+
+        var song_name = $('#searchSong').val();
+        song_name = encodeURIComponent(song_name.trim());
+        var result = $('#result');
+
+        if(song_name.length == 0){
+            result.fadeOut("normal",function(){
+                result.empty();
+            });
+        }
+
+        if(song_name.length > 0){
+
+            var instance = axios.create();
+            delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+            instance({
+            url: `https://api.spotify.com/v1/search?q=${song_name}&type=track,artist&limit=5`,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            dataType: 'json',
+
+        })
+        .then(function (data) {
+            result.empty();   
+            let tracks = data.data.tracks.items;
+
+            $.each(tracks, function (index, element) { 
+
+               let item = $('#song-prototype').clone();
+               let img = item.children('div').children('div').first().find('img');
+               img.attr('src',element.album.images[0].url);
+                
+               let content = item.children('div').children('div').last();
+               content.children('div').first().find('h6').text(element.name);
+               content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
+
+               let artists = "";
+                $.each(element.artists, function (index, artist) {
+                    artists += artist.name +' ';
+                });
+
+                content.children('div').last().children().first().text(artists);
+                content.children('div').last().children().last().text(element.album.name)
+
+                item.attr('data-id', element.id);
+                item.attr('data-uri', element.uri)
+                item.attr('data-duration', element.duration_ms)
+                item.attr('data-number', index)
+                item.addClass('item');
+                item.removeAttr('id');
+                result.append(item).hide().fadeIn();            
+               
+
+            });
+   
+        })
+        .catch(function(error){
+            console.log('search error: ');
+            console.log(error);
+        })
+        }
+    })
+
+    /* AGGIUNGERE LA CANZONE ALLE TRACKS DI UN PARTY */
+
+    $(document).on('click','.item',function(event){
+        event.preventDefault();
+        let track_uri = $(this).data('uri');
+        let track_id = $(this).data('id');
+        // let track_img_src = $(this).children('div').children('div').first().find('img').attr('src');
+        // let track_duration = $(this).data('duration');
+        // let track_artists = $(this).children('div').children('div').last().children('div').last().children().first().text();
+        // let track_album = $(this).children('div').children('div').last().children('div').last().children().last().text();
+        // let track_name = $(this).children('div').first().find('h6').text();
+
+
+
+        var instance = axios.create();
+        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+       
+        $.ajax({
+        url: `/party/${party_code}/tracks`,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: {
+            'track_uri' : track_uri
+        },
+        dataType: 'json',
+        success: function(response){
+            // snapshot_id = response.data.snapshot_id;
+            // console.log(snapshot_id);
+            console.log(response);
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+
+                let song_link = $('#playlist_song_prototype').clone();
+
+                let item = populate_song_link(song_link, data.data,true);
+                playlist_dom.append(item).hide().fadeIn(1000);
+
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+    
+                Toast.fire({
+                    type: 'success',
+                    title: 'The song has been added to the Playlist!'
+                    });
+
+            })
+            .catch(function(error){
+                console.log(error);
+            });
+
+
+         
+            
+                   // instance({
+            //     url: `https://api.spotify.com/v1/me/player/queue?uri=` + track_uri,
+            //     method: 'POST',
+            //     headers: {
+            //         'Authorization': 'Bearer ' + token,
+            //     },
+            //     data: {
+            //         'uri' : track_uri,
+            //         'device_id' : devId,
+            //     },
+            //     dataType: 'json',
+            //     })
+            // .then(function(response){
+            //     console.log('canzone aggiunta alla coda')
+            // });
+            /*
+            var item_s = $('#playlist_song_prototype').clone();
+            let index = $('#party_playlist').children().last().data('number');
+            item_s.find('h5').text(track_name);
+            
+            item_s.find('p').text(track_artists);
+            // append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album)
+
+            var thumb = item_s.find('img');
+            thumb.attr('src', track_img_src);
+            
+            item_s.children('div').children('div').children('small').text(track_album);
+            item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
+            item_s.children('div').children('div').children('div').children('small').children('a').attr('data-id', track_id);
+            item_s.attr('data-id', track_id);
+            item_s.attr('data-uri', track_uri);
+            item_s.attr('data-number', index + 1);
+            item_s.attr('data-playlist-uri', my_party_playlist.uri);
+            item_s.addClass('song_link');
+            $('#party_playlist').append(item_s);
+            */
+        }
+        })
+        
+        
+    })
+
+    /* ---------------- RIMUOVERE UNA CANZONE --------------*/
+
+    var song_uri;
+    var parent;
+
+    $(document).on('click', '._delete', function(){
+        song_uri = $(this).attr('data-uri');
+        parent = $(this).parents('a')
+        $('#deleteSongModal').modal('show');
+        
+    });
+
+    $('#deleteSongModal').on('submit', function(event) {
+        event.preventDefault();
+
+         /**
+         * Logica eliminazione canzone dalla playlist
+         */
+
+        $.ajax({
+            type: "DELETE",
+            url: `/party/${party_code}/tracks/${song_uri}`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                $('#deleteSongModal').modal('hide');
+                parent.fadeOut("slow",function(){
+                parent.remove()
+            })
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+           
+    })
 
 
 

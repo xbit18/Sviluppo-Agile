@@ -147,7 +147,7 @@
                                 <div class="col-sm-3 album_img_container">
                                     <img class="album_img"/>
                                 </div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-7">
                                     <div class="d-flex w-100 justify-content-between title_song" >
                                         <h5 class="mb-1"></h5>
                                         <small> 
@@ -158,6 +158,9 @@
                                     </div>
                                     <p class="mb-1"></p>
                                     <small></small>
+                                </div>
+                                <div class="col-sm-2">
+                                  <button class="btn btn-default"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
                                 </div>
                             </div>
                             
