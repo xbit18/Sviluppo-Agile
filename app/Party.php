@@ -11,7 +11,12 @@ class Party extends Model
    /** RELATIONSHIPS **/
 
    public function users(){
-      return $this->belongsToMany('App\User','user_participates_parties');
+      return $this->belongsToMany('App\User','user_participates_parties')
+                  ->withPivot([
+                     'vote',
+                     'timestamp_kick',
+                     'kick_duration'
+                  ]);
    }
 
    public function user(){

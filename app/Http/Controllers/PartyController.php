@@ -67,7 +67,7 @@ class PartyController extends Controller
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
-
+        $user->participates()->sync($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;

@@ -43,7 +43,12 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function participates(){
-        return $this->belongsToMany('App\Party','user_participates_parties');
+        return $this->belongsToMany('App\Party','user_participates_parties')
+                                    ->withPivot([
+                                        'vote',
+                                        'timestamp_kick',
+                                        'kick_duration',
+                                    ]);
     }
 
 

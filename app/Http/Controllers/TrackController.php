@@ -8,6 +8,7 @@ use App\Party;
 use App\Track;
 
 
+
 class TrackController extends Controller
 {
     //
@@ -48,6 +49,93 @@ class TrackController extends Controller
         }
 
         abort(401);
-
     }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * campi di request : track_id // traccia che si vuole votare
+     */
+   public function vote($code, $track_uri){
+
+        $user=Auth::user();
+
+        $party = Party::where('code',$code)->first();
+
+        $user_participates = $party->users()->where('user_id','=',$user->id)
+        ->where('party_id','=',$party->id)->first()->pivot;
+
+        if(!$user_participates){
+            return response()->json([
+                'message' => 'You do not participate in this party!'
+            ]);
+        }
+
+
+        if($user_participates->vote != true) {
+
+            $track = $party->tracks()->where('track_uri',$track_uri)->first();
+            if($track == null) {
+                return response()->json([
+                    'message' => 'track not found'
+                ]);
+            }
+            $track->votes += 1;
+            $track->save();
+            $user->participates()->updateExistingPivot($party->id,['vote' => true]);
+            return response()->json([
+                'message' => 'track voted successfully'
+            ]);
+        }
+        else{
+            return response()->json([
+                'message' => 'You have already voted'
+            ]);
+        }
+
+}
+
+/**
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ * campi request : track_id // traccia che si vuole unvotare
+ */
+
+public function unvote($code, $track_uri){
+
+        $user=Auth::user();
+
+        $party = Party::where('code',$code)->first();
+
+        $user_participates = $party->users()->where('user_id','=',$user->id)
+        ->where('party_id','=',$party->id)->first()->pivot;
+
+        if(!$user_participates){
+            return response()->json([
+                'message' => 'You do not participate in this party!'
+            ]);
+        }
+
+
+        if($user_participates->vote != false) {
+
+            $track = $party->tracks()->where('track_uri',$track_uri)->first();
+            if($track == null) {
+                return response()->json([
+                    'message' => 'track not found'
+                ]);
+            }
+            $track->votes -= 1;
+            $track->save();
+            $user->participates()->updateExistingPivot($party->id,['vote' => false]);
+            return response()->json([
+                'message' => 'track voted successfully'
+            ]);
+        }
+        else{
+            return response()->json([
+                'message' => 'You have already voted'
+            ]);
+        }
+}
 }

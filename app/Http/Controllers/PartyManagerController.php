@@ -11,64 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PartyManagerController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     * campi di request : track_id // traccia che si vuole votare
-     */
-   public function vote(Request $request){
-        $user=Auth::user()->id;
-        $party=UserParticipatesParty::where('user_id',$user)->first();
-        if($party == null) {
-            return redirect()->back()->withErrors(['User not partecipate in any parties']);
-        }
-        if($party->vote==false) {
-            $party->vote = true;
-            $party->save();
-
-            $track_to_vote = $request->track_id;
-            $track = Track::find($track_to_vote);
-            if($track == null) {
-                return redirect()->back()->withErrors(['track not found']);
-            }
-            $track->vote = $track->vote - 1;
-            $track->save();
-            return redirect()->back()->with('success', 'track voted!');
-        }
-        else{
-            return redirect()->back()->withErrors(['you have already voted!']);
-        }
-   }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     * campi request : track_id // traccia che si vuole unvotare
-     */
-
-    public function unvote(Request $request){
-        $user=Auth::user()->id;
-        $party=UserParticipatesParty::where('user_id',$user)->first();
-        if($party == null) {
-            return redirect()->back()->withErrors(['User not partecipate in any parties']);
-        }
-        if($party->vote==true) {
-            $party->vote = false;
-            $party->save();
-
-            $track_to_vote = $request->track_id;
-            $track = Track::find($track_to_vote);
-            if($track == null) {
-                return redirect()->back()->withErrors(['track not found']);
-            }
-            $track->vote = $track->vote - 1;
-            $track->save;
-            return redirect()->back()->with('success', '');
-        }
-        else{
-            return redirect()->back()->withErrors(['you haven\'t voted yet']);
-        }
-    }
+    
 
     /**
      * @param Request $request

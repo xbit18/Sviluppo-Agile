@@ -361,7 +361,7 @@ $( document ).ready( function() {
         
 
         // Se ho cliccato su elimina non deve partire
-        if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
+        if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
 
         // console.log('clicked');
 
@@ -778,31 +778,57 @@ $( document ).ready( function() {
 
     /*------------VOTE A SONG ------------ */
 
-    $(document).on('click','.vote',function(event){
+    $(document).on('click','.like',function(event){
         event.preventDefault();
         let vote = $(this);
-        vote.addClass('voted')
-
-        // let song_uri = $(this).attr('data-uri');
+        let parent = $(this).parents('a.song_link');
+        let song_uri = parent.data('track');
         
-        // $.ajax({
-        //     type: "GET",
-        //     url: `/party/${party_code}/tracks/${song_uri}/vote`,
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     },
-        //     dataType: "json",
-        //     success: function (response) {
-                
-        //     },
-        //     error: function(error){
-        //         console.log(error);
-        //     }
-        // });
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_uri}/vote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response, 'track voted');
+                vote.removeClass('like');
+                vote.addClass('unlike');
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
 
-<<<<<<< HEAD
     });
-=======
+
+    $(document).on('click','.unlike',function(event){
+        event.preventDefault();
+        let vote = $(this);
+        let parent = $(this).parents('a.song_link');
+        let song_uri = parent.data('track');
+        
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_uri}/unvote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response, 'track unvoted');
+                vote.removeClass('unlike');
+                vote.addClass('like');
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+    });
+
+
         if($('#left_side_button').length) {
             $('#left_side_button').click( function() {
                 $('.song_link').each( function(index, item) {
@@ -830,7 +856,6 @@ $( document ).ready( function() {
         }
 
 
->>>>>>> 7086e1f391bd6f33e8f014c032013cef2740dbc4
 
     };
 
