@@ -65,6 +65,10 @@ class PartyManagerController extends Controller
      * time // tempo di kick
      */
    public function kick(Request $request){
+       if(Auth::user()->id == $request->user)
+       {
+           return redirect()->back()->withErrors(['you cant unkick yourself']);
+       }
        $party=UserParticipatesParty::where('user_id',$request->user)->first(); // user che voglio kickare
        $party->timestamp_kick=Carbon::now();
        if($request->time < Carbon::now()){
@@ -85,6 +89,10 @@ class PartyManagerController extends Controller
 
 
     public function unkick(Request $request){
+        if(Auth::user()->id == $request->user)
+        {
+            return redirect()->back()->withErrors(['you cant unkick yourself']);
+        }
         $party=UserParticipatesParty::where('user_id',$request->user)->first(); // user che voglio kickare
         $party->timestamp_kick=null;
         $party->kick_duration=null;
@@ -102,6 +110,10 @@ class PartyManagerController extends Controller
 
    public function ban(Request $request){
        $user=Auth::user();
+       if($user->id == $request->user)
+       {
+           return redirect()->back()->withErrors(['you cant ban yourself']);
+       }
        $ban=\UserBanUser::where([
                ['user_id', '=', $user->id],
                ['ban_user_id', '=', $request->user]
@@ -129,6 +141,10 @@ class PartyManagerController extends Controller
 
     public function unban(Request $request){
         $user=Auth::user();
+        if($user->id == $request->user)
+        {
+            return redirect()->back()->withErrors(['you cant unban yourself']);
+        }
         $ban=\UserBanUser::where([
             ['user_id', '=', $user->id],
             ['ban_user_id', '=', $request->user]
