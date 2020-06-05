@@ -160,7 +160,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
+                                  <button class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
                                 </div>
                             </div>
                             
@@ -189,7 +189,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
+                                  <button class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
                                 </div>
                             </div>
                             

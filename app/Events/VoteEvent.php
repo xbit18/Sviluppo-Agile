@@ -10,22 +10,23 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use App\Party;
 
 
-class PlayerNext implements ShouldBroadcast
+class VoteEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party;
-
+    public $party, $track_uri;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Party $party)
+    public function __construct($party, $track_uri)
     {
-      $this->party = $party;
+        $this->party = $party;
+        $this->track_uri = $track_uri;
     }
 
     /**
@@ -38,18 +39,18 @@ class PlayerNext implements ShouldBroadcast
         return new PresenceChannel('party.'.$this->party->code);
     }
 
-    /**
-     * The event's broadcast name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'player.next';
+    public function broadcastAs(){
+        return 'song.voted';
     }
 
     public function broadcastWhen(){
         $user_id = Auth::id();
-        return $this->party->user->id === $user_id;
+        
+        $already_voted = $this->party->users()->where('user_id','=',$user_id)
+                                            ->where('party_id','=',$this->party->id)
+                                            ->where('vote', '!=', null )->get();
+
+       return $already_voted->isNotEmpty();
     }
+
 }

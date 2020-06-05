@@ -753,6 +753,31 @@ $( document ).ready( function() {
     })
 
 
+    /*------------VOTE A SONG ------------ */
+
+    $(document).on('click','.vote',function(event){
+        event.preventDefault();
+        let vote = $(this);
+        vote.addClass('voted')
+
+        // let song_uri = $(this).attr('data-uri');
+        
+        // $.ajax({
+        //     type: "GET",
+        //     url: `/party/${party_code}/tracks/${song_uri}/vote`,
+        //     headers: {
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        //     },
+        //     dataType: "json",
+        //     success: function (response) {
+                
+        //     },
+        //     error: function(error){
+        //         console.log(error);
+        //     }
+        // });
+
+    });
 
     };
 
