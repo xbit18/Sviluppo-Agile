@@ -26,6 +26,7 @@
             <label>Password</label>
             <input type="password" class="form-control" value="passwordnoncambiata" name="password" >
         </div>
+    <input value="{{$user->email}}" name="old_email" hidden>
         @if ($errors->any())
             <div class="alert alert-danger">
                 <ul>
