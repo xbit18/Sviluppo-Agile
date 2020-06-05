@@ -19,12 +19,18 @@ class PartyManagerController extends Controller
    public function vote(Request $request){
         $user=Auth::user()->id;
         $party=UserParticipatesParty::where('user_id',$user)->first();
+        if($party == null) {
+            return redirect()->back()->withErrors(['User not partecipate in any parties']);
+        }
         if($party->vote==false) {
             $party->vote = true;
             $party->save();
 
             $track_to_vote = $request->track_id;
-            $track = Track::findorFail($track_to_vote);
+            $track = Track::find($track_to_vote);
+            if($track == null) {
+                return redirect()->back()->withErrors(['track not found']);
+            }
             $track->vote = $track->vote - 1;
             $track->save();
             return redirect()->back()->with('success', 'track voted!');
@@ -43,12 +49,18 @@ class PartyManagerController extends Controller
     public function unvote(Request $request){
         $user=Auth::user()->id;
         $party=UserParticipatesParty::where('user_id',$user)->first();
+        if($party == null) {
+            return redirect()->back()->withErrors(['User not partecipate in any parties']);
+        }
         if($party->vote==true) {
             $party->vote = false;
             $party->save();
 
             $track_to_vote = $request->track_id;
-            $track = Track::findorFail($track_to_vote);
+            $track = Track::find($track_to_vote);
+            if($track == null) {
+                return redirect()->back()->withErrors(['track not found']);
+            }
             $track->vote = $track->vote - 1;
             $track->save;
             return redirect()->back()->with('success', '');
@@ -70,6 +82,9 @@ class PartyManagerController extends Controller
            return redirect()->back()->withErrors(['you cant unkick yourself']);
        }
        $party=UserParticipatesParty::where('user_id',$request->user)->first(); // user che voglio kickare
+       if($party == null) {
+           return redirect()->back()->withErrors(['User not partecipate in any parties']);
+       }
        $party->timestamp_kick=Carbon::now();
        if($request->time < Carbon::now()){
            return redirect()->back()->withErrors(['kick time cannot be earlier than now']);
@@ -94,6 +109,9 @@ class PartyManagerController extends Controller
             return redirect()->back()->withErrors(['you cant unkick yourself']);
         }
         $party=UserParticipatesParty::where('user_id',$request->user)->first(); // user che voglio kickare
+        if($party == null) {
+            return redirect()->back()->withErrors(['User not partecipate in any parties']);
+        }
         $party->timestamp_kick=null;
         $party->kick_duration=null;
         $party->save();

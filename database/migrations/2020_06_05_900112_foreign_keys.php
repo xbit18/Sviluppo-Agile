@@ -22,11 +22,11 @@ class ForeignKeys extends Migration
             $table0->foreign('genre_id')->references('id')
                 ->on('genres')->onDelete('cascade'); });
 
-        Schema::table('user_participates_party', function(Blueprint $table0) {
+        Schema::table('user_participates_parties', function(Blueprint $table0) {
             $table0->foreign('user_id')->references('id')
                 ->on('users')->onDelete('cascade'); });
 
-        Schema::table('user_participates_party', function(Blueprint $table0) {
+        Schema::table('user_participates_parties', function(Blueprint $table0) {
             $table0->foreign('party_id')->references('id')
                 ->on('parties')->onDelete('cascade'); });
 

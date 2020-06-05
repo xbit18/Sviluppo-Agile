@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UserParticipatesParty extends Migration
+class UserParticipatesParties extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class UserParticipatesParty extends Migration
      */
     public function up()
     {
-        Schema::create('user_participates_party', function (Blueprint $table) {
+        Schema::create('user_participates_parties', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('party_id');
             $table->unsignedBigInteger('user_id')->unique();

@@ -11,7 +11,7 @@ class Party extends Model
    /** RELATIONSHIPS **/
 
    public function users(){
-      return $this->belongsToMany('App\User','user_participates_party');
+      return $this->belongsToMany('App\User','user_participates_parties');
    }
 
    public function user(){

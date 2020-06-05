@@ -43,7 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function participates(){
-        return $this->belongsToMany('App\Party','user_participates_party');
+        return $this->belongsToMany('App\Party','user_participates_parties');
     }
 
 

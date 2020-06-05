@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 
 class AdminKicksController extends Controller
@@ -13,7 +14,18 @@ class AdminKicksController extends Controller
      */
     public function index()
     {
-        //
+        $a= new AdminController;
+        $a->verify();
+        if(request('email')!=null) {
+            $key = request('email');
+            $users = User::where('email', $key)->get();
+            return view('admin.forms.kick.index',compact('users'));
+        }
+        else {
+            $users = User::paginate(10);
+            return view('admin.forms.kick.index',compact('users'));
+        }
+
     }
 
     /**
@@ -23,7 +35,9 @@ class AdminKicksController extends Controller
      */
     public function create()
     {
-        //
+        $a= new AdminController;
+        $a->verify();
+        return view('admin.forms.vote.create');
     }
 
     /**
