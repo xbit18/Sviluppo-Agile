@@ -1041,6 +1041,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         event.preventDefault();
         paused = true;
         player.pause()
+    });
         /**
          * AJAX CALL FOR PAUSE
          */
@@ -1083,7 +1084,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         //         }
         //     });
         // });
-    });
+  
 
 
         /**
