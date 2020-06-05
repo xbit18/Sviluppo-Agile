@@ -30,7 +30,7 @@
                 <div class="col-sm-9 player-buttons-container">
                 
                     <form class="d-inline" id="spotify_prev_form" action="#">
-                        <button class="btn player-button-adders" id="prev-song" type="submit"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
+                        <button class="btn player-button-adders" disabled id="prev-song" type="submit"><i class="fa fa-step-backward" aria-hidden="true"></i></button>
                     </form> 
                     <form class="d-inline" id="spotify_play_form" action="#">
                         <button class="btn player-button-play" id="play" type="submit"><i class="fa fa-play" aria-hidden="true"></i></button>
@@ -39,7 +39,7 @@
                         <button class="btn player-button-stop" id="pause" type="submit"><i class="fa fa-pause" aria-hidden="true"></i></button>
                     </form> 
                     <form class="d-inline" id="spotify_next_form" action="#">
-                        <button class="btn player-button-adders" id="next-song" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+                        <button class="btn player-button-adders" disabled  id="next-song" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
                     </form> 
                 
                 

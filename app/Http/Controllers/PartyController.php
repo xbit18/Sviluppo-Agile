@@ -353,14 +353,25 @@ class PartyController extends Controller
      * @return \Illuminate\Http\RedirectResponse|void
      */
     public function populateParty(Request $request){
+       
+
         $uris = $this->getSongsByGenre(null, $request->genre_id);
+        /*$playlist_id = Party::where('code','=',$request->party_code)->first()->playlist_id;
         $api = new SpotifyWebAPI();
         $api->setAccessToken(Auth::user()->access_token);
-        $bool = $api->addPlaylistTracks($playlist_id,$uris);
-        if($bool){
-            return redirect()->back();
+        $bool = $api->addPlaylistTracks($playlist_id,$uris);*/
+
+        $party = Party::where('code', $request->party_code)->first();
+        if(Auth::user()->id != $party->user->id) abort(401);
+
+        foreach($uris as $song) {
+            $track = Track::create([
+                'party_id' => $party->id,
+                'track_uri' => $song
+            ]);
+            $party->tracks()->save($track);
         }
-        return ;
+        return redirect()->back();
     }
 
     /**

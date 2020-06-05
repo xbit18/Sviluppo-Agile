@@ -134,7 +134,7 @@
                 <div class="panel panel-teal panel-widget border-right">
                     <form id="delete-form-{{$id}}"method="POST" action="/admin/party/delete">
                         @csrf
-                            <em class="fa fa-xl fa-user-times color-red" style="cursor: pointer;" onclick="deleteFunc{{$id}}()" ></em>
+                            <em class="fa fa-xl fa-times color-red" style="cursor: pointer;" onclick="deleteFunc{{$id}}()" ></em>
                         <script>
                             function deleteFunc{{$id}}() {
                                 var x = confirm('Do you really want to delete {{$party->code}} party ?')
