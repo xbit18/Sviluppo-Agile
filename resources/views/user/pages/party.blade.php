@@ -77,20 +77,30 @@
               @if(Auth::user()->id == $party->user->id) 
                 <form method="POST" action="{{ route('playlist.populate') }}">
                     @csrf
-                    <div class="form-group">
-                        <label class="description" for="partygenre">Party Genre</label>
-                        <select class="form-control form-control-sm" name="genre_id">
-                            @foreach($genre_list as $genre)
-                                <option value="{{ $genre->id }}">{{ $genre->genre }}</option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" value="{{ $party->code }}" name="party_code">
-                        <input class="btn mt-2" type="submit" value="Conferma">
+                    <div class="row">
+                      <div class="col-7 form-group">
+                          <label class="description inline" for="partygenre">Party Genre</label>
+                          <select class="form-control form-control-sm" name="genre_id">
+                              @foreach($genre_list as $genre)
+                                  <option value="{{ $genre->id }}">{{ $genre->genre }}</option>
+                              @endforeach
+                          </select>
+                      </div>
                     </div>
+                    <input type="hidden" value="{{ $party->code }}" name="party_code">
+                    <input class="btn poca-btn" type="submit" value="Conferma">
+                    
                 </form>
               @endif
 
               <p class="mt-30"><i>Description: </i>{{ $party->description }}</p>
+
+              @if( $party->type == 'Battle' )
+                <h4 id="p_type" data-type="1">Battle Party</h4>
+              @else
+                <h4 id="p_type" data-type="2">Democracy Party</h4>
+              @endif
+              
 
               <h5>Music Source: {{ $party->source }}</h5>
 
@@ -135,6 +145,31 @@
                 --}}
 
                 @include('user._shared.player')
+
+
+                @if($party->type == "Battle") 
+                <div class="row mt-5 battle-box">
+                  <div class="col-6">
+                    <div id="left_side" class="card side">
+                      <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
+                      <div class="card-body">
+                        <h2>Left Side</h2>
+                        <p class="card-text">No song selected</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div class="col-2" id="vs_cont"><img class="vs_img" src="{{ asset('/img/bg-img/vs.png') }}"></div> -->
+                  <div class="col-6">
+                    <div id="right_side" class="card side">
+                      <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
+                      <div class="card-body">
+                        <h2>Right Side</h2>
+                        <p class="card-text">No song selected</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                @endif
 
                 {{-- PLAYLIST --}}
                 <div class="single-widget-area catagories-widget mt-5 mb-40">
@@ -431,6 +466,33 @@
             </div>
         </div>
     </div>
+
+
+    @if($party->type == 'Battle')
+          <!-- Modal -->
+        <div class="modal fade" id="battleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Put on the ring</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>The will be choise by partecipants</p>
+                <button type="button" id="left_side_button" class="btn poca-btn">Left Side</button>
+                <button type="button" id="right_side_button" class="btn poca-btn">Right Side</button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+    @endif
+
   @endisset
 
 

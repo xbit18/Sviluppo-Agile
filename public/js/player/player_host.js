@@ -14,10 +14,13 @@ $( document ).ready( function() {
     var actual_dur = 0;
     var actual_track;
     var playlist_uri;
+    var selected_track;
+
+    var party_type = $('#p_type').attr('data-type');
 
     var paused = true;
     var act_pos = 0;
-    var auto_changed = false;
+    var prec_play = false;
 
     
 
@@ -162,6 +165,7 @@ $( document ).ready( function() {
 
 
             if (!state.paused) {
+                prec_play = true;
                 paused = false;
                 if(position == 0) timeline.val(0);
                 increment_timeline(true);
@@ -203,7 +207,9 @@ $( document ).ready( function() {
                     }
                 });
             } else if (state.paused) {
+                
                 //console.log('position ' + act_pos);
+                /*
                 instance({
                     url: "https://api.spotify.com/v1/me/player",
                     method: 'GET',
@@ -211,11 +217,12 @@ $( document ).ready( function() {
                         'Authorization': 'Bearer ' + token,
                     },
                     dataType: 'json',
-                }).then(function (data) {
+                }).then(function () {
+                */
                     //console.log(data, 'track_info');
 
                     // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
-                    if(!paused) {
+                    if(!paused && prec_play) {
                         //console.error('canzone finita');
                         $.ajax({
                             url: "/party/" + party_code + "/getNextTrack",
@@ -228,12 +235,12 @@ $( document ).ready( function() {
                                 // console.log(data);
                                 // DEBUGGING
                                 //console.log(data);
+                                console.log(data.track_uri);
                                 $('.song_link').each( function(index, item) {
                                     if( $(this).attr('data-track') == data.track_uri ) {
                                         $(this).click();
                                     }
                                 });
-                                data.track_uri
                                 console.log(data, 'next_track');
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
@@ -249,9 +256,11 @@ $( document ).ready( function() {
                                 }
                             }
                         });
+                        prec_play = false;
                     }
+                    
     
-                });
+               // });
                 increment_timeline(false);
                 $.ajax({
                     url: "/party/" + party_code + "/pause",
@@ -333,6 +342,9 @@ $( document ).ready( function() {
         });
 
 
+
+
+
         
     /**
      * Listener alle canzoni
@@ -340,78 +352,55 @@ $( document ).ready( function() {
     $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
 
-        console.log(event.target);
+        var track_uri = $(this).attr('data-track');
+        var link = $(this);
+        
 
         // Se ho cliccato su elimina non deve partire
         if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
 
         // console.log('clicked');
 
-        /**
-         * AJAX CALL FOR PLAY THAT SONG
-         */
-        var track_uri = $(this).attr('data-track');
-        var link = $(this);
 
-        instance({
-            url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-            },
-            data: {
-                    "uris": [track_uri],
-                    "position_ms": 0
-                  },
-            dataType: 'json'
-        }).then(function (data) {
+        if(party_type == 1) {
+            $('#battleModal').modal();
+            selected_track = track_uri;
+        } 
+        else {
+            /**
+             * AJAX CALL FOR PLAY THAT SONG
+             */
+            
 
-                player.setVolume(slider.val() / 100);
-                console.log("uri " + track_uri);
-                paused = false;
-                $.ajax({
-                    url: "/party/" + party_code + "/play",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        "track_uri": track_uri,
+            instance({
+                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                data: {
+                        "uris": [track_uri],
                         "position_ms": 0
                     },
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
-                });
+                dataType: 'json'
+            }).then(function (data) {
 
-                link.fadeOut( 'normal', () => {
-                    link.remove();
-
+                    player.setVolume(slider.val() / 100);
+                    console.log("uri " + track_uri);
+                    paused = false;
                     $.ajax({
-                        url: "/party/" + party_code + "/tracks/" + track_uri,
-                        method: 'DELETE',
+                        url: "/party/" + party_code + "/play",
+                        method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "track_uri": track_uri,
+                            "position_ms": 0
                         },
                         dataType: 'json',
                         success: function (data) {
                             console.log(data);
-                            console.log('canzone eliminata');
                             // DEBUGGING
                             //console.log(data);
                         },
@@ -419,7 +408,6 @@ $( document ).ready( function() {
                             /**
                              * Error Handling
                              */
-                            console.log(xhr);
                             if (xhr.status == 404) {
                                 console.log("404 NOT FOUND");
                             } else if (xhr.status == 500) {
@@ -430,9 +418,44 @@ $( document ).ready( function() {
                         }
                     });
 
+                    link.fadeOut( 'normal', () => {
+                        link.remove();
+
+                        $.ajax({
+                            url: "/party/" + party_code + "/tracks/" + track_uri,
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data);
+                                console.log('canzone eliminata');
+                                // DEBUGGING
+                                //console.log(data);
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                /**
+                                 * Error Handling
+                                 */
+                                console.log(xhr);
+                                if (xhr.status == 404) {
+                                    console.log("404 NOT FOUND");
+                                } else if (xhr.status == 500) {
+                                    console.log("500 INTERNAL SERVER ERROR");
+                                } else {
+                                    console.log("errore " + xhr.status);
+                                }
+                            }
+                        });
+
+                    });
+                    
                 });
-                
-            });
+        
+        
+        
+            }
 
         });
 
@@ -530,6 +553,33 @@ $( document ).ready( function() {
             }
               
         });
+
+
+        if($('#left_side_button').length) {
+            $('#left_side_button').click( function() {
+                $('.song_link').each( function(index, item) {
+                    if($(item).attr('data-track') == selected_track) {
+                        $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
+                        $('#left_side').find('h2').text($(item).find('h5').text());
+                        $('#left_side').find('p').text($(item).find('p').text());
+                        $('#battleModal').modal('hide');
+                    }
+                });
+            });
+        }
+
+        if($('#left_side_button').length) {
+            $('#right_side_button').click( function() {
+                $('.song_link').each( function(index, item) {
+                    if($(item).attr('data-track') == selected_track) {
+                        $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
+                        $('#right_side').find('h2').text($(item).find('h5').text());
+                        $('#right_side').find('p').text($(item).find('p').text());
+                        $('#battleModal').modal('hide');
+                    }
+                });
+            });
+        }
 
 
 
