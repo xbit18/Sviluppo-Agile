@@ -1,5 +1,5 @@
 
-  
+
   <!-- ***** Newsletter Area Start ***** -->
   <section class="poca-newsletter-area bg-img bg-overlay pt-50 jarallax" style="background-image: url({{ asset('img/bg-img/15.jpg')}});">
     <div class="container">
@@ -12,7 +12,7 @@
             <h6>Start to create and share parties with your friends!</h6>
             <a href="{{ route('register') }}" class="btn poca-btn mt-30">Register </a>
           </div>
-        
+
         </div>
       @endguest
 
@@ -49,30 +49,12 @@
 
             <p>It is a long established fact that a reader will be distracted by the readable content.</p>
             <div class="copywrite-content">
-              <p>&copy; 
+              <p>&copy;
 
 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
             </div>
-          </div>
-        </div>
-
-        <!-- Single Footer Widget -->
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="single-footer-widget mb-80">
-            <!-- Widget Title -->
-            <h4 class="widget-title">Categories</h4>
-
-            <!-- Catagories Nav -->
-            <nav>
-              <ul class="catagories-nav">
-                <li><a href="#">Entrepreneurship</a></li>
-                <li><a href="#">Media</a></li>
-                <li><a href="#">Tech</a></li>
-                <li><a href="#">Tutorials</a></li>
-              </ul>
-            </nav>
           </div>
         </div>
 

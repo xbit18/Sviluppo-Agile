@@ -68,16 +68,17 @@ class AdminController extends Controller
     }
     protected function user_update(Request $request)
     {
-        $a= new AdminController;
+        $a = new AdminController;
         $a->verify();
         if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             $emailErr = "Invalid email format";
             return \Redirect::back()->withErrors([$emailErr]);
         }
-        if (User::where('email',$request->email)->first()) {
-            $emailErr = "this mail is already used";
-            return \Redirect::back()->withErrors([$emailErr]);
-        }
+        if ($request->old_email != $request->email){
+            if (User::where('email', $request->email)->first()) {
+                $emailErr = "this mail is already used";
+                return \Redirect::back()->withErrors([$emailErr]);
+            }}
 
         $user= User::findOrFail($request->id);
         $user->name=$request['name'];
