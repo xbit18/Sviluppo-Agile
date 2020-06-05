@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/party/update/{code}','PartyController@update')->name('party.update');
 
     Route::get('/party/show', 'PartyController@index')->name('parties.index');
+    Route::get('/party/{code}/getNextTrack', 'TrackController@getMostVotedSong')->name('party.nextTrack');
+    Route::delete('/party/{code}/tracks/{track_uri}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
 
 
 

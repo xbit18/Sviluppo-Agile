@@ -17,6 +17,7 @@ class CreateTracksTable extends Migration
             $table->id();
             $table->unsignedBigInteger('party_id');
             $table->string('track_uri');
+            $table->integer('votes')->default(0);
             $table->timestamps();
         });
     }

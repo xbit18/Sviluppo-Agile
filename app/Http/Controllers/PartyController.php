@@ -268,7 +268,7 @@ class PartyController extends Controller
             /**
              * Popolazione delle tracce
              */
-            $songsByGenre = $this->getSongsByGenre($party->code,null);
+            $songsByGenre = $this->getSongsByGenre($party->code, null);
 
             foreach($songsByGenre as $song) {
                 $track = Track::create([
@@ -385,19 +385,24 @@ class PartyController extends Controller
         }
 
 
+        try {
+            $user_token = Auth::user()->access_token;
 
-        $user_token = Auth::user()->access_token;
+            $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
 
-        $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
+            $tracks = array();
+            if(!$response['tracks']) return redirect()->route('spotify.login');
+            $tracks = $response['tracks'];
 
-        $tracks = array();
-        $tracks = $response['tracks'];
-
-        $tracks_uris = array();
-        foreach ($tracks as $track) {
-            $tracks_uris[] = $track['uri'];
+            $tracks_uris = array();
+            foreach ($tracks as $track) {
+                $tracks_uris[] = $track['uri'];
+            }
+            return $tracks_uris;
+        } catch (SpotifyWebApiException $e){
+            return redirect()->route('spotify.login');
         }
-        return $tracks_uris;
+        
     }
 
 
