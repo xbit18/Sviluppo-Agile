@@ -268,7 +268,7 @@ class PartyController extends Controller
             /**
              * Popolazione delle tracce
              */
-            $songsByGenre = $this->getSongsByGenre($party->code);
+            $songsByGenre = $this->getSongsByGenre($party->code,null);
 
             foreach($songsByGenre as $song) {
                 $track = Track::create([
@@ -354,7 +354,6 @@ class PartyController extends Controller
      */
     public function populateParty(Request $request){
         $uris = $this->getSongsByGenre(null, $request->genre_id);
-        $playlist_id = Party::where('code','=',$request->party_code)->first()->playlist_id;
         $api = new SpotifyWebAPI();
         $api->setAccessToken(Auth::user()->access_token);
         $bool = $api->addPlaylistTracks($playlist_id,$uris);
