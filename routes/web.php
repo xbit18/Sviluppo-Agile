@@ -42,12 +42,12 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/party/show', 'PartyController@index')->name('parties.index');
 
-    Route::get('/party/{code}/tracks/{track_uri}/vote', 'TrackController@vote')->name('party.voteTrack');
-    Route::get('/party/{code}/tracks/{track_uri}/unvote', 'TrackController@unvote')->name('party.unvoteTrack');
+    Route::get('/party/{code}/tracks/{id}/vote', 'TrackController@vote')->name('party.voteTrack');
+    Route::get('/party/{code}/tracks/{id}/unvote', 'TrackController@unvote')->name('party.unvoteTrack');
 
     Route::get('/party/{code}/getNextTrack', 'TrackController@getMostVotedSong')->name('party.nextTrack');
     Route::post('/party/{code}/tracks/', 'TrackController@addTrackToPlaylist')->name('party.addTrack');
-    Route::delete('/party/{code}/tracks/{track_uri}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
+    Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
    
 
 

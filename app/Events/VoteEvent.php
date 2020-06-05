@@ -17,16 +17,16 @@ class VoteEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party, $track_uri;
+    public $party, $track;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party, $track_uri)
+    public function __construct($party, $track)
     {
         $this->party = $party;
-        $this->track_uri = $track_uri;
+        $this->track = $track;
     }
 
     /**
@@ -43,14 +43,14 @@ class VoteEvent implements ShouldBroadcast
         return 'song.voted';
     }
 
-    public function broadcastWhen(){
-        $user_id = Auth::id();
+    // public function broadcastWhen(){
+    //     $user_id = Auth::id();
         
-        $already_voted = $this->party->users()->where('user_id','=',$user_id)
-                                            ->where('party_id','=',$this->party->id)
-                                            ->where('vote', '!=', null )->get();
+    //    $already_voted = $this->party->users()->where('user_id','=',$user_id)
+    //                                         ->where('party_id','=',$this->party->id)
+    //                                         ->first()->pivot;
 
-       return $already_voted->isNotEmpty();
-    }
+    //    return $already_voted->vote == false;
+    // }
 
 }

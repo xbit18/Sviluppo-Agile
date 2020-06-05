@@ -71,8 +71,8 @@ class PartyController extends Controller
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;
-
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list]);
+        $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
+        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
 
