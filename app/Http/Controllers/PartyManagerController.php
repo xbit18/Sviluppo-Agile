@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\UserBanUser;
 use App\Track;
 use App\User;
 use App\UserParticipatesParty;
@@ -75,7 +75,7 @@ class PartyManagerController extends Controller
        {
            return redirect()->back()->withErrors(['you cant ban yourself']);
        }
-       $ban=\UserBanUser::where([
+       $ban=UserBanUser::where([
                ['user_id', '=', $user->id],
                ['ban_user_id', '=', $request->user]
            ])->first();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\UserBanUser;
 use Illuminate\Http\Request;
 
 class AdminBansController extends Controller
@@ -16,6 +17,9 @@ class AdminBansController extends Controller
     {
         $a= new AdminController;
         $a->verify();
+        $bans = UserBanUser::all();
+        return $bans;
+        /*
         if(request('email')!=null) {
             $key = request('email');
             $users = User::where('email', $key)->get();
@@ -25,7 +29,7 @@ class AdminBansController extends Controller
             $users = User::paginate(10);
             return view('admin.forms.ban.index',compact('users'));
         }
-
+*/
     }
 
     /**
