@@ -70,36 +70,7 @@
             <a href="#"><i class="fa fa-download" aria-hidden="true"></i> Download (12)</a>
         </div>
         </div> -->
-          {{-- PLAYLIST --}}
-    <div class="single-widget-area catagories-widget mt-5 mb-40">
-        <h5 class="widget-title">Songs</h5>
-
-        <div class="d-none">    
-            <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="row song_row">
-                    <div class="col-sm-3 album_img_container">
-                        <img class="album_img"/>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="d-flex w-100 justify-content-between title_song" >
-                            <h5 class="mb-1"></h5>
-                            <small> 
-                                <button class="btn btn-danger _delete">
-                                    <i class="fa fa-times" aria-hidden="true"></i>
-                                </button>
-                            </small>
-                        </div>
-                        <p class="mb-1"></p>
-                        <small></small>
-                    </div>
-                </div>
-                
-            </a>
-        </div>
-        <div class="list-group" id="party_playlist">
-        </div>
-
-    </div>
+          
     </div>
     
 </div>

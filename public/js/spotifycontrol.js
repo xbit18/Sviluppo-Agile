@@ -17,6 +17,7 @@ var playlist_dom = $('#party_playlist');
 var actual_dur = 0;
 var actual_track;
 var playlist_uri;
+
 var paused = true;
 var act_pos;
 var auto_changed = false;
@@ -414,7 +415,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         //console.log('joining')
         //console.log(user)
         var new_partecipant = $('#partecipant-prototype').clone();
-        new_partecipant_link = new_partecipant.find('a');
+        var new_partecipant_link = new_partecipant.find('a');
         new_partecipant.removeAttr('id');
         new_partecipant_link.text(user.name);
         new_partecipant_link.attr('data-id', user.id);

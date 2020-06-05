@@ -181,18 +181,7 @@ class AdminController extends Controller
 
         $code = Str::random(16);
         $user_id = $user->id;
-        $party = Party::create([
-            'user_id' => $user_id,
-            'name' => $request->name,
-            'mood' => $request->mood,
-            'type' => $request->type,
-            'source' => $request->source,
-            'description' => $request->desc,
-            'code' => $code,
-        ]);
-        foreach ($genre_ids as $id) {
-            $party->genre()->attach($id);
-        }
+
 
         try {
             $api = new SpotifyWebAPI();
@@ -201,6 +190,19 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'public' => false
             ]);
+            $party = Party::create([
+                'user_id' => $user_id,
+                'name' => $request->name,
+                'mood' => $request->mood,
+                'type' => $request->type,
+                'source' => $request->source,
+                'description' => $request->desc,
+                'code' => $code,
+                'playlist_id' => $playlist->id
+            ]);
+            foreach ($genre_ids as $id) {
+                $party->genre()->attach($id);
+            }
             $p = new PartyController();
             $songsByGenre = $p->getSongsByGenre($party->code);
             $bool = $api->addPlaylistTracks($playlist->id, $songsByGenre);
@@ -270,6 +272,8 @@ class AdminController extends Controller
         $party->type = $request->type;
         $party->description = $request->desc;
         $party->source = $request->source;
+        $party->playlist_id = $request->playlist_id;
+
         /**$party->name = $request->name;                Da decidere*/
 
 

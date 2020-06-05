@@ -33,6 +33,10 @@ class ForeignKeys extends Migration
         Schema::table('parties', function(Blueprint $table0) {
             $table0->foreign('user_id')->references('id')
                 ->on('users')->onDelete('cascade'); });
+
+        Schema::table('tracks', function(Blueprint $table0) {
+            $table0->foreign('party_id')->references('id')
+                ->on('parties')->onDelete('cascade'); });
     }
 
     /**

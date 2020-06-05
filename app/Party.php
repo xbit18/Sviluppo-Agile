@@ -22,4 +22,8 @@ class Party extends Model
       return $this->belongsToMany('App\Genre','party_has_genre');
    }
 
+   public function tracks(){
+      return $this->hasMany('App\Track');
+   }
+
 }
