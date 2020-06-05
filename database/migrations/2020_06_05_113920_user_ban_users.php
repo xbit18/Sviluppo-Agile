@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UserBanUser extends Migration
+class UserBanUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class UserBanUser extends Migration
      */
     public function up()
     {
-        Schema::create('user_ban_user', function (Blueprint $table) {
+        Schema::create('user_ban_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('ban_user_id')->unique();
@@ -28,7 +28,7 @@ class UserBanUser extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('user_participates_party');
+        Schema::dropIfExists('user_ban_users');
         Schema::enableForeignKeyConstraints();
     }
 }

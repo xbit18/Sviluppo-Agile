@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\UserBanUser;
 use App\Track;
 use App\User;
 use App\UserParticipatesParty;
@@ -24,7 +24,6 @@ class PartyManagerController extends Controller
         }
         if($party->vote==false) {
             $party->vote = true;
-            $party->save();
 
             $track_to_vote = $request->track_id;
             $track = Track::find($track_to_vote);
@@ -32,6 +31,7 @@ class PartyManagerController extends Controller
                 return redirect()->back()->withErrors(['track not found']);
             }
             $track->vote = $track->vote - 1;
+            $party->save();
             $track->save();
             return redirect()->back()->with('success', 'track voted!');
         }
@@ -54,7 +54,6 @@ class PartyManagerController extends Controller
         }
         if($party->vote==true) {
             $party->vote = false;
-            $party->save();
 
             $track_to_vote = $request->track_id;
             $track = Track::find($track_to_vote);
@@ -63,6 +62,7 @@ class PartyManagerController extends Controller
             }
             $track->vote = $track->vote - 1;
             $track->save;
+            $party->save();
             return redirect()->back()->with('success', '');
         }
         else{
@@ -132,7 +132,7 @@ class PartyManagerController extends Controller
        {
            return redirect()->back()->withErrors(['you cant ban yourself']);
        }
-       $ban=\UserBanUser::where([
+       $ban=UserBanUser::where([
                ['user_id', '=', $user->id],
                ['ban_user_id', '=', $request->user]
            ])->first();
