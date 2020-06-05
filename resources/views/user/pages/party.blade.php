@@ -74,23 +74,21 @@
                 </div>
               </div>
 
+              @if(Auth::user()->id == $party->user->id) 
                 <form method="POST" action="{{ route('playlist.populate') }}">
                     @csrf
                     <div class="form-group">
                         <label class="description" for="partygenre">Party Genre</label>
                         <select class="form-control form-control-sm" name="genre_id">
                             @foreach($genre_list as $genre)
-                                <option value="{{ $genre->id }}"
-                                        @if ($party->genre->contains($genre))
-                                        selected="selected"
-                                    @endif
-                                >{{ $genre->genre }}</option>
+                                <option value="{{ $genre->id }}">{{ $genre->genre }}</option>
                             @endforeach
                         </select>
                         <input type="hidden" value="{{ $party->code }}" name="party_code">
                         <input class="btn mt-2" type="submit" value="Conferma">
                     </div>
                 </form>
+              @endif
 
               <p class="mt-30"><i>Description: </i>{{ $party->description }}</p>
 
@@ -137,6 +135,64 @@
                 --}}
 
                 @include('user._shared.player')
+
+                {{-- PLAYLIST --}}
+                <div class="single-widget-area catagories-widget mt-5 mb-40">
+                    <h5 class="widget-title">Songs</h5>
+
+                    <!-- Prototype for adding -->
+                    <div class="d-none">    
+                        <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="row song_row">
+                                <div class="col-sm-3 album_img_container">
+                                    <img class="album_img"/>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="d-flex w-100 justify-content-between title_song" >
+                                        <h5 class="mb-1"></h5>
+                                        <small> 
+                                            <button class="btn btn-danger _delete">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1"></p>
+                                    <small></small>
+                                </div>
+                            </div>
+                            
+                        </a>
+                    </div>
+                    
+                    <div class="list-group" id="party_playlist">
+                      <!-- Actual playlist-->
+                      @forelse($party->tracks as $song)
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link" data-track="{{ $song->track_uri }}">
+                            <div class="row song_row">
+                                <div class="col-sm-3 album_img_container">
+                                    <img class="album_img"/>
+                                </div>
+                                <div class="col-sm-9">
+                                    <div class="d-flex w-100 justify-content-between title_song" >
+                                        <h5 class="mb-1"></h5>
+                                        <small> 
+                                            <button class="btn btn-danger _delete">
+                                                <i class="fa fa-times" aria-hidden="true"></i>
+                                            </button>
+                                        </small>
+                                    </div>
+                                    <p class="mb-1"></p>
+                                    <small></small>
+                                </div>
+                            </div>
+                            
+                        </a>
+                      @empty
+
+                      @endforelse
+                    </div>
+
+                </div>
 
             </div>
           </div>

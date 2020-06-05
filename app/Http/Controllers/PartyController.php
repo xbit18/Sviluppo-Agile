@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
 use App\User;
+use App\Track;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -112,6 +113,7 @@ class PartyController extends Controller
         /**
          * Valida i campi della richiesta
          */
+
         $rules = array(
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
@@ -209,13 +211,16 @@ class PartyController extends Controller
         $api = new SpotifyWebAPI();
 
         try {
+            
             $api->setAccessToken($user->access_token);
+            /*
             $playlist = $api->createPlaylist([
             'name' => $request->name,
             'public' => false
-        ]);
+            ]);
+                */
 
-        $genres = $request->genre;
+            $genres = $request->genre;
             $genre_ids = array();
 
             /**
@@ -249,7 +254,7 @@ class PartyController extends Controller
                 'source' => $request->source,
                 'description' => $request->desc,
                 'code' => $code,
-                'playlist_id' => $playlist->id
+                //'playlist_id' => $playlist->id
             ]);
 
             foreach($genre_ids as $id) {
@@ -260,15 +265,24 @@ class PartyController extends Controller
              * Aggiunta della playlist
              */
 
-        /**
-         * Popolazione delle tracce
-         */
-        $songsByGenre = $this->getSongsByGenre($party->code);
+            /**
+             * Popolazione delle tracce
+             */
+            $songsByGenre = $this->getSongsByGenre($party->code);
 
-        $bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
-        if($bool){
-                return redirect()->route('me.parties.show');
-        }
+            foreach($songsByGenre as $song) {
+                $track = Track::create([
+                    'party_id' => $party->id,
+                    'track_uri' => $song
+                ]);
+                $party->tracks()->save($track);
+            }
+
+            //$bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
+            //if($bool){
+            return redirect()->route('me.parties.show');
+
+        //}
         } catch (SpotifyWebApiException $e){
             return redirect()->route('spotify.login');
         }
