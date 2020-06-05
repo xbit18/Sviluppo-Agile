@@ -27,6 +27,8 @@ class UserBanUser extends Migration
      */
     public function down()
     {
-        //
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('user_participates_party');
+        Schema::enableForeignKeyConstraints();
     }
 }
