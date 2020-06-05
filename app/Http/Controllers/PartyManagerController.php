@@ -26,7 +26,7 @@ class PartyManagerController extends Controller
             $track_to_vote = $request->track_id;
             $track = Track::findorFail($track_to_vote);
             $track->vote = $track->vote - 1;
-            $track->save;
+            $track->save();
             return redirect()->back()->with('success', 'track voted!');
         }
         else{
