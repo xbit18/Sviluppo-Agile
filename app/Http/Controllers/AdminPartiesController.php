@@ -103,7 +103,7 @@ class AdminPartiesController extends Controller
                 $party->genre()->attach($id);
             }
             $p = new PartyController();
-            $songsByGenre = $p->getSongsByGenre($party->code);
+            $songsByGenre = $p->getSongsByGenre($party->code, null);
             $bool = $api->addPlaylistTracks($playlist->id, $songsByGenre);
             if ($bool) {
                 return redirect()->route('admin.party.index')->with('success', 'Party Created with the playlist');

@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
     Route::get('party/edit/{code}', 'PartyController@edit')->name('party.edit');
     Route::post('/party/update/{code}','PartyController@update')->name('party.update');
+    Route::get('/party/{code}/delete','PartyController@delete')->name('party.delete');
 
     Route::get('/party/show', 'PartyController@index')->name('parties.index');
 
@@ -51,7 +52,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/party/active_track', 'TrackController@setTrackActive')->name('party.activeTrack');
     //Route::post('/party/release_track', 'TrackController@setTrackNotActive')->name('party.releaseTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
-   
+
     Route::get('/prova', function(){
         $user = Auth::user();
         $party = \App\Party::find(5);
