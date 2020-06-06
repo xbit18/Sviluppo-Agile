@@ -22,6 +22,9 @@ $( document ).ready( function() {
     var act_pos = 0;
     var prec_play = false;
 
+  
+    
+
     
 
     function millisToMinutesAndSeconds(millis) {
@@ -833,6 +836,7 @@ $( document ).ready( function() {
        }
 
     })
+
 
 
     /*------------VOTE A SONG ------------ */

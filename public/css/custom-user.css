@@ -64,7 +64,7 @@ body {
     left: 0;
     right: 0;
     margin: auto;
-    max-width: 10%;
+    max-width: 15%;
     max-height: 20%;
     z-index: 5;
     animation: scale_vs 0.8s ease infinite;
@@ -114,7 +114,8 @@ body {
 }
 
 .battle-box > div {
-    padding: 4em;
+    padding: 1em;
+    overflow: hidden;
     box-shadow: 0 1px 30px rgba(255, 249, 140, 0.6);
 }
 
