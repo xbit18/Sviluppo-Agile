@@ -213,7 +213,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
+                                  <button class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
                                 </div>
                             </div>
                             
@@ -223,7 +223,7 @@
                     <div class="list-group" id="party_playlist">
                       <!-- Actual playlist-->
                       @forelse($party->tracks->sortBy('votes')->reverse() as $song)
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link" data-track="{{ $song->track_uri }}">
+                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
                             
                             <div class="row song_row">
                                 <div class="col-sm-3 album_img_container">
@@ -242,7 +242,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
+                                <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
                                 </div>
                             </div>
                             

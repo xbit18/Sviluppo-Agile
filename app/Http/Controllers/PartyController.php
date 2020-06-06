@@ -67,19 +67,20 @@ class PartyController extends Controller
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
-
+        $user->participates()->sync($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;
+        $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
 
         if($party->type == 'Battle') {
             $side1 = $party->tracks()->where('active', 1)->first();
             $side2 = $party->tracks()->where('active', 2)->first();
 
-            return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2]);
+            return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
         }
-
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list]);
+        
+        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
 

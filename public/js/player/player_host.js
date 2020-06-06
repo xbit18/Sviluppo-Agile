@@ -74,12 +74,12 @@ $( document ).ready( function() {
 
 
 
-    function populate_song_link(item, track, bool) {
+    function populate_song_link(item, track, id, bool = false) {
         //console.log('sono in populate')
         //console.log(item)
         //console.log(track)
         item.find('h5').text(track.name);
-    
+        item.data('song-id',id);
         var artists = "";
         $.each(track.artists, function (index, artist) {
             artists += " " + artist.name;
@@ -328,7 +328,8 @@ $( document ).ready( function() {
             var song_link = $(this);
             var track_uri = song_link.attr('data-track'); 
             var track_id = track_uri.replace('spotify:track:', '');
-            //console.log('track: ' + track_uri)       
+            let song_id = $(this).data('song-id');
+            console.log('track: ' + track_uri)       
 
             // Chiamo per ottenere i dati della traccia
             instance({
@@ -391,7 +392,7 @@ $( document ).ready( function() {
         
 
         // Se ho cliccato su elimina non deve partire
-        if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
+        if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
 
         // console.log('clicked');
 
@@ -650,6 +651,7 @@ $( document ).ready( function() {
         event.preventDefault();
         let track_uri = $(this).data('uri');
         let track_id = $(this).data('id');
+        let song_id;
         // let track_img_src = $(this).children('div').children('div').first().find('img').attr('src');
         // let track_duration = $(this).data('duration');
         // let track_artists = $(this).children('div').children('div').last().children('div').last().children().first().text();
@@ -675,6 +677,7 @@ $( document ).ready( function() {
             // snapshot_id = response.data.snapshot_id;
             // console.log(snapshot_id);
             console.log(response);
+            song_id = response.id;
             instance({
                 url: "https://api.spotify.com/v1/tracks/" + track_id,
                 method: 'GET',
@@ -687,7 +690,7 @@ $( document ).ready( function() {
 
                 let song_link = $('#playlist_song_prototype').clone();
 
-                let item = populate_song_link(song_link, data.data,true);
+                let item = populate_song_link(song_link, data.data,song_id,true);
                 playlist_dom.append(item).hide().fadeIn(1000);
 
 
@@ -755,12 +758,11 @@ $( document ).ready( function() {
 
     /* ---------------- RIMUOVERE UNA CANZONE --------------*/
 
-    var song_uri;
     var parent;
-
+    var song_id;
     $(document).on('click', '._delete', function(){
-        song_uri = $(this).attr('data-uri');
-        parent = $(this).parents('a')
+        parent = $(this).parents('a');
+        song_id = $(this).data('song-id');
         $('#deleteSongModal').modal('show');
         
     });
@@ -774,7 +776,7 @@ $( document ).ready( function() {
 
         $.ajax({
             type: "DELETE",
-            url: `/party/${party_code}/tracks/${song_uri}`,
+            url: `/party/${party_code}/tracks/${song_id}`,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
@@ -792,36 +794,74 @@ $( document ).ready( function() {
 
            
     })
+    /* ------------------------------LISTENER AL CHANNEL DELLE VOTAZIONI ------------------------- */
+
+    channel.listen('.song.voted',function(data){
+        console.log(data);
+    })
 
 
     /*------------VOTE A SONG ------------ */
 
-    $(document).on('click','.vote',function(event){
+    $(document).on('click','.like',function(event){
         event.preventDefault();
         let vote = $(this);
-        vote.addClass('voted')
-
-        // let song_uri = $(this).attr('data-uri');
+        let parent = $(this).parents('a.song_link');
+        let song_id = parent.data('song-id');
         
-        // $.ajax({
-        //     type: "GET",
-        //     url: `/party/${party_code}/tracks/${song_uri}/vote`,
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     },
-        //     dataType: "json",
-        //     success: function (response) {
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/vote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                if(!response.error){
+                    vote.removeClass('like');
+                    vote.addClass('unlike');
+                }
                 
-        //     },
-        //     error: function(error){
-        //         console.log(error);
-        //     }
-        // });
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
     });
 
+    /* -------------------- UNVOTE A SONG -----------------*/
 
+    $(document).on('click','.unlike',function(event){
+        event.preventDefault();
+        let vote = $(this);
+        let parent = $(this).parents('a.song_link');
+        let song_id = parent.data('song-id');
+        
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/unvote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                if(!response.error){
+                    vote.removeClass('unlike');
+                    vote.addClass('like');
+                }
+                
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
 
-    /** ----------- Gestione dell'aggiunta delle canzoni sul ring in modalità Battle ------------ */
+    });
+
+/* ---------------------------------------------------------------- */
 
         if($('#left_side_button').length) {
             $('#left_side_button').click( function() {

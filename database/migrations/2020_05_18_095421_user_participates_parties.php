@@ -16,8 +16,8 @@ class UserParticipatesParties extends Migration
         Schema::create('user_participates_parties', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('party_id');
-            $table->unsignedBigInteger('user_id')->unique();
-            $table->boolean('vote');
+            $table->unsignedBigInteger('user_id');
+            $table->integer('vote')->default(null)->nullable();
             $table->timestamp('timestamp_kick')->nullable();
             $table->timestamp('kick_duration')->nullable();
         });
@@ -31,7 +31,7 @@ class UserParticipatesParties extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('user_participates_party');
+        Schema::dropIfExists('user_participates_parties');
         Schema::enableForeignKeyConstraints();
     }
 }

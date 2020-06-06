@@ -141,7 +141,7 @@ body {
     min-height: 10em;
 }
 
-.voted{
+.unlike > i{
     color: red;
 }
 
