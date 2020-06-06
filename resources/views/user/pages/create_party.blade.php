@@ -50,15 +50,14 @@
                                     <small id="partyname_help" class="form-text text-muted">The Party Name will be used by your friends to find your party</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="partymood">Party Mood</label>
                                     <input type="text" class="form-control" id="partymood" aria-describedby="partymood_help" placeholder="es. 90's, Cartoon Songs" name="mood" required />
                                     <small id="partymood_help" class="form-text text-muted">The Party Mood suggests the party theme</small>
                                 </div>
                                 <div class="form-group">
                                     <label class="description" for="partytype">Party Type </label>
                                     <select class="form-control form-control-sm" id="partytype" name="type">
-                                        <option value="Battle">BATTLE <small>(pick two songs and let users vote for one of them)</small></option>
-                                        <option value="Democracy">DEMOCRACY <small>(play the playlist’s most voted song)</small></option>
+                                        <option value="Battle">BATTLE (pick two songs and let users vote for one of them)</option>
+                                        <option value="Democracy">DEMOCRACY (play the playlist’s most voted song)</option>
                                     </select>
                                 </div>
 
