@@ -62,18 +62,15 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="single-footer-widget mb-80">
             <!-- Widget Title -->
-            <h4 class="widget-title">Lastest Parties</h4>
+            <h4 class="widget-title">Latest Parties</h4>
 
             <!-- Single Latest Episodes -->
-            <div class="single-latest-episodes">
-              <p class="episodes-date">December 9, 2018</p>
-              <a href="#" class="episodes-title">Example1</a>
-            </div>
-            <!-- Single Latest Episodes -->
-            <div class="single-latest-episodes">
-              <p class="episodes-date">December 8, 2018</p>
-              <a href="#" class="episodes-title">Example2</a>
-            </div>
+            @foreach($latest_parties as $party)
+              <div class="single-latest-episodes">
+                  <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
+                  <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+              </div>
+            @endforeach
           </div>
         </div>
 

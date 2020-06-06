@@ -63,7 +63,7 @@
                 <div class="post-content col-sm-9 ">
                   <span class="d-none" data-code="{{$party->code}}" id="party_code"></span>
                   <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
-                  <a href="#" class="post-date">{{ $party->created_at }}</a>
+                  <a href="#" class="post-date">{{ $party->created_at->format('d/m/y H:i') }}</a>
                   @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn setting-button" data-toggle="modal" data-target="#editPartyModal"><i class="fa fa-cogs" aria-hidden="true"></i></button> @endif
                   <h2>{{ $party->name }}</h2>
                   <p id="party_name" class="d-none">{{ $party->name }}</p>
@@ -74,7 +74,7 @@
                 </div>
               </div>
 
-              @if(Auth::user()->id == $party->user->id) 
+              @if(Auth::user()->id == $party->user->id)
                 <form method="POST" action="{{ route('playlist.populate') }}">
                     @csrf
                     <div class="row">
@@ -89,7 +89,7 @@
                     </div>
                     <input type="hidden" value="{{ $party->code }}" name="party_code">
                     <input class="btn poca-btn" type="submit" value="Conferma">
-                    
+
                 </form>
               @endif
 
@@ -100,7 +100,7 @@
               @else
                 <h4 id="p_type" data-type="2">Democracy Party</h4>
               @endif
-              
+
 
               <h5>Music Source: {{ $party->source }}</h5>
 
@@ -147,11 +147,11 @@
                 @include('user._shared.player')
 
 
-                @if($party->type == "Battle") 
+                @if($party->type == "Battle")
                 <div class="ring">
                   <div class="vs-cont" style="background-image: url({{ asset('/img/bg-img/vs.png') }})">
                   </div>
-                  <div class="row mt-5 battle-box">                  
+                  <div class="row mt-5 battle-box">
                     <div class="col-6">
                       <div id="left_side" class="card side">
                         <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
@@ -187,14 +187,14 @@
                 </div>
                 @endif
 
-                
+
 
                 {{-- PLAYLIST --}}
                 <div class="single-widget-area catagories-widget mt-5 mb-40">
                     <h5 class="widget-title">Songs</h5>
 
                     <!-- Prototype for adding -->
-                    <div class="d-none">    
+                    <div class="d-none">
                         <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="row song_row">
                                 <div class="col-sm-3 album_img_container">
@@ -203,7 +203,7 @@
                                 <div class="col-sm-7">
                                     <div class="d-flex w-100 justify-content-between title_song" >
                                         <h5 class="mb-1"></h5>
-                                        <small> 
+                                        <small>
                                             <button class="btn btn-danger _delete">
                                                 <i class="fa fa-times" aria-hidden="true"></i>
                                             </button>
@@ -216,15 +216,15 @@
                                   <button class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
                                 </div>
                             </div>
-                            
+
                         </a>
                     </div>
-                    
+
                     <div class="list-group" id="party_playlist">
                       <!-- Actual playlist-->
                       @forelse($party->tracks->sortBy('votes')->reverse() as $song)
                     <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
-                            
+
                             <div class="row song_row">
                                 <div class="col-sm-3 album_img_container">
                                     <img class="album_img"/>
@@ -232,7 +232,7 @@
                                 <div class="col-sm-7">
                                     <div class="d-flex w-100 justify-content-between title_song" >
                                         <h5 class="mb-1"></h5>
-                                        <small> 
+                                        <small>
                                             <button class="btn btn-danger _delete">
                                                 <i class="fa fa-times" aria-hidden="true"></i>
                                             </button>
@@ -245,7 +245,7 @@
                                 <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>{{$song->votes}}</span></button>
                                 </div>
                             </div>
-                            
+
                         </a>
                       @empty
 
@@ -507,7 +507,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                
+
               </div>
             </div>
           </div>

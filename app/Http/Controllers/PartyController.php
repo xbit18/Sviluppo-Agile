@@ -424,7 +424,11 @@ class PartyController extends Controller
 
     }
 
-    /**Cancella il party**/
+    /**
+     * Cancella il party specificato
+     * @param $party_code
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function delete($party_code){
         $party = Party::where('code','=',$party_code)->first();
         if(Auth::user()->id == $party->user_id){
@@ -433,6 +437,14 @@ class PartyController extends Controller
         }
         $error = 'Couldn\'t delete party';
         return redirect()->back()->with($error);
+    }
+
+    public function getLatestParties(){
+        $parties = Party::orderBy('created_at', 'desc')
+                        ->take(10)
+                        ->get();
+
+        return $parties;
     }
 
 }
