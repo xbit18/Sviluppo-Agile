@@ -47,6 +47,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/party/{code}/getNextTrack', 'TrackController@getMostVotedSong')->name('party.nextTrack');
     Route::post('/party/{code}/tracks/', 'TrackController@addTrackToPlaylist')->name('party.addTrack');
+    Route::delete('/party/{code}/tracks/{track_uri}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
+    Route::post('/party/active_track', 'TrackController@setTrackActive')->name('party.activeTrack');
+    //Route::post('/party/release_track', 'TrackController@setTrackNotActive')->name('party.releaseTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
    
     Route::get('/prova', function(){

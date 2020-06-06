@@ -39,6 +39,7 @@
                             <div class="contact-heading">
                                 <h2>Create your party</h2>
                                 <h5>Share your music with others!</h5>
+                                <small>Ti raccomandiamo di eseguire l'accesso a spotify prima della creazione del party</small>
                             </div>
 
                             <form method="POST" action="{{ route('party.store') }}">
