@@ -7,13 +7,14 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use App\Party;
 
 
-class VoteEvent implements ShouldBroadcast
+class VoteEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -43,14 +44,21 @@ class VoteEvent implements ShouldBroadcast
         return 'song.voted';
     }
 
-    // public function broadcastWhen(){
-    //     $user_id = Auth::id();
-        
-    //    $already_voted = $this->party->users()->where('user_id','=',$user_id)
-    //                                         ->where('party_id','=',$this->party->id)
-    //                                         ->first()->pivot;
+    public function broadcastWith(){
+        return [
+            'song-id' => $this->track->id,
+            'likes' => $this->track->votes,
+        ];
+    }
 
-    //    return $already_voted->vote == false;
-    // }
+    /** @return bool **/
+
+    public function broadcastWhen(){
+        
+        $user = Auth::user();
+        $bool = $user->participates()->where('party_id',$this->party->id)->first()->pivot->vote === NULL;
+        return $bool;
+      
+    }
 
 }

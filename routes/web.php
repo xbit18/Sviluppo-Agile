@@ -49,7 +49,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/party/{code}/tracks/', 'TrackController@addTrackToPlaylist')->name('party.addTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
    
-
+    Route::get('/prova', function(){
+        $user = Auth::user();
+        $party = \App\Party::find(5);
+        return $user->participates()->where('party_id',$party->id)->first()->pivot->vote === NULL;
+    });
 
 
     /* PLAYER MANAGEMENT */

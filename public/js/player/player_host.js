@@ -359,7 +359,7 @@ $( document ).ready( function() {
 
         var track_uri = $(this).attr('data-track');
         var link = $(this);
-        
+        var song_id = $(this).data('song-id');
 
         // Se ho cliccato su elimina non deve partire
         if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
@@ -427,7 +427,7 @@ $( document ).ready( function() {
                         link.remove();
 
                         $.ajax({
-                            url: "/party/" + party_code + "/tracks/" + track_uri,
+                            url: "/party/" + party_code + "/tracks/" + song_id,
                             method: 'DELETE',
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -744,7 +744,8 @@ $( document ).ready( function() {
     var song_id;
     $(document).on('click', '._delete', function(){
         parent = $(this).parents('a');
-        song_id = $(this).data('song-id');
+        song_id = parent.data('song-id');
+        console.log(parent);
         $('#deleteSongModal').modal('show');
         
     });
@@ -779,7 +780,9 @@ $( document ).ready( function() {
     /* ------------------------------LISTENER AL CHANNEL DELLE VOTAZIONI ------------------------- */
 
     channel.listen('.song.voted',function(data){
-        console.log(data);
+        
+        
+
     })
 
 

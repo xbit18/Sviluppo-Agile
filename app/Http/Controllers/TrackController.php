@@ -27,7 +27,11 @@ class TrackController extends Controller
         if(Auth::user()->id == $party->user->id ) {
 
             Track::find($id)->delete();
-
+            
+            $votes = $party->users()->where('vote',$id)->get();
+            foreach($votes as $vote){
+                $vote->participates()->updateExistingPivot($party->id,['vote' => null]);
+            }
             return response()->json('completed');
 
         }
@@ -82,8 +86,8 @@ class TrackController extends Controller
             }
             $track->votes += 1;
             $track->save();
-            $user->participates()->updateExistingPivot($party->id,['vote' => $id]);
             broadcast(new VoteEvent($party,$track));
+            $user->participates()->updateExistingPivot($party->id,['vote' => $id]);
             return response()->json([
                 'message' => 'track voted successfully'
             ]);
@@ -130,6 +134,7 @@ public function unvote($code, $id){
             $track->votes -= 1;
             $track->save();
             $user->participates()->updateExistingPivot($party->id,['vote' => null]);
+            broadcast(new VoteEvent($party,$track));
             return response()->json([
                 'message' => 'track unvoted successfully',
                 'error' => false,
