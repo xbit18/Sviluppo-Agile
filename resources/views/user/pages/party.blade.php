@@ -38,7 +38,7 @@
     <div class="container">
       <div class="row">
         <div class="col-12 col-xl-8">
-          <div class="podcast-details-content d-flex mt-5 mb-80">
+          <div class="podcast-details-content d-flex mt-5 mb-10 mb-sm-50 mb-md-80 mb-lg-100">
 
             <!-- Post Share -->
             <div class="post-share">
@@ -149,10 +149,10 @@
 
                 @if($party->type == "Battle") 
                 <div class="ring">
-                  <div class="vs-cont" style="background-image: url({{ asset('/img/bg-img/vs.png') }})">
+                  <div class="vs-cont d-none d-sm-none d-md-none d-lg-block d-xl-block" style="background-image: url({{ asset('/img/bg-img/vs.png') }})">
                   </div>
                   <div class="row mt-5 battle-box">                  
-                    <div class="col-6">
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 p-2 p-sm-2 p-md-4 p-lg-5 p-xl-5 mb-2 mb-sm-2 mb-md-2 mb-lg-2 mb-xl-2">
                       <div id="left_side" class="card side">
                         <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
                         @if(isset($side_1) && !empty($side_1))
@@ -168,7 +168,7 @@
                       </div>
                     </div>
                     <!-- <div class="col-2" id="vs_cont"><img class="vs_img" src="{{ asset('/img/bg-img/vs.png') }}"></div> -->
-                    <div class="col-6">
+                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 p-2 p-sm-2 p-md-4 p-lg-5 p-xl-5 mb-2 mb-sm-2 mb-md-2 mb-lg-2 mb-xl-2">
                       <div id="right_side" class="card side">
                         <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
                         @if(isset($side_2) && !empty($side_2))
@@ -275,10 +275,10 @@
               <div class="d-none">
                 <div id="song-prototype" class="list-group-item list-group-item-action flex-column align-items-start p-0">
                   <div class="row align-items-center">
-                    <div class="col-sm-3">
-                      <img src="https://i.scdn.co/image/ab67616d0000b2731f7077ae1018b5fbab08dfa8" alt="">
+                    <div class="col-3 col-sm-3">
+                      <img  src="https://i.scdn.co/image/ab67616d0000b2731f7077ae1018b5fbab08dfa8" alt="">
                     </div>
-                    <div class="col-sm-9">
+                    <div class="col-9 col-sm-9">
                       <div class="d-flex w-100 justify-content-between">
                         <h6>Nome canzone</h6>
                         <small class="mr-1">2:23</small>
@@ -312,7 +312,7 @@
             </div>
 
             <!-- Single Widget Area -->
-            <div class="single-widget-area news-widget mb-80">
+            <div class="single-widget-area news-widget mb-15 mb-sm-50 mb-md-80 mb-lg-100">
               <h5 class="widget-title">Other Similar Parties</h5>
 
               <!-- Single News Area -->
@@ -351,12 +351,12 @@
             </div>
 
             <!-- Single Widget Area -->
-            <div class="single-widget-area adds-widget mb-80">
+            <div class="single-widget-area adds-widget mb-15 mb-sm-30 mb-md-80 mb-lg-100">
               <a href="#"><img class="w-100" src="./img/bg-img/banner.png" alt=""></a>
             </div>
 
             <!-- Single Widget Area -->
-            <div class="single-widget-area tags-widget mb-80">
+            <div class="single-widget-area tags-widget  mb-30 mb-sm-50 mb-md-80 mb-lg-100">
               <h5 class="widget-title">Popular Genres</h5>
 
               <ul class="tags-list">

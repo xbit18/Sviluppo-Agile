@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row align-items-center">
         <!-- Invite Content -->
-        <div class="col-12 col-lg-6">
+        <div class="col-md-12 col-lg-6">
           <div class="newsletter-content mb-50">
             <h2>Invite People</h2>
             <h6>Search by email and invite</h6>
@@ -11,7 +11,7 @@
           </div>
         </div>
         <!-- Invite Form -->
-        <div class="col-12 col-lg-6">
+        <div class="col-md-12 col-lg-6">
             <div class="newsletter-form mb-50">
                 <form id="add_people_to_list" action="#" method="post">
                     <input id="invite_field" type="email" name="nl-email" class="form-control email" placeholder="Email">

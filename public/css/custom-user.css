@@ -118,6 +118,7 @@ body {
     box-shadow: 0 1px 30px rgba(255, 249, 140, 0.6);
 }
 
+
 .battle-box p {
     font-size: 0.8em;
 }
@@ -184,5 +185,47 @@ body {
     
   }
 
+  @media (max-width: 576px){
+    .item:hover{
+        cursor: pointer;
+        transition: all ease-in-out .2s;
+        transform: scale(1.0,1.0);
+    }
+  }
 
-  
+  @media (max-width:420px){
+      .battle-box > div{
+        padding: 0 !important;
+      }
+  }
+
+  @media (max-width: 490px){
+      .battle-box >div{
+          flex: 0 0 100%;
+          max-width: 100%;
+          padding: 3em !important;
+      }
+  }
+
+  @media (max-width: 400px){
+    .battle-box > div{
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 1em !important;
+    }
+}
+
+@media (max-width: 280){
+    .battle-box > div{
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 !important;
+    }
+}
+
+
+  /* @media (max-width: 720px){
+      .battle-box{
+          height: 500px;
+      }
+  } */
