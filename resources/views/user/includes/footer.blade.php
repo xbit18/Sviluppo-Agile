@@ -43,7 +43,7 @@
 
         <!-- Single Footer Widget -->
         <div class="col-12 col-sm-6 col-lg-3">
-          <div class="single-footer-widget mb-80">
+          <div class="single-footer-widget  mb-15 mb-sm-50 mb-md-80 mb-lg-100">
             <!-- Widget Title -->
             <h4 class="widget-title">About Us</h4>
 
@@ -60,7 +60,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
         <!-- Single Footer Widget -->
         <div class="col-12 col-sm-6 col-lg-3">
-          <div class="single-footer-widget mb-80">
+          <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
             <!-- Widget Title -->
             <h4 class="widget-title">Latest Parties</h4>
 

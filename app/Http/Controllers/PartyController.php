@@ -440,10 +440,7 @@ class PartyController extends Controller
     }
 
     public function getLatestParties(){
-        $parties = Party::orderBy('created_at', 'desc')
-                        ->take(10)
-                        ->get();
-
+        $parties = Party::orderBy('created_at', 'desc')->take(10)->get();
         return $parties;
     }
 

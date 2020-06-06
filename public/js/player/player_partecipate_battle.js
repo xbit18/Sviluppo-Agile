@@ -23,6 +23,13 @@ $( document ).ready( function() {
     var act_pos = 0;
     var prec_play = false;
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 6000
+    });
+
     /* Music Pause */
 
     /**
@@ -34,7 +41,7 @@ $( document ).ready( function() {
         $.each(users, function (index, user) {
             console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
-            new_partecipant_link = new_partecipant.find('a');
+            var new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.text(user.name);
             new_partecipant.removeAttr('id');
             new_partecipant_link.attr('data-id', user.id);
@@ -51,7 +58,7 @@ $( document ).ready( function() {
         //console.log('joining')
         //console.log(user)
         var new_partecipant = $('#partecipant-prototype').clone();
-        new_partecipant_link = new_partecipant.find('a');
+        var new_partecipant_link = new_partecipant.find('a');
         new_partecipant.removeAttr('id');
         new_partecipant_link.text(user.name);
         new_partecipant_link.attr('data-id', user.id);
@@ -94,24 +101,15 @@ $( document ).ready( function() {
         //console.log(item)
         //console.log(track)
         item.find('h5').text(track.name);
-    
         var artists = "";
         $.each(track.artists, function (index, artist) {
             artists += " " + artist.name;
         });
-
         item.find('p').text(artists);
-
         var thumb = item.find('img');
         thumb.attr('src', track.album.images[0].url);
-        
         item.children('div').children('div').children('small').text(track.album.name);
-        //item.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
         item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
-        //item.attr('data-id', track.id);
-        //item.attr('data-uri', track.uri);
-        //item.attr('data-number', index + 1);
-        //item.attr('data-playlist-uri', my_party_playlist.uri);
         item.addClass('song_link');
 
         if(bool){
@@ -137,6 +135,15 @@ $( document ).ready( function() {
 
         // Playback status updates
         player.addListener('player_state_changed', state => {
+
+            if(state) {
+                var dur = state.track_window.current_track.duration_ms;
+                $('.total-duration').text( millisToMinutesAndSeconds( dur ) );
+                var position = state.position;
+                var track_uri = state.track_window.current_track.uri;
+                actual_dur = parseInt(state.track_window.current_track.duration_ms);
+            }
+
             console.log(state);
             if (!($('#title-player').text() === state.track_window.current_track.name))
                 $('#title-player').text(state.track_window.current_track.name);
@@ -199,51 +206,42 @@ $( document ).ready( function() {
         /**
          * Per i partecipanti : ascolta l'evento play
          */
-            channel.listen('.player.played', (data) => {
-                var instance = axios.create();
-                delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-                console.log(devId);
-                console.log(data.position_ms);
-                instance({
-                    url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                    },
-                    data: {
-                        "uris": [data.track_uri],
-                        "position_ms": data.position_ms
-                    },
-                    dataType: 'json',
-                }).then(function (data) {
+        channel.listen('.player.played', (data) => {
+            var instance = axios.create();
+            delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+            console.log(devId);
+            console.log(data.position_ms);
+            instance({
+                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                data: {
+                    "uris": [data.track_uri],
+                    "position_ms": data.position_ms
+                },
+                dataType: 'json',
+            }).then(function (data) {
 
-                });
             });
+        });
 
-            /**
-             * Per i partecipanti : ascolta l'evento paused
-            */
+        /**
+         * Per i partecipanti : ascolta l'evento paused
+        */
 
-            channel.listen('.player.paused', (data) => {
-                player.pause();
-            });
-
-
+        channel.listen('.player.paused', (data) => {
+            player.pause();
+        });
 
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
-        /**
-         * Popolo i dati della playlist
-         */
-
-        $('.song_link').each(function(index, item) {
-            var song_link = $(this);
-            var track_uri = song_link.attr('data-track'); 
-            var track_id = track_uri.replace('spotify:track:', '');
-            //console.log('track: ' + track_uri)       
-
-            // Chiamo per ottenere i dati della traccia
+        if($('#track_uri_side_1').length) {
+            var uri = $('#track_uri_side_1').attr('data-track');
+            var track_id = uri.replace('spotify:track:', '');
+            var track_real_id = $('#track_uri_side_1').attr('data-song-id');
             instance({
                 url: "https://api.spotify.com/v1/tracks/" + track_id,
                 method: 'GET',
@@ -251,45 +249,196 @@ $( document ).ready( function() {
                     'Authorization': 'Bearer ' + token,
                 },
                 dataType: 'json',
-            }).then(function (data) {
-                //console.log(data, 'track_info');
-                populate_song_link(song_link, data.data);
+            }).then(function (res) {
                 
+                var track = res.data;
+                var artists = "";
+                $.each(track.artists, function (index, artist) {
+                    artists += " " + artist.name;
+                });
+
+                $('#left_side').children('img').attr('src', track.album.images[0].url);
+                $('#left_side').find('h5').text(track.name);
+                $('#left_side').find('p').text(artists);
+                $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + data.track.uri + '></span>');
+                $('#left_side').find('button').attr('disabled', false);
                 
-                /**
-                 * POPOLAZIONE RING SE ESISTE
-                 */
-                if($('#track_uri_side_1').length) {
-                    var uri = $('#track_uri_side_1').attr('data-track');
-                    $('.song_link').each( function(index, item) {
-                        
-                        if($(item).attr('data-track') == uri) {
-                            $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
-                            $('#left_side').find('h5').text($(item).find('h5').text());
-                            $('#left_side').find('p').text($(item).find('p').text());
-                        }
-                    });
-                }
-
-                if($('#track_uri_side_2').length) {
-                    var uri = $('#track_uri_side_2').attr('data-track');
-                    $('.song_link').each( function(index, item) {
-                        if($(item).attr('data-track') == uri) {
-                            $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
-                            $('#right_side').find('h5').text($(item).find('h5').text());
-                            $('#right_side').find('p').text($(item).find('p').text());
-                        }
-                    });
-                }
-
 
             });
-        });
+        }
+
+        if($('#track_uri_side_2').length) {
+            var uri = $('#track_uri_side_2').attr('data-track');
+            var track_id = uri.replace('spotify:track:', '');
+            var track_real_id = $('#track_uri_side_2').attr('data-song-id');
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (res) {
+                
+                var track = res.data;
+                var artists = "";
+                $.each(track.artists, function (index, artist) {
+                    artists += " " + artist.name;
+                });
+
+                $('#right_side').children('img').attr('src', track.album.images[0].url);
+                $('#right_side').find('h5').text(track.name);
+                $('#right_side').find('p').text(artists);
+                $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + data.track.uri + '></span>');
+                $('#right_side').find('button').attr('disabled', false);
+                
+
+            });
+        }
+        
+
+
+
+        
+        
+        channel.listen('.battle.selected',function(data){
+            if(data.track == null) {
+                $('#left_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                $('#left_side').find('h5').text('Left Side');
+                $('#left_side').find('p').text('No song selected');
+                $('#left_side').find('button').attr('disabled', true);
+                $('#left_side').find('button').removeClass('voted');
+                $('#right_side').find('button').removeClass('unlike');
+                $('#left_side').find('button').find('span').text('0');
+
+                $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                $('#right_side').find('h5').text('Right Side');
+                $('#right_side').find('p').text('No song selected');
+                $('#right_side').find('button').attr('disabled', true);
+                $('#right_side').find('button').removeClass('voted');
+                $('#right_side').find('button').removeClass('unlike');
+                $('#right_side').find('button').find('span').text('0');
+            } else {
+                var track_id = data.track.track_uri.replace('spotify:track:', '');
+                instance({
+                    url: "https://api.spotify.com/v1/tracks/" + track_id,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    dataType: 'json',
+                }).then(function (res) {
+                    var track = res.data;
+                    var artists = "";
+                    $.each(track.artists, function (index, artist) {
+                        artists += " " + artist.name;
+                    });
+
+                    if(data.side == "1") {
+                        $('#left_side').children('img').attr('src', track.album.images[0].url);
+                        $('#left_side').find('h5').text(track.name);
+                        $('#left_side').find('p').text(artists);
+                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#left_side').find('button').attr('disabled', false);
+                    }
+                    else if(data.side == "2") {
+                        $('#right_side').children('img').attr('src', track.album.images[0].url);
+                        $('#right_side').find('h5').text(track.name);
+                        $('#right_side').find('p').text(artists);
+                        $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#right_side').find('button').attr('disabled', false);
+                    }
+                    
+    
+                });
+                
+            }
+            console.log(data);
+        })
 
 
         
 
-
+        channel.listen('.song.voted',function(data){
+            console.log(data);
+        })
+    
+    
+        /*------------VOTE A SONG ------------ */
+    
+        $(document).on('click','.like_bat',function(event){
+            event.preventDefault();
+            let vote = $(this);
+            var song_id;
+            if($(this).attr('id') == 'vote_left')
+                song_id = $('#track_uri_side_1').attr('data-id');
+            else if($(this).attr('id') == 'vote_right')
+                song_id = $('#track_uri_side_2').attr('data-id');
+            
+            $.ajax({
+                type: "GET",
+                url: `/party/${party_code}/tracks/${song_id}/vote`,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    if(!response.error){
+                        vote.removeClass('like_bat');
+                        vote.addClass('unlike');
+                        vote.addClass('voted');
+                        vote.children('span').text(parseInt(vote.children('span').text()) + 1);
+                    }
+                    else {
+                        Toast.fire({
+                            type: 'error',
+                            title: response.error
+                            });
+                    }
+                    
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+    
+        });
+    
+        /* -------------------- UNVOTE A SONG -----------------*/
+    
+        $(document).on('click','.unlike',function(event){
+            event.preventDefault();
+            let vote = $(this);
+            var song_id;
+            if($(this).attr('id') == 'vote_left')
+                song_id = $('#track_uri_side_1').attr('data-id');
+            else if($(this).attr('id') == 'vote_right')
+                song_id = $('#track_uri_side_2').attr('data-id');
+            
+            $.ajax({
+                type: "GET",
+                url: `/party/${party_code}/tracks/${song_id}/unvote`,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    if(!response.error){
+                        vote.removeClass('unlike');
+                        vote.addClass('like_bat');
+                        vote.removeClass('voted');
+                        vote.children('span').text(parseInt(vote.children('span').text()) - 1);
+                    }
+                    
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+    
+        });
 
 
         
