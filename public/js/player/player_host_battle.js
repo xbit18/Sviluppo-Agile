@@ -884,7 +884,13 @@ $( document ).ready( function() {
                     vote.removeClass('voted');
                     vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                 }
-                
+                else {
+                    console.log(`/party/${party_code}/tracks/${song_id}/unvote`)
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                    });
+                }
             },
             error: function(error){
                 console.log(error);
@@ -942,13 +948,15 @@ $( document ).ready( function() {
                         $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
                         $('#left_side').find('h5').text($(item).find('h5').text());
                         $('#left_side').find('p').text($(item).find('p').text());
-                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '></span>');
+                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
+                        
                         $('#left_side').find('button').attr('disabled', false);
+                        console.log('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '></span>')
                     } else {
                         $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
                         $('#right_side').find('h5').text($(item).find('h5').text());
                         $('#right_side').find('p').text($(item).find('p').text());
-                        $('#right_side').prepend('<span id="track_uri_side_1" data-track="' + track_uri + '></span>');
+                        $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
                         $('#right_side').find('button').attr('disabled', false);
                     }
                 },

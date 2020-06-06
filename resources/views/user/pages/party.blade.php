@@ -162,9 +162,16 @@
                         <div class="card-body">
                           <h5>Left Side</h5>
                           <p class="card-text">No song selected</p>
-                          <button id="vote_left" @if(!isset($side_1) || empty($side_1)) disabled @endif type="button" class="btn poca-back like_bat">
+                          @if(!isset($side_1) || empty($side_1))
+                          <button id="vote_left" disabled type="button" class="btn poca-back like_bat">
                             <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_1) && !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
                           </button>
+                          @else
+                          <button id="vote_right" type="button" class="btn poca-back @if($liked == $side_1->id) unlike @else like_bat @endif">
+                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_1) && !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
+                          </button>
+                          @endif
+                          
                         </div>
                       </div>
                     </div>
@@ -178,9 +185,15 @@
                         <div class="card-body">
                           <h5>Right Side</h5>
                           <p class="card-text">No song selected</p>
-                          <button id="vote_right" type="button" @if(!isset($side_2) || empty($side_2)) disabled @endif class="btn poca-back like_bat">
-                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_2) && !empty($side_2)) {{$side_2->votes}} @else 0 @endif</span>
+                          @if(!isset($side_2) || empty($side_2))
+                          <button id="vote_left" disabled type="button" class="btn poca-back like_bat">
+                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">0</span>
                           </button>
+                          @else
+                          <button id="vote_right" type="button" class="btn poca-back @if($liked == $side_2->id) unlike @else like_bat @endif">
+                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">{{$side_2->votes}}</span>
+                          </button>
+                          @endif
                         </div>
                       </div>
                     </div>
