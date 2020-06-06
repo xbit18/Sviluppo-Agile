@@ -96,27 +96,6 @@ $( document ).ready( function() {
     }
 
 
-    function populate_song_link(item, track, bool) {
-        //console.log('sono in populate')
-        //console.log(item)
-        //console.log(track)
-        item.find('h5').text(track.name);
-        var artists = "";
-        $.each(track.artists, function (index, artist) {
-            artists += " " + artist.name;
-        });
-        item.find('p').text(artists);
-        var thumb = item.find('img');
-        thumb.attr('src', track.album.images[0].url);
-        item.children('div').children('div').children('small').text(track.album.name);
-        item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
-        item.addClass('song_link');
-
-        if(bool){
-            return item;
-        }
-    }
-
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
         const token = $('#mytoken').text();
