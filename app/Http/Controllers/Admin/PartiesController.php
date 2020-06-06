@@ -1,7 +1,7 @@
 <?php
+namespace App\Http\Controllers\Admin;
 
-namespace App\Http\Controllers;
-
+use App\Http\Controllers\Controller;
 use App\Genre;
 use App\Party;
 use App\User;
@@ -11,10 +11,10 @@ use Illuminate\Support\Str;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use SpotifyWebAPI\SpotifyWebAPIException;
 
-class AdminPartiesController extends Controller
+class PartiesController extends Controller
 {
     function index(){
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         if(request('name')!=null) {
             $key = request('name');
@@ -28,7 +28,7 @@ class AdminPartiesController extends Controller
     }
     protected function delete(Request $request)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         $party=Party::findOrFail($request->id);
         $code=$party->code;
@@ -37,14 +37,14 @@ class AdminPartiesController extends Controller
     }
 
     function create(){
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         return view('admin.forms.party.create')->with('success', 'Party Created without the playlist ');
     }
 
     protected function store(Request $request)
     {
-        $a = new AdminController;
+        $a = new MainController;
         $a->verify();
         $user = new User();
         $validatedData = $request->validate([
@@ -82,7 +82,7 @@ class AdminPartiesController extends Controller
         $user_id = $user->id;
 
 
-        try {
+       // try {
             $api = new SpotifyWebAPI();
             $api->setAccessToken($user->access_token);
             $playlist = $api->createPlaylist([
@@ -101,20 +101,24 @@ class AdminPartiesController extends Controller
             ]);
             foreach ($genre_ids as $id) {
                 $party->genre()->attach($id);
-            }
-            $p = new PartyController();
-            $songsByGenre = $p->getSongsByGenre($party->code, null);
+                // provisorio finche non è implementato il resto
+                return redirect()->route('admin.party.index')->with('success', 'Party Created WITHOUT the playlist ');
+
+
+            }/*
+            $p = new \App\Http\Controllers\PartyController();
+            $songsByGenre = $p->getSongsByGenre($party->code);
             $bool = $api->addPlaylistTracks($playlist->id, $songsByGenre);
             if ($bool) {
                 return redirect()->route('admin.party.index')->with('success', 'Party Created with the playlist');
             }
         } catch (SpotifyWebApiException $e) {
             return redirect()->route('admin.party.index')->with('success', 'Party Created WITHOUT the playlist ');
-        }
+        }*/
     }
     protected function edit($id)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         $party = Party::where('id','=',$id)->first();
         $party_genres = $party->genre;
@@ -125,7 +129,7 @@ class AdminPartiesController extends Controller
 
     protected function update(Request $request)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         /**
          * Valida i campi della richiesta

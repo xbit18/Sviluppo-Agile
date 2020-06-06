@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class AdminUsersController extends Controller
+class UsersController extends Controller
 {
 
     /**
@@ -14,7 +15,7 @@ class AdminUsersController extends Controller
      */
 
     function index(){
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         if(request('email')!=null) {
             $key = request('email');
@@ -28,14 +29,14 @@ class AdminUsersController extends Controller
     }
 
     function create(){
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         return view('admin.forms.user.create');
     }
 
     protected function store(Request $request)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             $emailErr = "Invalid email format";
@@ -56,7 +57,7 @@ class AdminUsersController extends Controller
     }
     protected function update(Request $request)
     {
-        $a = new AdminController;
+        $a = new MainController;
         $a->verify();
         if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             $emailErr = "Invalid email format";
@@ -83,7 +84,7 @@ class AdminUsersController extends Controller
 
     protected function edit($id)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         $user= User::findOrFail($id);
         return view('admin.forms.user.edit',compact('user'));
@@ -92,7 +93,7 @@ class AdminUsersController extends Controller
 
     protected function delete(Request $request)
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         $user=User::findOrFail($request->id);
         $email=$user->email;
