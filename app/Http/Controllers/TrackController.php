@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Party;
 use App\Track;
 use App\Events\VoteEvent;
+use App\Events\BattleSelectedEvent;
 
 
 class TrackController extends Controller
@@ -16,9 +17,10 @@ class TrackController extends Controller
 
         $party = Party::where('code', $code)->first();
 
-        if($party->type == 'Battle')
+        if($party->type == 'Battle'){
             $res = $party->tracks()->where('active', '!=', 0)->orderByDesc('votes')->first();
-        else
+            if(empty($res)) return $party->tracks()->first();
+        } else
             $res = $party->tracks()->orderByDesc('votes')->first();
 
         return $res;
@@ -30,13 +32,20 @@ class TrackController extends Controller
         
         if(Auth::user()->id != $party->user->id ) abort(401);
 
+        foreach($party->users as $user) {
+            $party->users()->updateExistingPivot($user->id,['vote' => null]);
+        }
+
         foreach($party->tracks as $track) {
+            if($track->active != 0) broadcast(new BattleSelectedEvent(null ,$track->active,$party));
             $track->active = 0;
             $track->save();
+            
         }
 
         return $party->tracks;
     }
+
 
 
     public function deleteTrackFromPlaylist($code, $id) {
@@ -91,6 +100,7 @@ class TrackController extends Controller
             $mytrack = $party->tracks->where('track_uri', $uri)->first();
             $mytrack->active = $side;
             $mytrack->save();
+            broadcast(new BattleSelectedEvent($mytrack,$side,$party));
 
             return response()->json(['message' => 'Track Activated']);
 
@@ -145,7 +155,7 @@ class TrackController extends Controller
 
         if(!$user_participates){
             return response()->json([
-                'message' => 'You do not participate in this party!'
+                'error' => 'You do not participate in this party!'
             ]);
         }
 
@@ -155,7 +165,7 @@ class TrackController extends Controller
             $track = Track::find($id);
             if($track == null) {
                 return response()->json([
-                    'message' => 'track not found'
+                    'error' => 'track not found'
                 ]);
             }
             $track->votes += 1;
@@ -168,8 +178,7 @@ class TrackController extends Controller
         }
         else{
             return response()->json([
-                'message' => 'You have already voted, remove your vote before voting again',
-                'error'  => true
+                'error' => 'You have already voted, remove your vote before voting again',
             ]);
         }
 
@@ -192,7 +201,7 @@ class TrackController extends Controller
 
         if(!$user_participates){
             return response()->json([
-                'message' => 'You do not participate in this party!'
+                'error' => 'You do not participate in this party!'
             ]);
         }
 
@@ -202,7 +211,7 @@ class TrackController extends Controller
             $track = Track::find($id);
             if($track == null) {
                 return response()->json([
-                    'message' => 'track not found'
+                    'error' => 'track not found'
                 ]);
             }
             $track->votes -= 1;

@@ -18,6 +18,8 @@ class PlayerController extends Controller
         */
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerPaused($party))->toOthers();
+
+        return response()->json(['message' => 'song paused']);
     }
 
     public function play(Request $request, $code){
@@ -30,6 +32,8 @@ class PlayerController extends Controller
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerPlayed($party, $track_uri, $position_ms))->toOthers();
 
+        return response()->json(['message' => 'song played']);
+
     }
 
    
@@ -41,5 +45,7 @@ class PlayerController extends Controller
         $user_id = $request->user_id;
         $party = Party::where('code',$code)->first();
         broadcast(new PlayerSync($party, $user_id, $track_uri, $position_ms))->toOthers();
+
+        return response()->json(['message' => 'syncronized']);
     }
 }

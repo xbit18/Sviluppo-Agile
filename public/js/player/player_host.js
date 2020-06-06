@@ -22,6 +22,9 @@ $( document ).ready( function() {
     var act_pos = 0;
     var prec_play = false;
 
+  
+    
+
     
 
     function millisToMinutesAndSeconds(millis) {
@@ -799,6 +802,7 @@ $( document ).ready( function() {
     channel.listen('.song.voted',function(data){
         console.log(data);
     })
+
 
 
     /*------------VOTE A SONG ------------ */

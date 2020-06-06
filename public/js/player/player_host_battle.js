@@ -22,169 +22,16 @@ $( document ).ready( function() {
     var act_pos = 0;
     var prec_play = false;
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 6000
+    });
+
+
     
-
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-    }
-
-    
-    function increment_timeline(data) {
-        //console.log('funzione increment timeline chiamata');
-        if(data) {
-            if(!running) {
-                running = true;
-                timer = setInterval( () => { 
-                    //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
-                    timeline.val( parseInt(timeline.val()) + 1000 );
-                    duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
-                    //console.log('incrementing ' + timeline.val()); 
-                    var v = ( timeline.val() ) / actual_dur;
-                    act_pos = timeline.val();
-
-                    timeline.css('background-image', [
-                        '-webkit-gradient(',
-                        'linear, ',
-                        'left top, ',
-                        'right top, ',
-                        'color-stop(' + v + ', #1DB954), ',
-                        'color-stop(' + v + ', #535353)',
-                        ')'
-                    ].join(''));
-                    timeline.css('background-image', [
-                        '-moz-linear-gradient(',
-                        'linear, ',
-                        'left top, ',
-                        'right top, ',
-                        'color-stop(' + v + ', #1DB954), ',
-                        'color-stop(' + v + ', #535353)',
-                        ')'
-                    ].join(''));
-                    
-                },1000);
-            }
-        } else {
-            //console.log('clearing');
-            clearInterval(timer);
-            running = false;
-        }
-    }
-
-
-
-    function populate_song_link(item, track, bool) {
-        //console.log('sono in populate')
-        //console.log(item)
-        //console.log(track)
-        item.find('h5').text(track.name);
-    
-        var artists = "";
-        $.each(track.artists, function (index, artist) {
-            artists += " " + artist.name;
-        });
-
-        item.find('p').text(artists);
-
-        var thumb = item.find('img');
-        thumb.attr('src', track.album.images[0].url);
-        
-        item.children('div').children('div').children('small').text(track.album.name);
-        //item.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
-        item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
-        //item.attr('data-id', track.id);
-        //item.attr('data-uri', track.uri);
-        //item.attr('data-number', index + 1);
-        //item.attr('data-playlist-uri', my_party_playlist.uri);
-        item.addClass('song_link');
-
-        if(bool){
-            return item;
-        }
-    }
-
-    function play_next_song_battle(deviceId, token, code)  {
-
-            // CALL FOR GETTING NEXT SONG
-            $.ajax({
-                url: "/party/" + code + "/getNextTrack",
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                dataType: 'json',
-                success: function (data) {
-                    var track_uri = data.track_uri
-                    console.log(data, 'next_track');
-
-                    // Riproduco la canzone sul player
-                    instance({
-                        url: "https://api.spotify.com/v1/me/player/play?device_id=" + deviceId,
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': 'Bearer ' + token,
-                        },
-                        data: {
-                                "uris": [track_uri],
-                                "position_ms": 0
-                            },
-                        dataType: 'json'
-                    }).then(function (data) {
-
-                        player.setVolume(slider.val() / 100);
-                        paused = false;
-                        $.ajax({
-                            url: "/party/" + party_code + "/play",
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            data: {
-                                "track_uri": track_uri,
-                                "position_ms": 0
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                console.log(data);
-                                // DEBUGGING
-                                //console.log(data);
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                /**
-                                 * Error Handling
-                                 */
-                                if (xhr.status == 404) {
-                                    console.log("404 NOT FOUND");
-                                } else if (xhr.status == 500) {
-                                    console.log("500 INTERNAL SERVER ERROR");
-                                } else {
-                                    console.log("errore " + xhr.status);
-                                }
-                            }
-                        });
-
-                        
-                    });
-
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    if (xhr.status == 404) {
-                        console.log("Next Track 404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("Next Track 500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("Next Track errore " + xhr.status);
-                    }
-                }
-            });
-            
-            
-    }
-
+ 
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
         const token = $('#mytoken').text();
@@ -239,9 +86,6 @@ $( document ).ready( function() {
                 paused = false;
                 if(position == 0) timeline.val(0);
                 increment_timeline(true);
-    
-                // console.log("uri " + track_uri);
-                // console.log('position ' + position);
                 $.ajax({
                     url: "/party/" + party_code + "/play",
                     method: 'POST',
@@ -255,14 +99,8 @@ $( document ).ready( function() {
                     dataType: 'json',
                     success: function () {
                         console.log('success play');
-                        // console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
                         console.log('party/code/play error');
                         console.log(xhr);
                         if (xhr.status == 404) {
@@ -273,7 +111,9 @@ $( document ).ready( function() {
                             console.log("errore " + xhr.status);
                         }
                     }
+                    
                 });
+
             } else if (state.paused) {
                 
                 //console.log('position ' + act_pos);
@@ -291,39 +131,7 @@ $( document ).ready( function() {
 
                     // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
                     if(!paused && prec_play) {
-                        //console.error('canzone finita');
-                        $.ajax({
-                            url: "/party/" + party_code + "/getNextTrack",
-                            method: 'GET',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                // console.log(data);
-                                // DEBUGGING
-                                //console.log(data);
-                                console.log(data.track_uri);
-                                $('.song_link').each( function(index, item) {
-                                    if( $(this).attr('data-track') == data.track_uri ) {
-                                        $(this).click();
-                                    }
-                                });
-                                console.log(data, 'next_track');
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                /**
-                                 * Error Handling
-                                 */
-                                if (xhr.status == 404) {
-                                    console.log("Next Track 404 NOT FOUND");
-                                } else if (xhr.status == 500) {
-                                    console.log("Next Track 500 INTERNAL SERVER ERROR");
-                                } else {
-                                    console.log("Next Track errore " + xhr.status);
-                                }
-                            }
-                        });
+                        play_next_song_battle(devId, token, party_code);
                         prec_play = false;
                     }
                     
@@ -380,6 +188,285 @@ $( document ).ready( function() {
         // Connect to the player!
         player.connect();
 
+           
+
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    
+    function increment_timeline(data) {
+        //console.log('funzione increment timeline chiamata');
+        if(data) {
+            if(!running) {
+                running = true;
+                timer = setInterval( () => { 
+                    //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
+                    timeline.val( parseInt(timeline.val()) + 1000 );
+                    duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
+                    //console.log('incrementing ' + timeline.val()); 
+                    var v = ( timeline.val() ) / actual_dur;
+                    act_pos = timeline.val();
+
+                    timeline.css('background-image', [
+                        '-webkit-gradient(',
+                        'linear, ',
+                        'left top, ',
+                        'right top, ',
+                        'color-stop(' + v + ', #1DB954), ',
+                        'color-stop(' + v + ', #535353)',
+                        ')'
+                    ].join(''));
+                    timeline.css('background-image', [
+                        '-moz-linear-gradient(',
+                        'linear, ',
+                        'left top, ',
+                        'right top, ',
+                        'color-stop(' + v + ', #1DB954), ',
+                        'color-stop(' + v + ', #535353)',
+                        ')'
+                    ].join(''));
+                    
+                },1000);
+            }
+        } else {
+            //console.log('clearing');
+            clearInterval(timer);
+            running = false;
+        }
+    }
+
+
+
+    function populate_song_link(item, track, bool) {
+        item.find('h5').text(track.name);
+    
+        var artists = "";
+        $.each(track.artists, function (index, artist) {
+            artists += " " + artist.name;
+        });
+
+        item.find('p').text(artists);
+
+        var thumb = item.find('img');
+        thumb.attr('src', track.album.images[0].url);
+        
+        item.children('div').children('div').children('small').text(track.album.name);
+        item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
+        item.addClass('song_link');
+
+        if(bool){
+            return item;
+        }
+    }
+
+
+    function refresh_all(tracks, actual_playing_uri) {
+        $('#party_playlist').empty();
+
+        $.each(tracks, function(index, track) {
+            if(actual_playing_uri != track.track_uri) {
+                var elem = $('#playlist_song_prototype').clone();
+                var track_id = track.track_uri.replace('spotify:track:', '');
+                elem.attr('id', '');
+                elem.attr('data-track', track.track_uri);
+                elem.attr('data-song-id', track.id);
+                elem.addClass('song_link');
+                instance({
+                    url: "https://api.spotify.com/v1/tracks/" + track_id,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    dataType: 'json',
+                }).then(function (data) {
+                    //console.log(data, 'track_info');
+                    populate_song_link(elem, data.data, false);
+                });
+                $('#party_playlist').append(elem);
+            }
+        });
+
+    }
+
+    function play_next_song_battle(deviceId, token, code)  {
+
+            console.log(deviceId + " " + token)
+
+            // CALL FOR GETTING NEXT SONG
+            $.ajax({
+                url: "/party/" + code + "/getNextTrack",
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var track_real_id = data.id;
+                    var track_uri = data.track_uri;
+                    console.log(data, 'next_track');
+                    var instance = axios.create();
+                    delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+                    console.log(instance.defaults.headers)
+                    
+
+                    // Riproduco la canzone sul player
+                    instance({
+                        url: "https://api.spotify.com/v1/me/player/play?device_id=" + deviceId,
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        data: {
+                                "uris": [track_uri],
+                                "offset": {
+                                    "uri": track_uri,
+                                },
+                                "position_ms": 0
+                            },
+                        dataType: 'json'
+                    }).then(function (data) {
+
+                        console.log(data, 'spo_play');
+
+                        player.setVolume(slider.val() / 100);
+                        paused = false;
+                        $.ajax({
+                            url: "/party/" + party_code + "/play",
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: {
+                                "track_uri": track_uri,
+                                "position_ms": 0
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                console.log(data);
+                                
+                                $.ajax({
+                                    url: "/party/" + party_code + "/resetbattle",
+                                    method: 'GET',
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        console.log(data, 'party battle resetted');
+
+                                        $('#left_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                                        $('#left_side').find('h5').text('Left Side');
+                                        $('#left_side').find('p').text('No song selected');
+                                        $('#left_side').find('button').attr('disabled', true);
+                                        $('#left_side').find('button').removeClass('voted');
+                                        $('#right_side').find('button').removeClass('unlike');
+                                        $('#left_side').find('button').find('span').text('0');
+
+                                        $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                                        $('#right_side').find('h5').text('Right Side');
+                                        $('#right_side').find('p').text('No song selected');
+                                        $('#right_side').find('button').attr('disabled', true);
+                                        $('#right_side').find('button').removeClass('voted');
+                                        $('#right_side').find('button').removeClass('unlike');
+                                        $('#right_side').find('button').find('span').text('0');
+
+                                        $.ajax({
+                                            type: "DELETE",
+                                            url: `/party/${party_code}/tracks/${track_real_id}`,
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                            },
+                                            dataType: "json",
+                                            success: function (response) {
+                                                refresh_all(data, track_uri);
+                                            },
+                                            error: function(error){
+                                                console.log(error);
+                                            }
+                                        });
+
+                                        
+                                        // DEBUGGING
+                                        //console.log(data);
+                                    },
+                                    error: function (xhr, ajaxOptions, thrownError) {
+                                        /**
+                                         * Error Handling
+                                         */
+                                        if (xhr.status == 404) {
+                                            console.log("404 NOT FOUND");
+                                        } else if (xhr.status == 500) {
+                                            console.log("500 INTERNAL SERVER ERROR");
+                                        } else {
+                                            console.log("errore " + xhr.status);
+                                        }
+                                    }
+                                });
+                                
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                /**
+                                 * Error Handling
+                                 */
+                                if (xhr.status == 404) {
+                                    console.log("404 NOT FOUND");
+                                } else if (xhr.status == 500) {
+                                    console.log("500 INTERNAL SERVER ERROR");
+                                } else {
+                                    console.log("errore " + xhr.status);
+                                }
+                            }
+                        });
+
+                        
+                    }).catch((error)=> {
+                        if (error.response) {
+                          // The request was made and the server responded with a status code
+                          // that falls out of the range of 2xx
+                          console.log(error.response.data);
+                          console.log(error.response.status);
+                          console.log(error.response.headers);
+                        } else if (error.request) {
+                          // The request was made but no response was received
+                          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                          // http.ClientRequest in node.js
+                          console.log(error.request);
+                        } else {
+                          // Something happened in setting up the request that triggered an Error
+                          console.log('Error', error.message);
+                        }
+                    });
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("Next Track 404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("Next Track 500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("Next Track errore " + xhr.status);
+                    }
+                }
+            });
+            
+            
+    }
+
+    function delete_from_playlist(track_uri) {
+        $('#party_playlist a').each( function(index, item) {
+            if($(this).attr('data-track') == track_uri) {
+                var elem = $(this);
+                elem.fadeOut("slow",function(){ elem.remove() });
+            }
+        });
+    }
+
 
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
@@ -404,12 +491,9 @@ $( document ).ready( function() {
                 dataType: 'json',
             }).then(function (data) {
                 //console.log(data, 'track_info');
-                populate_song_link(song_link, data.data);
+                populate_song_link(song_link, data.data, false);
                 
-                
-                /**
-                 * POPOLAZIONE RING SE ESISTE
-                 */
+
                 if($('#track_uri_side_1').length) {
                     var uri = $('#track_uri_side_1').attr('data-track');
                     $('.song_link').each( function(index, item) {
@@ -471,7 +555,8 @@ $( document ).ready( function() {
             player.getCurrentState().then(state => {
                 if (!state) {
                     console.error('User is not playing music through the Web Playback SDK');
-                    $('.song_link').first().click();
+                    //$('.song_link').first().click();
+                    play_next_song_battle(devId, token, party_code);
     
                     return;
                 }
@@ -727,29 +812,85 @@ $( document ).ready( function() {
     })
 
 
+    channel.listen('.song.voted',function(data){
+        console.log(data);
+    })
+
+
     /*------------VOTE A SONG ------------ */
 
-    $(document).on('click','.vote',function(event){
+    $(document).on('click','.like_bat',function(event){
         event.preventDefault();
         let vote = $(this);
-        vote.addClass('voted')
-
-        // let song_uri = $(this).attr('data-uri');
+        var song_id;
+        if($(this).attr('id') == 'vote_left')
+            song_id = $('#track_uri_side_1').attr('data-id');
+        else if($(this).attr('id') == 'vote_right')
+            song_id = $('#track_uri_side_2').attr('data-id');
         
-        // $.ajax({
-        //     type: "GET",
-        //     url: `/party/${party_code}/tracks/${song_uri}/vote`,
-        //     headers: {
-        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        //     },
-        //     dataType: "json",
-        //     success: function (response) {
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/vote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                if(!response.error){
+                    vote.removeClass('like_bat');
+                    vote.addClass('unlike');
+                    vote.addClass('voted');
+                    vote.children('span').text(parseInt(vote.children('span').text()) + 1);
+                }
+                else {
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                        });
+                }
                 
-        //     },
-        //     error: function(error){
-        //         console.log(error);
-        //     }
-        // });
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
+    });
+
+    /* -------------------- UNVOTE A SONG -----------------*/
+
+    $(document).on('click','.unlike',function(event){
+        event.preventDefault();
+        let vote = $(this);
+        var song_id;
+        if($(this).attr('id') == 'vote_left')
+            song_id = $('#track_uri_side_1').attr('data-id');
+        else if($(this).attr('id') == 'vote_right')
+            song_id = $('#track_uri_side_2').attr('data-id');
+        
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/unvote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                if(!response.error){
+                    vote.removeClass('unlike');
+                    vote.addClass('like_bat');
+                    vote.removeClass('voted');
+                    vote.children('span').text(parseInt(vote.children('span').text()) - 1);
+                }
+                
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+
     });
 
 
@@ -761,9 +902,8 @@ $( document ).ready( function() {
                 $('.song_link').each( function(index, item) {
                     if($(item).attr('data-track') == selected_track) {
                         $('#battleModal').modal('hide');
-
-                        setSongActive(selected_track, party_code, 1, item);
-                        
+                        setSongActive(selected_track, party_code, 1, item, $(item).attr('data-song-id'));
+                        delete_from_playlist(selected_track);
                     }
                 });
             });
@@ -775,14 +915,15 @@ $( document ).ready( function() {
                     if($(item).attr('data-track') == selected_track) {
                         $('#battleModal').modal('hide');
 
-                        setSongActive(selected_track, party_code, 2, item);
+                        setSongActive(selected_track, party_code, 2, item, $(item).attr('data-song-id'));
+                        delete_from_playlist(selected_track);
                     }
                 });
             });
         }
 
 
-        function setSongActive(track_uri, code, side, item) {
+        function setSongActive(track_uri, code, side, item, track_real_id) {
             $.ajax({
                 type: "POST",
                 url: '/party/active_track',
@@ -801,13 +942,21 @@ $( document ).ready( function() {
                         $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
                         $('#left_side').find('h5').text($(item).find('h5').text());
                         $('#left_side').find('p').text($(item).find('p').text());
+                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '></span>');
+                        $('#left_side').find('button').attr('disabled', false);
                     } else {
                         $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
                         $('#right_side').find('h5').text($(item).find('h5').text());
                         $('#right_side').find('p').text($(item).find('p').text());
+                        $('#right_side').prepend('<span id="track_uri_side_1" data-track="' + track_uri + '></span>');
+                        $('#right_side').find('button').attr('disabled', false);
                     }
                 },
                 error: function(error){
+                    Toast.fire({
+                        type: 'error',
+                        title: error.responseJSON.message
+                    });
                     console.log(error);
                 }
             });

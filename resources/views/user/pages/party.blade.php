@@ -144,11 +144,12 @@
                 @endif -->
                 --}}
 
-                @include('user._shared.player')
+                
 
 
                 @if($party->type == "Battle") 
-                <div class="ring">
+                <div class="ring mt-5">
+                  <h4><i class="fa fa-star" aria-hidden="true"></i> Battle Mode Ring <i class="fa fa-star" aria-hidden="true"></i></h4>
                   <div class="vs-cont" style="background-image: url({{ asset('/img/bg-img/vs.png') }})">
                   </div>
                   <div class="row mt-5 battle-box">                  
@@ -156,12 +157,12 @@
                       <div id="left_side" class="card side">
                         <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
                         @if(isset($side_1) && !empty($side_1))
-                        <span id="track_uri_side_1" data-track="{{$side_1->track_uri}}"></span>
+                        <span id="track_uri_side_1" data-id="{{$side_1->id}}" data-track="{{$side_1->track_uri}}"></span>
                         @endif
                         <div class="card-body">
                           <h5>Left Side</h5>
                           <p class="card-text">No song selected</p>
-                          <button id="vote_left" type="button" class="btn poca-back">
+                          <button id="vote_left" @if(!isset($side_1) || empty($side_1)) disabled @endif type="button" class="btn poca-back like_bat">
                             <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_1) && !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
                           </button>
                         </div>
@@ -172,12 +173,12 @@
                       <div id="right_side" class="card side">
                         <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
                         @if(isset($side_2) && !empty($side_2))
-                        <span id="track_uri_side_2" data-track="{{$side_2->track_uri}}"></span>
+                        <span id="track_uri_side_2" data-id="{{$side_2->id}}" data-track="{{$side_2->track_uri}}"></span>
                         @endif
                         <div class="card-body">
                           <h5>Right Side</h5>
                           <p class="card-text">No song selected</p>
-                          <button id="vote_right" type="button" class="btn poca-back">
+                          <button id="vote_right" type="button" @if(!isset($side_2) || empty($side_2)) disabled @endif class="btn poca-back like_bat">
                             <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_2) && !empty($side_2)) {{$side_2->votes}} @else 0 @endif</span>
                           </button>
                         </div>
@@ -187,11 +188,15 @@
                 </div>
                 @endif
 
+                @include('user._shared.player')
+
                 
 
                 {{-- PLAYLIST --}}
                 <div class="single-widget-area catagories-widget mt-5 mb-40">
+                  @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
                     <h5 class="widget-title">Songs</h5>
+                  @endif
 
                     <!-- Prototype for adding -->
                     <div class="d-none">    
@@ -213,7 +218,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
+                                  <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
                                 </div>
                             </div>
                             
@@ -222,34 +227,38 @@
                     
                     <div class="list-group" id="party_playlist">
                       <!-- Actual playlist-->
-                      @forelse($party->tracks->sortBy('votes')->reverse() as $song)
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
+                      @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
+                        @forelse($party->tracks->sortBy('votes')->reverse() as $song)
+                        
+                          <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link @if($party->type == 'Battle' && $song->active != 0) d-none @endif" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
+                                  
+                                  <div class="row song_row">
+                                      <div class="col-sm-3 album_img_container">
+                                          <img class="album_img"/>
+                                      </div>
+                                      <div class="col-sm-7">
+                                          <div class="d-flex w-100 justify-content-between title_song" >
+                                              <h5 class="mb-1"></h5>
+                                              <small> 
+                                                  <button class="btn btn-danger _delete">
+                                                      <i class="fa fa-times" aria-hidden="true"></i>
+                                                  </button>
+                                              </small>
+                                          </div>
+                                          <p class="mb-1"></p>
+                                          <small></small>
+                                      </div>
+                                      <div class="col-sm-2">
+                                      <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
+                                      </div>
+                                  </div>
+                                  
+                              </a>
                             
-                            <div class="row song_row">
-                                <div class="col-sm-3 album_img_container">
-                                    <img class="album_img"/>
-                                </div>
-                                <div class="col-sm-7">
-                                    <div class="d-flex w-100 justify-content-between title_song" >
-                                        <h5 class="mb-1"></h5>
-                                        <small> 
-                                            <button class="btn btn-danger _delete">
-                                                <i class="fa fa-times" aria-hidden="true"></i>
-                                            </button>
-                                        </small>
-                                    </div>
-                                    <p class="mb-1"></p>
-                                    <small></small>
-                                </div>
-                                <div class="col-sm-2">
-                                <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
-                                </div>
-                            </div>
-                            
-                        </a>
-                      @empty
-
-                      @endforelse
+                        @empty
+                        <p>No songs</p>
+                        @endforelse
+                      @endif
                     </div>
 
                 </div>
