@@ -37,7 +37,7 @@
 <section class="blog-details-area">
     <div class="container">
       <div class="row">
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-xl-8">
           <div class="podcast-details-content d-flex mt-5 mb-80">
 
             <!-- Post Share -->
@@ -65,7 +65,7 @@
                   <span class="d-none" data-code="{{Auth::user()->id}}" id="user_code"></span>
                   <a href="#" class="post-date">{{ $party->created_at }}</a>
                   @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn setting-button" data-toggle="modal" data-target="#editPartyModal"><i class="fa fa-cogs" aria-hidden="true"></i></button> @endif
-                  <h2 class="text-uppercase">{{ $party->name }}</h2>
+                  <h2>{{ $party->name }}</h2>
                   <p id="party_name" class="d-none">{{ $party->name }}</p>
                   <div class="post-meta">
                     <a href="#" class="post-author">CREATED BY {{ $party->user->name }}</a>
@@ -148,28 +148,46 @@
 
 
                 @if($party->type == "Battle") 
-                <div class="row mt-5 battle-box">
-                  <div class="col-6">
-                    <div id="left_side" class="card side">
-                      <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
-                      <div class="card-body">
-                        <h2>Left Side</h2>
-                        <p class="card-text">No song selected</p>
+                <div class="ring">
+                  <div class="vs-cont" style="background-image: url({{ asset('/img/bg-img/vs.png') }})">
+                  </div>
+                  <div class="row mt-5 battle-box">                  
+                    <div class="col-6">
+                      <div id="left_side" class="card side">
+                        <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
+                        @if(isset($side_1) && !empty($side_1))
+                        <span id="track_uri_side_1" data-track="{{$side_1->track_uri}}"></span>
+                        @endif
+                        <div class="card-body">
+                          <h5>Left Side</h5>
+                          <p class="card-text">No song selected</p>
+                          <button id="vote_left" type="button" class="btn poca-back">
+                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_1) && !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <!-- <div class="col-2" id="vs_cont"><img class="vs_img" src="{{ asset('/img/bg-img/vs.png') }}"></div> -->
-                  <div class="col-6">
-                    <div id="right_side" class="card side">
-                      <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
-                      <div class="card-body">
-                        <h2>Right Side</h2>
-                        <p class="card-text">No song selected</p>
+                    <!-- <div class="col-2" id="vs_cont"><img class="vs_img" src="{{ asset('/img/bg-img/vs.png') }}"></div> -->
+                    <div class="col-6">
+                      <div id="right_side" class="card side">
+                        <img class="card-img-top" src="{{ asset('/img/bg-img/no_song.png') }}" alt="Card image cap">
+                        @if(isset($side_2) && !empty($side_2))
+                        <span id="track_uri_side_2" data-track="{{$side_2->track_uri}}"></span>
+                        @endif
+                        <div class="card-body">
+                          <h5>Right Side</h5>
+                          <p class="card-text">No song selected</p>
+                          <button id="vote_right" type="button" class="btn poca-back">
+                            <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_2) && !empty($side_2)) {{$side_2->votes}} @else 0 @endif</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 @endif
+
+                
 
                 {{-- PLAYLIST --}}
                 <div class="single-widget-area catagories-widget mt-5 mb-40">
@@ -224,7 +242,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
+                                  <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default vote"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
                                 </div>
                             </div>
                             
@@ -244,7 +262,7 @@
 
         <!-- COLONNA DI DESTRA -->
 
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-xl-4">
           <div class="sidebar-area mt-5">
 
             <!-- Single Widget Area -->
