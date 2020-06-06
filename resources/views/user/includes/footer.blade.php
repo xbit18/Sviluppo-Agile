@@ -87,11 +87,6 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
               <a href="#" class="instagram" data-toggle="tooltip" data-placement="top" title="Instagram"><i class="fa fa-instagram"></i></a>
               <a href="#" class="youtube" data-toggle="tooltip" data-placement="top" title="YouTube"><i class="fa fa-youtube-play"></i></a>
             </div>
-            <!-- App Download Button -->
-            <div class="app-download-button mt-30">
-              <a href="#"><img src="./img/core-img/app-store.png" alt=""></a>
-              <a href="#"><img src="./img/core-img/google-play.png" alt=""></a>
-            </div>
           </div>
         </div>
 

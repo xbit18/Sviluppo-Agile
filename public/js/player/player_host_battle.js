@@ -1,5 +1,4 @@
-$( document ).ready( function() {
-    'use strict';
+ 'use strict';
 
 
     var party_code = $('#party_code').attr('data-code');
@@ -31,7 +30,6 @@ $( document ).ready( function() {
 
 
     
- 
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
         const token = $('#mytoken').text();
@@ -136,7 +134,7 @@ $( document ).ready( function() {
                     }
                     
     
-               // });
+                // });
                 increment_timeline(false);
                 $.ajax({
                     url: "/party/" + party_code + "/pause",
@@ -188,7 +186,7 @@ $( document ).ready( function() {
         // Connect to the player!
         player.connect();
 
-           
+            
 
     function millisToMinutesAndSeconds(millis) {
         var minutes = Math.floor(millis / 60000);
@@ -424,19 +422,19 @@ $( document ).ready( function() {
                         
                     }).catch((error)=> {
                         if (error.response) {
-                          // The request was made and the server responded with a status code
-                          // that falls out of the range of 2xx
-                          console.log(error.response.data);
-                          console.log(error.response.status);
-                          console.log(error.response.headers);
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
                         } else if (error.request) {
-                          // The request was made but no response was received
-                          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                          // http.ClientRequest in node.js
-                          console.log(error.request);
+                            // The request was made but no response was received
+                            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                            // http.ClientRequest in node.js
+                            console.log(error.request);
                         } else {
-                          // Something happened in setting up the request that triggered an Error
-                          console.log('Error', error.message);
+                            // Something happened in setting up the request that triggered an Error
+                            console.log('Error', error.message);
                         }
                     });
 
@@ -604,7 +602,7 @@ $( document ).ready( function() {
             
         /** ---------------- TIMELINE Listener ----------------- */
 
-         //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
+            //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
         var timeline_mob = document.getElementById('timeline');
 
         var mc_timeline = new Hammer.Manager(timeline_mob);
@@ -617,7 +615,7 @@ $( document ).ready( function() {
             if(timeline.val() != 0) {
                 player.seek(timeline.val()).then(() => {
                     //console.log('Changed position mob!');
-                  });
+                    });
             }
             
         }); 
@@ -630,7 +628,7 @@ $( document ).ready( function() {
                     ///console.log('Changed position!');
                 });
             }
-              
+                
         });
 
     /*----------------------- CERCARE UNA CANZONE --------------------*/
@@ -666,15 +664,15 @@ $( document ).ready( function() {
 
             $.each(tracks, function (index, element) { 
 
-               let item = $('#song-prototype').clone();
-               let img = item.children('div').children('div').first().find('img');
-               img.attr('src',element.album.images[0].url);
+                let item = $('#song-prototype').clone();
+                let img = item.children('div').children('div').first().find('img');
+                img.attr('src',element.album.images[0].url);
                 
-               let content = item.children('div').children('div').last();
-               content.children('div').first().find('h6').text(element.name);
-               content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
+                let content = item.children('div').children('div').last();
+                content.children('div').first().find('h6').text(element.name);
+                content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
 
-               let artists = "";
+                let artists = "";
                 $.each(element.artists, function (index, artist) {
                     artists += artist.name +' ';
                 });
@@ -689,10 +687,10 @@ $( document ).ready( function() {
                 item.addClass('item');
                 item.removeAttr('id');
                 result.append(item).hide().fadeIn();            
-               
+                
 
             });
-   
+    
         })
         .catch(function(error){
             console.log('search error: ');
@@ -717,7 +715,7 @@ $( document ).ready( function() {
 
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-       
+        
         $.ajax({
         url: `/party/${party_code}/tracks`,
         method: 'POST',
@@ -786,7 +784,7 @@ $( document ).ready( function() {
     $('#deleteSongModal').on('submit', function(event) {
         event.preventDefault();
 
-         /**
+            /**
          * Logica eliminazione canzone dalla playlist
          */
 
@@ -808,7 +806,7 @@ $( document ).ready( function() {
             }
         });
 
-           
+            
     })
 
 
@@ -944,21 +942,18 @@ $( document ).ready( function() {
                 },
                 success: function (response) {
                     console.log(response, 'setactiveresponse');
+                    var elem;
                     if(side == 1) {
-                        $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
-                        $('#left_side').find('h5').text($(item).find('h5').text());
-                        $('#left_side').find('p').text($(item).find('p').text());
-                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
-                        
-                        $('#left_side').find('button').attr('disabled', false);
-                        console.log('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '></span>')
+                        elem = $('#left_side');
                     } else {
-                        $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
-                        $('#right_side').find('h5').text($(item).find('h5').text());
-                        $('#right_side').find('p').text($(item).find('p').text());
-                        $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
-                        $('#right_side').find('button').attr('disabled', false);
+                        elem = $('#right_side');
                     }
+                    elem.children('img').attr('src', $(item).find('img').attr('src'));
+                    elem.find('h5').text($(item).find('h5').text());
+                    elem.find('p').text($(item).find('p').text());
+                    elem.prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
+                    elem.find('button').addClass('like_bat');
+                    elem.find('button').attr('disabled', false);
                 },
                 error: function(error){
                     Toast.fire({
@@ -973,10 +968,6 @@ $( document ).ready( function() {
 
 
     };
-
-    // FINE onSpotifyWebPlaybackSDKReady
-
     
 
-
-});
+    // FINE onSpotifyWebPlaybackSDKReady
