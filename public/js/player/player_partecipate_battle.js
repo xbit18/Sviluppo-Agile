@@ -239,7 +239,7 @@ $( document ).ready( function() {
                 $('#left_side').children('img').attr('src', track.album.images[0].url);
                 $('#left_side').find('h5').text(track.name);
                 $('#left_side').find('p').text(artists);
-                $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + data.track.uri + '></span>');
+                $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track.uri + '></span>');
                 $('#left_side').find('button').attr('disabled', false);
                 
 
@@ -268,7 +268,7 @@ $( document ).ready( function() {
                 $('#right_side').children('img').attr('src', track.album.images[0].url);
                 $('#right_side').find('h5').text(track.name);
                 $('#right_side').find('p').text(artists);
-                $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + data.track.uri + '></span>');
+                $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track.uri + '></span>');
                 $('#right_side').find('button').attr('disabled', false);
                 
 
@@ -409,6 +409,12 @@ $( document ).ready( function() {
                         vote.addClass('like_bat');
                         vote.removeClass('voted');
                         vote.children('span').text(parseInt(vote.children('span').text()) - 1);
+                    }
+                    else {
+                        Toast.fire({
+                            type: 'error',
+                            title: response.error
+                            });
                     }
                     
                 },

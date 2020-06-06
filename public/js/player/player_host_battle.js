@@ -884,7 +884,13 @@ $( document ).ready( function() {
                     vote.removeClass('voted');
                     vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                 }
-                
+                else {
+                    console.log(`/party/${party_code}/tracks/${song_id}/unvote`)
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                    });
+                }
             },
             error: function(error){
                 console.log(error);

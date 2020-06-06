@@ -229,8 +229,7 @@ class TrackController extends Controller
         }
         else{
             return response()->json([
-                'message' => 'You have already voted, please remove your vote before voting again',
-                'error' => true,
+                'error' => 'You have already voted, please remove your vote before voting again',
             ]);
         }
 }
