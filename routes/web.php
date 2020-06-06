@@ -51,7 +51,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/party/active_track', 'TrackController@setTrackActive')->name('party.activeTrack');
     //Route::post('/party/release_track', 'TrackController@setTrackNotActive')->name('party.releaseTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
-   
+
     Route::get('/prova', function(){
         $user = Auth::user();
         $party = \App\Party::find(5);
@@ -92,52 +92,52 @@ Route::group(['middleware' => ['auth']], function () {
     /**
      * Admin routes
      */
-    Route::get('/admin','AdminController@index');
+    Route::get('/admin','Admin\MainController@index');
     /**
      * Admin users
      */
-    Route::get('/admin/users','AdminUsersController@index')->name('users.index');
-    Route::post('/admin/user/delete','AdminUsersController@delete');
-    Route::get('/admin/user/new','AdminUsersController@create');
-    Route::post('/admin/user/store','AdminUsersController@store');
-    Route::post('/admin/user/update','AdminUsersController@update');
-    Route::get('/admin/user/{id}/edit','AdminUsersController@edit');
+    Route::get('/admin/users','Admin\UsersController@index')->name('users.index');
+    Route::post('/admin/user/delete','Admin\UsersController@delete');
+    Route::get('/admin/user/new','Admin\UsersController@create');
+    Route::post('/admin/user/store','Admin\UsersController@store');
+    Route::post('/admin/user/update','Admin\UsersController@update');
+    Route::get('/admin/user/{id}/edit','Admin\UsersController@edit');
     /**
      * Admin party
      */
-    Route::get('/admin/parties','AdminPartiesController@index')->name('admin.party.index');
-    Route::post('/admin/party/delete','AdminPartiesController@delete');
-    Route::get('/admin/party/new','AdminPartiesController@create');
-    Route::post('/admin/party/store','AdminPartiesController@store')->name('admin.party.store');;
-    Route::post('/admin/party/update','AdminPartiesController@update')->name('admin.party.update');
-    Route::get('/admin/party/{id}/edit','AdminPartiesController@edit');
+    Route::get('/admin/parties','Admin\PartiesController@index')->name('admin.party.index');
+    Route::post('/admin/party/delete','Admin\PartiesController@delete');
+    Route::get('/admin/party/new','Admin\PartiesController@create');
+    Route::post('/admin/party/store','Admin\PartiesController@store')->name('admin.party.store');;
+    Route::post('/admin/party/update','Admin\PartiesController@update')->name('admin.party.update');
+    Route::get('/admin/party/{id}/edit','Admin\PartiesController@edit');
     /**
      * Admin bans
      */
-    Route::get('/admin/bans','AdminBansController@index')->name('admin.ban.index');
-    Route::post('/admin/ban/delete','AdminBansController@delete');
-    Route::get('/admin/ban/new','AdminBansController@create');
-    Route::post('/admin/ban/store','AdminBansController@store')->name('admin.ban.store');;
-    Route::post('/admin/ban/update','AdminBansController@update')->name('admin.ban.update');
-    Route::get('/admin/ban/{id}/edit','AdminBansController@edit');
+    Route::get('/admin/bans','Admin\BansController@index')->name('admin.ban.index');
+    Route::post('/admin/ban/delete','Admin\BansController@delete');
+    Route::get('/admin/ban/new','Admin\BansController@create');
+    Route::post('/admin/ban/store','Admin\BansController@store')->name('admin.ban.store');;
+    Route::post('/admin/ban/update','Admin\BansController@update')->name('admin.ban.update');
+    Route::get('/admin/ban/{id}/edit','Admin\BansController@edit');
     /**
      * Admin votes
      */
-    Route::get('/admin/votes','AdminVotesController@index')->name('admin.vote.index');
-    Route::post('/admin/vote/delete','AdminVotesController@delete');
-    Route::get('/admin/vote/new','AdminVotesController@create');
-    Route::post('/admin/vote/store','AdminVotesController@store')->name('admin.vote.store');;
-    Route::post('/admin/vote/update','AdminVotesController@update')->name('admin.vote.update');
-    Route::get('/admin/vote/{id}/edit','AdminVotesController@edit');
+    Route::get('/admin/votes','Admin\VotesController@index')->name('admin.vote.index');
+    Route::post('/admin/vote/delete','Admin\VotesController@delete');
+    Route::get('/admin/vote/new','Admin\VotesController@create');
+    Route::post('/admin/vote/store','Admin\VotesController@store')->name('admin.vote.store');;
+    Route::post('/admin/vote/update','Admin\VotesController@update')->name('admin.vote.update');
+    Route::get('/admin/vote/{id}/edit','Admin\VotesController@edit');
     /**
      * Admin kicks
      */
-    Route::get('/admin/kicks','AdminKicksController@index')->name('admin.kick.index');
-    Route::post('/admin/kick/delete','AdminKicksController@delete');
-    Route::get('/admin/kick/new','AdminKicksController@create');
-    Route::post('/admin/kick/store','AdminKicksController@store')->name('admin.kick.store');;
-    Route::post('/admin/kick/update','AdminKicksController@update')->name('admin.kick.update');
-    Route::get('/admin/kick/{id}/edit','AdminKicksController@edit');
+    Route::get('/admin/kicks','KAdmin\icksController@index')->name('admin.kick.index');
+    Route::post('/admin/kick/delete','Admin\KicksController@delete');
+    Route::get('/admin/kick/new','Admin\KicksController@create');
+    Route::post('/admin/kick/store','Admin\KicksController@store')->name('admin.kick.store');;
+    Route::post('/admin/kick/update','Admin\KicksController@update')->name('admin.kick.update');
+    Route::get('/admin/kick/{id}/edit','Admin\KicksController@edit');
     /**
      * Other admin routs
      */

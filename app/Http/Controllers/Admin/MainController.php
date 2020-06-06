@@ -1,22 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Genre;
-use App\Party;
-use App\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
-use SpotifyWebAPI\SpotifyWebAPIException;
 
-class AdminController extends Controller
+class MainController extends Controller
 {
     function index(){
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         return view('admin.index');
     }
