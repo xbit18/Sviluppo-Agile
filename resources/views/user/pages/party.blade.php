@@ -213,7 +213,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                  <button class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i>0</button>
+                                  <button class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
                                 </div>
                             </div>
                             
@@ -242,7 +242,7 @@
                                     <small></small>
                                 </div>
                                 <div class="col-sm-2">
-                                <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> {{$song->votes}}</button>
+                                <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>{{$song->votes}}</span></button>
                                 </div>
                             </div>
                             

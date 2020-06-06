@@ -46,7 +46,7 @@ class VoteEvent implements ShouldBroadcastNow
 
     public function broadcastWith(){
         return [
-            'song-id' => $this->track->id,
+            'song_id' => $this->track->id,
             'likes' => $this->track->votes,
         ];
     }

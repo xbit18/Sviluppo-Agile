@@ -798,8 +798,39 @@ $( document ).ready( function() {
     /* ------------------------------LISTENER AL CHANNEL DELLE VOTAZIONI ------------------------- */
 
     channel.listen('.song.voted',function(data){
+        console.log(data);
+       let first = playlist_dom.children().first().data('song-id');
+       let current = playlist_dom.find("[data-song-id='" + data.song_id + "']");
+       let current_likes = current.find('button').eq(1).find('span').text(data.likes);
+       let next;
+       let next_likes;
+       let prev;
+       let prev_likes;
+
+       if(first != current.data('song-id')){
+           
+        //    console.log(current);
+            prev = current.prev();
+            prev_likes = prev.find('button').eq(1).find('span').text();
+
+            next = current.next();
+            next_likes = next.find('button').eq(1).find('span').text();
         
-        
+             if(current_likes.text() < next_likes ){
+                current.fadeOut("slow",function(){
+                    current.remove()
+                    current.hide().insertAfter(next).fadeIn("slow");
+                })
+                
+             } else if(current_likes.text() > prev_likes ){
+                 current.fadeOut("slow",function(){
+                     current.remove();
+                     current.hide().insertBefore(prev).fadeIn("slow");
+                 });
+                 
+             }
+
+       }
 
     })
 
@@ -808,6 +839,7 @@ $( document ).ready( function() {
 
     $(document).on('click','.like',function(event){
         event.preventDefault();
+        event.stopPropagation()
         let vote = $(this);
         let parent = $(this).parents('a.song_link');
         let song_id = parent.data('song-id');
@@ -838,6 +870,7 @@ $( document ).ready( function() {
 
     $(document).on('click','.unlike',function(event){
         event.preventDefault();
+        event.stopPropagation()
         let vote = $(this);
         let parent = $(this).parents('a.song_link');
         let song_id = parent.data('song-id');
