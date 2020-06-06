@@ -103,6 +103,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin/user/new','Admin\UsersController@create');
     Route::post('/admin/user/store','Admin\UsersController@store');
     Route::post('/admin/user/update','Admin\UsersController@update');
+    Route::post('/admin/user/joinparty','Admin\UsersController@joinparty');
+    Route::post('/admin/user/kickparty','Admin\UsersController@kickparty');
     Route::get('/admin/user/{id}/edit','Admin\UsersController@edit');
     /**
      * Admin party
@@ -134,7 +136,7 @@ Route::group(['middleware' => ['auth']], function () {
     /**
      * Admin kicks
      */
-    Route::get('/admin/kicks','KAdmin\icksController@index')->name('admin.kick.index');
+    Route::get('/admin/kicks','Admin\KicksController@index')->name('admin.kick.index');
     Route::post('/admin/kick/delete','Admin\KicksController@delete');
     Route::get('/admin/kick/new','Admin\KicksController@create');
     Route::post('/admin/kick/store','Admin\KicksController@store')->name('admin.kick.store');;

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Party;
+use App\Track;
 use App\User;
+use App\UserParticipatesParty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -100,4 +103,32 @@ class UsersController extends Controller
         $user->delete();
         return back()->with('success', 'User '. $email.' deleted!');
     }
+
+    function joinparty(Request $request)
+    {
+        $a= new MainController;
+        $a->verify();
+        $party=Party::where('code',$request->code)->first();
+        if($party == null) {
+            return redirect()->back()->with('Success','cant find party');;
+        }
+        $partecipate = new UserParticipatesParty();
+        $partecipate->user_id =$request->id;
+        $partecipate->party_id= Party::where('code',$request->code)->first()->id;
+        $partecipate->save();
+
+        return redirect()->back()->with('Success','Joined successfully');
+    }
+    function kickparty(Request $request)
+    {
+        $a= new MainController;
+        $a->verify();
+        $partecipate = UserParticipatesParty::where('user_id',$request->id)->first();
+        if($partecipate->vote != null){
+            $track = Track::where('id',$partecipate->vote)->first();
+            $track->votes = $track->votes-1;
+            $track->save();
+        }
+        $partecipate->delete();
+        return redirect()->back()->with('Success','Kicked successfully');    }
 }

@@ -16,12 +16,12 @@
     @endif
     <div class="panel panel-container" style="background-color: #F1F4F7">
         <div class="row">
-            <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                     Name
                 </div>
             </div>
-            <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                     Email
                 </div>
@@ -29,6 +29,11 @@
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                         Parties created
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+                <div class="panel panel-teal panel-widget border-right">
+                    Join Party
                 </div>
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
@@ -49,12 +54,12 @@
         @endphp
     <div class="panel panel-container">
         <div class="row">
-            <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                    {{$user->name}}
                 </div>
             </div>
-            <div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                     {{$user->email}}
                 </div>
@@ -69,6 +74,47 @@
                             <option>{{$party->name}}</option>
                             @endforeach
                         </select>
+                    @endif
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+                <div class="panel panel-teal panel-widget border-right" style="color: green">
+                    @if(\App\UserParticipatesParty::where('user_id',$user->id)->first() == null)
+                    <form  id='joinparty-form-{{$id}}' action="/admin/user/joinparty" method="POST">
+                        @csrf
+                        <em onclick="insertFunc{{$id}}()" class="fa fa-xl fa-plus color-green" style="cursor: pointer" ></em>
+                        <script>
+                            function insertFunc{{$id}}() {
+                                var x = prompt('please enter party code');
+                                    document.getElementById("party_code{{$id}}").value = x;
+                                    document.getElementById('joinparty-form-{{$id}}').submit();
+                            }
+                        </script>
+                        <input name="id" value="{{$user->id}}" hidden >
+                        <input name="code" id="party_code{{$id}}" hidden>
+                    </form>
+                    @else
+                        <form  id='kickparty-form-{{$id}}' action="/admin/user/kickparty" method="POST">
+                            @csrf<p
+                        onmouseover="
+                            this.innerHTML='kick';
+                            this.style.color='red';"
+                        onmouseout="
+                            this.innerHTML='joined';
+                            this.style.color='green'"
+                        onclick="kickFunc{{$id}}()"
+                            style="cursor: pointer; color:green;">
+                        joined
+                    </p>
+                            <script>
+                                function kickFunc{{$id}}() {
+                                    var x = confirm('Do you really want to kick {{$user->email}} user from the party?')
+                                    if(x == true){
+                                        document.getElementById('kickparty-form-{{$id}}').submit(); }
+                                }
+                            </script>
+                            <input name="id" value="{{$user->id}}" hidden >
+                        </form>
                     @endif
                 </div>
             </div>

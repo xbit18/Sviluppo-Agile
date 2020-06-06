@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Genre;
 use App\Party;
+use App\Track;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
@@ -84,11 +87,9 @@ class PartiesController extends Controller
 
        // try {
             $api = new SpotifyWebAPI();
-            $api->setAccessToken($user->access_token);
-            $playlist = $api->createPlaylist([
-                'name' => $request->name,
-                'public' => false
-            ]);
+            if($user->access_token != null ) {
+                $api->setAccessToken($user->access_token);
+            }
             $party = Party::create([
                 'user_id' => $user_id,
                 'name' => $request->name,
@@ -97,15 +98,30 @@ class PartiesController extends Controller
                 'source' => $request->source,
                 'description' => $request->desc,
                 'code' => $code,
-                'playlist_id' => $playlist->id
             ]);
             foreach ($genre_ids as $id) {
                 $party->genre()->attach($id);
-                // provisorio finche non è implementato il resto
-                return redirect()->route('admin.party.index')->with('success', 'Party Created WITHOUT the playlist ');
+            }
+        $api = new SpotifyWebAPI();
+        if($user->access_token != null ) {
+            $api->setAccessToken($user->access_token);
+
+            $songsByGenre = $this->getSongsByGenre($party->code, null);
+
+            foreach ($songsByGenre as $song) {
+                $track = Track::create([
+                    'party_id' => $party->id,
+                    'track_uri' => $song
+                ]);
+                $party->tracks()->save($track);
+            }
+            return redirect()->route('admin.party.index')->with('success', 'Party Created WITH the tracks ');
+        }
+
+            return redirect()->route('admin.party.index')->with('success', 'Party Created WITHOUT the tracks, token old or not exists');
 
 
-            }/*
+        /*
             $p = new \App\Http\Controllers\PartyController();
             $songsByGenre = $p->getSongsByGenre($party->code);
             $bool = $api->addPlaylistTracks($playlist->id, $songsByGenre);
@@ -189,6 +205,41 @@ class PartiesController extends Controller
         return redirect()->route('admin.party.index')->with('success', 'Party '. $party->code.' updated!');;
 
     }
+    public function getSongsByGenre($party_code, $genre_id)
+    {
 
+        $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
+
+        if($genre_id == null && $party_code == null){ return ;}
+        if($genre_id != null){
+            $genre = strtolower(Genre::findOrFail($genre_id)->genre);
+            $URI .= $genre;
+        } else {
+            $genres = Party::where('code','=',$party_code)->first()->genre;
+            foreach($genres as $genre){
+                $URI .= strtolower($genre->genre).',';
+            }
+        }
+
+
+        try {
+            $user_token = Auth::user()->access_token;
+
+            $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
+
+            $tracks = array();
+            if(!$response['tracks']) return redirect()->route('spotify.login');
+            $tracks = $response['tracks'];
+
+            $tracks_uris = array();
+            foreach ($tracks as $track) {
+                $tracks_uris[] = $track['uri'];
+            }
+            return $tracks_uris;
+        } catch (SpotifyWebApiException $e){
+            return redirect()->route('spotify.login');
+        }
+
+    }
 
 }

@@ -11,19 +11,19 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <form method="POST" action="/admin/user/store">
+            <form method="POST" action="/admin/kick/store">
                 @csrf
                 <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control" placeholder="Name" name="name">
+                    <label>Party Code</label>
+                    <input class="form-control" placeholder="Party Code" name="code">
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
+                    <label>user to kick</label>
                     <input class="form-control" placeholder="Email" name="email">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" class="form-control" placeholder="password" name="password">
+                    <label>Duration</label>
+                    <input class="form-control" placeholder="2020-06-06 13:59:35" name="duration">
                 </div>
                 @if ($errors->any())
                     <div class="alert alert-danger">
@@ -38,5 +38,7 @@
             </form>
         </div>
     </div>
+
+
 
 @endsection

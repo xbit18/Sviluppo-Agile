@@ -17,6 +17,7 @@ class UserBanUsers extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('ban_user_id')->unique();
+            $table->timestamps();
         });
     }
 
