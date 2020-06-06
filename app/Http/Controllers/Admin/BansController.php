@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\User;
+use App\UserBanUser;
 use Illuminate\Http\Request;
 
-class AdminKicksController extends Controller
+class BansController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,18 +16,21 @@ class AdminKicksController extends Controller
      */
     public function index()
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
+        $bans = UserBanUser::all();
+        return $bans;
+        /*
         if(request('email')!=null) {
             $key = request('email');
             $users = User::where('email', $key)->get();
-            return view('admin.forms.kick.index',compact('users'));
+            return view('admin.forms.ban.index',compact('users'));
         }
         else {
             $users = User::paginate(10);
-            return view('admin.forms.kick.index',compact('users'));
+            return view('admin.forms.ban.index',compact('users'));
         }
-
+*/
     }
 
     /**
@@ -35,7 +40,7 @@ class AdminKicksController extends Controller
      */
     public function create()
     {
-        $a= new AdminController;
+        $a= new MainController;
         $a->verify();
         return view('admin.forms.vote.create');
     }

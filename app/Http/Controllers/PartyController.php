@@ -79,7 +79,7 @@ class PartyController extends Controller
 
             return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
         }
-        
+
         return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
@@ -185,9 +185,9 @@ class PartyController extends Controller
         /**
          * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
          */
-        //return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+        return redirect()->route( 'party.show', [ 'code' => $party->code ] );
 
-        return response()->json(['success' => 'Party Updated Successfully']);
+        //return response()->json(['success' => 'Party Updated Successfully']);
     }
 
     /**
@@ -219,7 +219,7 @@ class PartyController extends Controller
         $api = new SpotifyWebAPI();
 
         try {
-            
+
             $api->setAccessToken($user->access_token);
             /*
             $playlist = $api->createPlaylist([
@@ -361,7 +361,7 @@ class PartyController extends Controller
      * @return \Illuminate\Http\RedirectResponse|void
      */
     public function populateParty(Request $request){
-       
+
 
         $uris = $this->getSongsByGenre(null, $request->genre_id);
         /*$playlist_id = Party::where('code','=',$request->party_code)->first()->playlist_id;
@@ -421,9 +421,18 @@ class PartyController extends Controller
         } catch (SpotifyWebApiException $e){
             return redirect()->route('spotify.login');
         }
-        
+
     }
 
-
+    /**Cancella il party**/
+    public function delete($party_code){
+        $party = Party::where('code','=',$party_code)->first();
+        if(Auth::user()->id == $party->user_id){
+            $party->delete();
+            return redirect()->route('me.parties.show');
+        }
+        $error = 'Couldn\'t delete party';
+        return redirect()->back()->with($error);
+    }
 
 }
