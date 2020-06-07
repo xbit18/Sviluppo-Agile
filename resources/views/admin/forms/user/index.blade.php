@@ -10,7 +10,7 @@
     @if (\Session::has('success'))
         <div class="alert alert-success">
             <ul>
-                <li>{!! \Session::get('success') !!}</li>
+                <li>{{ \Session::get('success') }}</li>
             </ul>
         </div>
     @endif
@@ -38,10 +38,15 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
+                    Leave Party
+                </div>
+            </div>
+            <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
+                <div class="panel panel-teal panel-widget border-right">
                     Edit
                 </div>
             </div>
-            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                     Delete
                 </div>
@@ -79,7 +84,6 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right" style="color: green">
-                    @if(\App\UserParticipatesParty::where('user_id',$user->id)->first() == null)
                     <form  id='joinparty-form-{{$id}}' action="/admin/user/joinparty" method="POST">
                         @csrf
                         <em onclick="insertFunc{{$id}}()" class="fa fa-xl fa-plus color-green" style="cursor: pointer" ></em>
@@ -93,38 +97,43 @@
                         <input name="id" value="{{$user->id}}" hidden >
                         <input name="code" id="party_code{{$id}}" hidden>
                     </form>
+                </div>
+            </div><div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+                <div class="panel panel-teal panel-widget border-right">
+                    @if($user->participates->first() ==null)
+                        <p style="color: red">no party</p>
                     @else
-                        <form  id='kickparty-form-{{$id}}' action="/admin/user/kickparty" method="POST">
-                            @csrf<p
-                        onmouseover="
-                            this.innerHTML='kick';
-                            this.style.color='red';"
-                        onmouseout="
-                            this.innerHTML='joined';
-                            this.style.color='green'"
-                        onclick="kickFunc{{$id}}()"
-                            style="cursor: pointer; color:green;">
-                        joined
-                    </p>
-                            <script>
-                                function kickFunc{{$id}}() {
-                                    var x = confirm('Do you really want to kick {{$user->email}} user from the party?')
-                                    if(x == true){
-                                        document.getElementById('kickparty-form-{{$id}}').submit(); }
+                    <form  id='leave-form-{{$id}}' action="/admin/user/leaveparty" method="POST">
+                        @csrf
+                        <select class="form-control" name="party">
+                            @foreach($user->participates as $party)
+                                <option value="{{$party->id}}">{{$party->name}}</option>
+                            @endforeach
+                        </select>
+                        <input name="id" value="{{$user->id}}" hidden >
+                        <em onclick="leaveFunc{{$id}}()" class="fa fa-xl fa-trash color-red" style="cursor: pointer" ></em>
+
+                        <script>
+                            function leaveFunc{{$id}}() {
+                                var x = confirm('Do you really want to leave this party ?')
+                                if (x == true) {
+                                    document.getElementById('leave-form-{{$id}}').submit();
                                 }
-                            </script>
-                            <input name="id" value="{{$user->id}}" hidden >
-                        </form>
-                    @endif
+                            }
+                        </script>
+                        <input name="id" value="{{$user->id}}" hidden >
+                        <input name="code" id="party_code{{$id}}" hidden>
+                    </form>
+                        @endif
                 </div>
             </div>
-            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                       <a href="/admin/user/{{$id}}/edit"> <i class="fa fa-xl fa-edit"></i> </a>
                 </div>
             </div>
 
-            <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
+            <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
                     @if($id == 1)
                         <p style="color: red">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Party;
 use App\Track;
 use App\User;
 use App\UserParticipatesParty;
@@ -61,9 +62,13 @@ class VotesController extends Controller
         {
             return redirect()->back()->withErrors(['this email doesn\'t exist']);
         }
-        $party=UserParticipatesParty::where('user_id',$user->id)->first();
+        $x=Party::where('code',$request->code)->first();
+        if($x == null) {
+            return redirect()->back()->withErrors(['Party doesn\'t exist']);
+        }
+        $party=UserParticipatesParty::where('user_id',$user->id)->where('party_id',$x->id)->first();
         if($party == null) {
-            return redirect()->back()->withErrors(['User not partecipate in any parties']);
+            return redirect()->back()->withErrors(['User not partecipate in this party']);
         }
         if($party->vote==false) {
             $party->vote = $request->track_id;
@@ -97,7 +102,7 @@ class VotesController extends Controller
         $track = Track::where('id',$vote->vote)->first();
         $track->votes -=1;
         $track->save();
-        return $request->track_id;
+         $request->track_id;
         $track = Track::find($request->track_id);
         $track->votes += 1;
         $track->save();

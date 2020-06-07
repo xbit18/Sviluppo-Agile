@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PartyManagerController extends Controller
 {
-    
+
 
     /**
      * @param Request $request
@@ -71,6 +71,10 @@ class PartyManagerController extends Controller
 
    public function ban(Request $request){
        $user=Auth::user();
+       if(User::find($request->id) == null)
+       {
+           return redirect()->back()->withErrors(['user to ban not found']);
+       }
        if($user->id == $request->user)
        {
            return redirect()->back()->withErrors(['you cant ban yourself']);
@@ -80,6 +84,7 @@ class PartyManagerController extends Controller
                ['ban_user_id', '=', $request->user]
            ])->first();
        if($ban==null){
+           $ban=new UserBanUser();
            $ban->user_id=$user->id;
            $ban->ban_user_id=$request->user;
            $ban->save();
@@ -102,6 +107,10 @@ class PartyManagerController extends Controller
 
     public function unban(Request $request){
         $user=Auth::user();
+        if(User::find($request->id) == null)
+        {
+            return redirect()->back()->withErrors(['user to ban not found']);
+        }
         if($user->id == $request->user)
         {
             return redirect()->back()->withErrors(['you cant unban yourself']);

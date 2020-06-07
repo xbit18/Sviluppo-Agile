@@ -104,7 +104,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/user/store','Admin\UsersController@store');
     Route::post('/admin/user/update','Admin\UsersController@update');
     Route::post('/admin/user/joinparty','Admin\UsersController@joinparty');
-    Route::post('/admin/user/kickparty','Admin\UsersController@kickparty');
+    Route::post('/admin/user/leaveparty','Admin\UsersController@leaveparty');
     Route::get('/admin/user/{id}/edit','Admin\UsersController@edit');
     /**
      * Admin party
