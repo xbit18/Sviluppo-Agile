@@ -28,6 +28,55 @@
         timer: 6000
     });
 
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+    /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        var new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.find('.name').text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+    })
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
+
 
     
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -539,10 +588,10 @@
         // Se ho cliccato su elimina non deve partire
         if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
 
-        if(party_type == 1) {
+        // if(party_type == 1) {
             $('#battleModal').modal();
             selected_track = track_uri;
-        } 
+        //} 
 
     });
 
@@ -811,7 +860,18 @@
 
 
     channel.listen('.song.voted',function(data){
-        console.log(data);
+        // console.log(data);
+        let left = $('#track_uri_side_1');
+        let right = $('#track_uri_side_2')
+        
+        if(left.data('id') == data.song_id){
+            $('#left_side').find('button').children('span').text(data.likes)
+            console.log( $('#left_side').find('button').children('span'));
+        } else {
+            $('#right_side').find('button').children('span').text(data.likes);
+            console.log($('#right_side').find('button').children('span'));
+        }
+
     })
 
 
@@ -825,7 +885,8 @@
             song_id = $('#track_uri_side_1').attr('data-id');
         else if($(this).attr('id') == 'vote_right')
             song_id = $('#track_uri_side_2').attr('data-id');
-        
+        // console.log(song_id,' canzone a votare');
+        // console.log($(this).attr('id'),'canzone votata');
         $.ajax({
             type: "GET",
             url: `/party/${party_code}/tracks/${song_id}/vote`,
@@ -839,7 +900,6 @@
                     vote.removeClass('like_bat');
                     vote.addClass('unlike');
                     vote.addClass('voted');
-                    vote.children('span').text(parseInt(vote.children('span').text()) + 1);
                 }
                 else {
                     Toast.fire({
@@ -880,7 +940,6 @@
                     vote.removeClass('unlike');
                     vote.addClass('like_bat');
                     vote.removeClass('voted');
-                    vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                 }
                 else {
                     console.log(`/party/${party_code}/tracks/${song_id}/unvote`)

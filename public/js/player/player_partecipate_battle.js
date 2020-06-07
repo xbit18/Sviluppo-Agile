@@ -42,7 +42,7 @@ $( document ).ready( function() {
             console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             var new_partecipant_link = new_partecipant.find('a');
-            new_partecipant_link.text(user.name);
+            new_partecipant_link.find('.name').text(user.name);
             new_partecipant.removeAttr('id');
             new_partecipant_link.attr('data-id', user.id);
             $('#joining-list').append(new_partecipant);
@@ -60,7 +60,7 @@ $( document ).ready( function() {
         var new_partecipant = $('#partecipant-prototype').clone();
         var new_partecipant_link = new_partecipant.find('a');
         new_partecipant.removeAttr('id');
-        new_partecipant_link.text(user.name);
+        new_partecipant_link.find('.name').text(user.name);
         new_partecipant_link.attr('data-id', user.id);
         $('#joining-list').append(new_partecipant);
     })
@@ -76,7 +76,7 @@ $( document ).ready( function() {
             var partecipant_link = $(this).find('a');
             console.log(partecipant_link);
             if (partecipant_link.attr('data-id') == leaving_user.id) {
-                partecipant_link.text(partecipant_link.text() + " (leaving party...)");
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
                 setTimeout(function () {
                     user.remove();
                 }, 1000);

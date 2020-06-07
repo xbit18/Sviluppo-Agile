@@ -77,10 +77,10 @@ class PartyController extends Controller
             $side1 = $party->tracks()->where('active', 1)->first();
             $side2 = $party->tracks()->where('active', 2)->first();
 
-            return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
+            return view('user.pages.party_battle', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
         }
 
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
+        return view('user.pages.party_democracy', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
 

@@ -27,3 +27,8 @@
 
     <!-- Player CSS -->
     <link rel="stylesheet" href="{{ asset('css/player.css') }}">
+
+    @if(isset($battle))
+    {{-- Battle --}}
+    <link rel="stylesheet" href="{{ asset('css/battle.css') }}">
+    @endif
