@@ -11,19 +11,15 @@
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <form method="POST" action="/admin/user/store">
+            <form method="POST" action="/admin/ban/store">
                 @csrf
                 <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control" placeholder="Name" name="name">
+                    <label>User</label>
+                    <input type="email" class="form-control" placeholder="example@example.com" name="user">
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
-                    <input class="form-control" placeholder="Email" name="email">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" class="form-control" placeholder="password" name="password">
+                    <label>Banned</label>
+                    <input type="email" class="form-control" placeholder="example@example.com" name="banned">
                 </div>
                 @if ($errors->any())
                     <div class="alert alert-danger">

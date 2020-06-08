@@ -1,0 +1,26 @@
+.participants_list{
+    margin-top: 2em;
+}
+
+
+#joining-list{
+    height: 160px;
+    max-height: 160px;
+    overflow: scroll;  
+}
+
+#battle-playlist{
+    margin-top: 1em;
+}
+
+#party_playlist{
+    max-height: 535px;
+    overflow: scroll;
+}
+
+.single-widget-area .widget-title{
+    margin-bottom: 12px;
+}
+.poca-btn{
+    min-width: 0;
+}

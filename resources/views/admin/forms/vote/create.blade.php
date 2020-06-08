@@ -18,6 +18,10 @@
                     <input class="form-control" placeholder="user email" name="email">
                 </div>
                 <div class="form-group">
+                    <label>Party Code</label>
+                    <input class="form-control" placeholder="party code" name="code">
+                </div>
+                <div class="form-group">
                     <label>Track id</label>
                     <input class="form-control" placeholder="track id" name="track_id">
                 </div>

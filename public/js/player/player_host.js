@@ -1,4 +1,4 @@
-$( document ).ready( function() {
+
     'use strict';
 
 
@@ -23,7 +23,57 @@ $( document ).ready( function() {
     var prec_play = false;
 
   
-    
+      /**
+     * Comunica a tutti i partecipanti del canale quando un utente si unisce
+     */
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+    /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        var new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.find('.name').text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+    })
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
 
     
 
@@ -75,6 +125,12 @@ $( document ).ready( function() {
             }
         }
 
+        function order_playlist() {
+            playlist_dom.children().sort(sort_li).appendTo(playlist_dom);
+            function sort_li(a, b) {
+              return ($(b).find('button').eq(1).find('span').text()) < ($(a).find('button').eq(1).find('span').text()) ? -1 : 1;
+            }
+          };
 
 
     function populate_song_link(item, track, id, bool = false) {
@@ -119,8 +175,8 @@ $( document ).ready( function() {
     
         // Error handling
         player.addListener('initialization_error', ({ message }) => { console.log(message) });
-        player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
-        player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
+        player.addListener('authentication_error', ({ message }) => { /* window.location.replace('/loginspotify')*/ });
+        player.addListener('account_error', ({ message }) => { /*window.location.replace('/loginspotify') */ });
         player.addListener('playback_error', ({ message }) => { console.error(message); });
 
         player.addListener('player_state_changed', state => {
@@ -802,38 +858,41 @@ $( document ).ready( function() {
 
     channel.listen('.song.voted',function(data){
         console.log(data);
-       let first = playlist_dom.children().first().data('song-id');
+    //    let first = playlist_dom.children().first().data('song-id');
        let current = playlist_dom.find("[data-song-id='" + data.song_id + "']");
+       console.log(current);
        let current_likes = current.find('button').eq(1).find('span').text(data.likes);
-       let next;
-       let next_likes;
-       let prev;
-       let prev_likes;
+       console.log(current_likes);
+       order_playlist();
+    //    let next;
+    //    let next_likes;
+    //    let prev;
+    //    let prev_likes;
 
-       if(first != current.data('song-id')){
+    //    if(first != current.data('song-id')){
            
-        //    console.log(current);
-            prev = current.prev();
-            prev_likes = prev.find('button').eq(1).find('span').text();
+    //     //    console.log(current);
+    //         prev = current.prev();
+    //         prev_likes = prev.find('button').eq(1).find('span').text();
 
-            next = current.next();
-            next_likes = next.find('button').eq(1).find('span').text();
+    //         next = current.next();
+    //         next_likes = next.find('button').eq(1).find('span').text();
         
-             if(current_likes.text() < next_likes ){
-                current.fadeOut("slow",function(){
-                    current.remove()
-                    current.hide().insertAfter(next).fadeIn("slow");
-                })
+    //          if(current_likes.text() < next_likes ){
+    //             current.fadeOut("slow",function(){
+    //                 current.remove()
+    //                 current.hide().insertAfter(next).fadeIn("slow");
+    //             })
                 
-             } else if(current_likes.text() > prev_likes ){
-                 current.fadeOut("slow",function(){
-                     current.remove();
-                     current.hide().insertBefore(prev).fadeIn("slow");
-                 });
+    //          } else if(current_likes.text() > prev_likes ){
+    //              current.fadeOut("slow",function(){
+    //                  current.remove();
+    //                  current.hide().insertBefore(prev).fadeIn("slow");
+    //              });
                  
-             }
+    //          }
 
-       }
+    //    }
 
     })
 
@@ -969,4 +1028,3 @@ $( document ).ready( function() {
     
 
 
-});

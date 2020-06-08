@@ -110,25 +110,26 @@ class UsersController extends Controller
         $a->verify();
         $party=Party::where('code',$request->code)->first();
         if($party == null) {
-            return redirect()->back()->with('Success','cant find party');;
+            return back()->with('Success','cant find party');;
         }
         $partecipate = new UserParticipatesParty();
         $partecipate->user_id =$request->id;
         $partecipate->party_id= Party::where('code',$request->code)->first()->id;
         $partecipate->save();
 
-        return redirect()->back()->with('Success','Joined successfully');
+        return back()->with('Success','Joined successfully');
     }
-    function kickparty(Request $request)
+    function leaveparty(Request $request)
     {
         $a= new MainController;
         $a->verify();
-        $partecipate = UserParticipatesParty::where('user_id',$request->id)->first();
+        $partecipate = UserParticipatesParty::where('user_id',$request->id)->where('party_id',$request->party)->first();
         if($partecipate->vote != null){
             $track = Track::where('id',$partecipate->vote)->first();
             $track->votes = $track->votes-1;
             $track->save();
         }
         $partecipate->delete();
-        return redirect()->back()->with('Success','Kicked successfully');    }
+        return back()->with('Success','Kicked successfully');
+    }
 }

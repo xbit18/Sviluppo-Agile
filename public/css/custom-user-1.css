@@ -2,13 +2,10 @@ body {
     overflow-x: hidden ; 
 }
 
-html, body {
-    height:100%;
-} 
-
-/* .party-container{
-    height: 900px;
-} */
+.party-container{
+    height: 700px;
+    border: 1px solid #666666;
+}
 
 .main-container {
     margin-bottom: 100px;
@@ -38,10 +35,6 @@ html, body {
     font-family: cursive !important;
 }
 
-.participants_list{
-    margin-top: 13em;
-}
-
 
 
 .party_img {
@@ -50,49 +43,9 @@ html, body {
     margin: 1em;
 }
 
-#party_playlist img{
-    max-height: 100px;
-}
-
-
 .party_img_container {
     padding-left: 0 !important;
     
-}
-
-#party_playlist{
-    max-height: 530px;
-    overflow: scroll;
-}
-
-#joining-list{
-    height: 513px;
-    max-height: 513px;
-    overflow: scroll;  
-}
-
-#joining-list > li{
-    height: 50px;
-    max-height: 50px;
-    width: 100%;
-}
-
-#joining-list > li > a{
-    height: 50px;
-    max-height: 50px;
-    width: 100%;
-    border: 1px solid rgba(0,0,0,.125)!important;
-}
-
-#joining-list > li:first-child > a{
-    border-top-left-radius: .25rem;
-    border-top-right-radius: .25rem;
-}
-
-
-#joining-list > li:last-child > a:last-child{
-    border-bottom-left-radius: .25rem;
-    border-bottom-right-radius: .25rem;
 }
 
 .setting-button {
@@ -103,9 +56,9 @@ html, body {
     border-radius: 1px;
     text-align: center;
     padding-bottom: .1em;
+    PADDING-TOP: .2em;
     border: none;
     font-size: 2em;
-    height: 34px;
 }
 
 
@@ -127,8 +80,6 @@ html, body {
     background-color: #f55656;
     color: white;
 }
-
-
 
 @keyframes scale_vs {
 	0% {
@@ -193,21 +144,6 @@ html, body {
     transform: scale(1.2,1.2);
 }
 
-#searchSong{
-    height: 55px;
-}
-
-.search-widget-area form button{
-    height: 55px;
-}
-
-.card{
-    border: 0;
-}
-
-.card-footer{
-    background: none;
-}
 
  #partygenre {
     min-height: 10em;
