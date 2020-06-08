@@ -28,55 +28,6 @@
         timer: 6000
     });
 
-    channel.here((users) => {
-        console.log(users);
-        $('#joining-list').empty();
-        $.each(users, function (index, user) {
-            console.log(user);
-            var new_partecipant = $('#partecipant-prototype').clone();
-            var new_partecipant_link = new_partecipant.find('a');
-            new_partecipant_link.find('.name').text(user.name);
-            new_partecipant.removeAttr('id');
-            new_partecipant_link.attr('data-id', user.id);
-            $('#joining-list').append(new_partecipant);
-
-        });
-
-    });
-
-    /**
-     *  Action a utente entrante
-     */
-    channel.joining((user) => {
-        //console.log('joining')
-        //console.log(user)
-        var new_partecipant = $('#partecipant-prototype').clone();
-        var new_partecipant_link = new_partecipant.find('a');
-        new_partecipant.removeAttr('id');
-        new_partecipant_link.find('.name').text(user.name);
-        new_partecipant_link.attr('data-id', user.id);
-        $('#joining-list').append(new_partecipant);
-    })
-
-    /**
-     *  Comunica a tutti che un utente lascia il canale
-     */
-    channel.leaving((leaving_user) => {
-        //console.log('leaving')
-        console.log(leaving_user)
-        $('#joining-list li').each(function (index, user) {
-            console.log(user);
-            var partecipant_link = $(this).find('a');
-            console.log(partecipant_link);
-            if (partecipant_link.attr('data-id') == leaving_user.id) {
-                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
-                setTimeout(function () {
-                    user.remove();
-                }, 1000);
-            }
-        });
-    })
-
 
     
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -967,6 +918,119 @@
             
     })
 
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+
+      /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        var new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.find('.name').text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/join/" + user.id,
+            data: "data",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(user.name + 'presenza registrata')
+            },
+            error: function(e){
+                console.log(e)
+            }
+        });
+        
+        setTimeout(function () {
+
+            if (!paused) {
+                console.log('syncronizing');
+
+                player.getCurrentState().then(state => {
+                    var position = state.position;
+                    var track_uri = state.track_window.current_track.uri
+                    $.ajax({
+                        url: "/party/" + party_code + "/syncronize",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "user_id": user.id,
+                            "track_uri": track_uri,
+                            "position_ms": position
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+
+                            // console.log(data);
+                            // DEBUGGING
+                            // console.log(data);
+                        },
+                        error: function (e) {
+                            console.log(e)
+                        }
+                        //function (xhr, ajaxOptions, thrownError) {
+                        //     /**
+                        //      * Error Handling
+                        //      */
+                        //     if (xhr.status == 404) {
+                        //         console.log("404 NOT FOUND");
+                        //     } else if (xhr.status == 500) {
+                        //         console.log("500 INTERNAL SERVER ERROR");
+                        //     } else {
+                        //         console.log("errore " + xhr.status);
+                        //     }
+                        // }
+                    });
+                })
+            }
+
+        }, 4000)
+    })
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
 
     channel.listen('.song.voted',function(data){
         // console.log(data);

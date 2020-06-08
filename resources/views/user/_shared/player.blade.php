@@ -35,7 +35,7 @@
                         <button class="btn player-button-stop" id="pause" type="submit"><i class="fa fa-pause" aria-hidden="true"></i></button>
                     </form> 
                     <form class="d-inline align-self-center" id="spotify_next_form" action="#">
-                        <button class="btn player-button-adders" disabled  id="next-song" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+                        <button class="btn player-button-adders"   id="next-song" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
                     </form> 
                     @endif 
                 </div>
