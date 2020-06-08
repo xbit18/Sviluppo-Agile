@@ -128,7 +128,7 @@
                     </a></li>
                 <li>
                 <a class="" href="/admin/totalban">
-                    <span class="fa fa-arrow-right">&nbsp;</span> Show all bans
+                    <span class="fa fa-arrow-right">&nbsp;</span> Show all total bans
                 </a></li>
             </ul>
         </li>
