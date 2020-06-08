@@ -307,8 +307,13 @@ $( document ).ready( function() {
         }
         
 
+        $(document).on('click', '.genre', function (event) {
+            event.preventDefault();
+        });
 
-
+        $(document).on('click', '.search', function (event) {
+            event.preventDefault();
+        });
         
         
         channel.listen('.battle.selected',function(data){

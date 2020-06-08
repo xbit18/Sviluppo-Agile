@@ -188,6 +188,28 @@ a h5, a small, a p, a .like, a span {
     border-bottom-right-radius: .25rem;
 }
 
+.users{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 200px;
+    max-height: 300px;
+}
+
+.user:hover{
+    cursor:pointer;
+    background-color: rgb(255, 246, 255);
+    transform: scale(1.1,1.1);
+    transition: 0.3s all;
+}
+
+.unban{
+    color: green;
+}
+
+
+
+
+
 .setting-button {
     padding: 0px;
     font-size: 1em;

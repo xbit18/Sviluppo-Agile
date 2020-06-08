@@ -23,6 +23,13 @@
     var act_pos = 0;
     var prec_play = false;
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 6000
+    });
+
     channel.here((users) => {
         console.log(users);
         $('#joining-list').empty();
@@ -475,6 +482,17 @@
         event.preventDefault();
     });
 
+    $(document).on('click', '.partecipant', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.genre', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.search', function (event) {
+        event.preventDefault();
+    });
 
 
         var instance = axios.create();

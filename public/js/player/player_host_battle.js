@@ -28,6 +28,38 @@
         timer: 6000
     });
 
+    
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
 
     
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -612,7 +644,8 @@
 
     $(document).on('click', 'i.ban', function (event) {
         event.preventDefault();
-        let user_id = $(this).parents('a').data('id');
+        var user_id = $(this).parents('a').data('id');
+        var user_name = $(this).parents('a').find('.name').text();
         let ban_form = $('#ban_form');
         ban_form.unbind('submit');
         $('#banModal').modal();
@@ -639,6 +672,13 @@
                             type: 'success',
                             title: response.message
                         })  
+
+                        let user_prototype = $('#user-prototype').clone();
+                        user_prototype.removeAttr('id');
+                        user_prototype.removeClass('d-none');
+                        user_prototype.attr('data-id',user_id);
+                        user_prototype.find('.ban-name').text(user_name);
+                        $('#ban-list').append(user_prototype);
                       }
                 },
                 error: function(error){
@@ -648,6 +688,46 @@
             });
         })
        
+    });
+
+    $(document).on('click', '.user', function (event) {
+        
+
+        let user = $(this)
+      console.log('clicked');
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/user/${user.data('id')}/unban`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+
+                if (response.error) {
+                    Toast.fire({
+                        type: 'warning',
+                        title: response.message
+                    })
+
+                } else {
+                    Toast.fire({
+                        type: 'success',
+                        title: response.message
+                    })
+
+                    user.fadeOut(800,function(){
+                        user.remove()
+                    })
+                }
+            },
+            error: function (error) {
+
+                console.log(error);
+            }
+        });
+
+
     });
 
 
@@ -878,6 +958,13 @@
         
     })
 
+    $(document).on('click', '.genre', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.search', function (event) {
+        event.preventDefault();
+    });
     /* ---------------- RIMUOVERE UNA CANZONE --------------*/
 
     var song_uri;
@@ -918,21 +1005,6 @@
             
     })
 
-    channel.here((users) => {
-        console.log(users);
-        $('#joining-list').empty();
-        $.each(users, function (index, user) {
-            console.log(user);
-            var new_partecipant = $('#partecipant-prototype').clone();
-            var new_partecipant_link = new_partecipant.find('a');
-            new_partecipant_link.find('.name').text(user.name);
-            new_partecipant.removeAttr('id');
-            new_partecipant_link.attr('data-id', user.id);
-            $('#joining-list').append(new_partecipant);
-
-        });
-
-    });
 
 
       /**
@@ -1016,21 +1088,7 @@
     /**
      *  Comunica a tutti che un utente lascia il canale
      */
-    channel.leaving((leaving_user) => {
-        //console.log('leaving')
-        console.log(leaving_user)
-        $('#joining-list li').each(function (index, user) {
-            console.log(user);
-            var partecipant_link = $(this).find('a');
-            console.log(partecipant_link);
-            if (partecipant_link.attr('data-id') == leaving_user.id) {
-                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
-                setTimeout(function () {
-                    user.remove();
-                }, 1000);
-            }
-        });
-    })
+   
 
     channel.listen('.song.voted',function(data){
         // console.log(data);

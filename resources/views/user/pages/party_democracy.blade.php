@@ -122,6 +122,8 @@
 
 @include('user._shared.modals.ban_user')
 
+@include('user._shared.modals.unban',['party' => $party])
+
 @endisset
 
 

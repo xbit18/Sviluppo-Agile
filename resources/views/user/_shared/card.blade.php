@@ -60,7 +60,7 @@
                     <div class="card-footer">
                         <ul class="tags-list">
                             @foreach($party->genre as $genre)
-                            <li><a href="#">{{ $genre->genre }}</a></li>
+                            <li class="genre"><a href="#">{{ $genre->genre }}</a></li>
                             @endforeach
                       </ul>
                     </div>

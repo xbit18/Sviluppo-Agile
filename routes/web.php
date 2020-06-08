@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/party/{code}/user/{user_id}/kick/', 'PartyManagerController@kick')->name('kick.user');
     Route::get('/party/{code}/user/{user_id}/ban', 'PartyManagerController@ban')->name('ban.user');
+    Route::get('/party/{code}/user/{user_id}/unban', 'PartyManagerController@unban')->name('unban.user');
 
 
     /* PLAYER MANAGEMENT */

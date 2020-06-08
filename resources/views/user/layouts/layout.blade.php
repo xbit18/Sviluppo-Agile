@@ -18,6 +18,8 @@
   @yield('content')
 
  
+
+
   @include('user.includes.footer')
  
 

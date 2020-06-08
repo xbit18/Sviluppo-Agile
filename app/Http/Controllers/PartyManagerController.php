@@ -145,27 +145,42 @@ class PartyManagerController extends Controller
      */
 
 
-    public function unban(Request $request){
+    public function unban($code, $user_id){
+
         $user=Auth::user();
-        if(User::find($request->id) == null)
-        {
-            return redirect()->back()->withErrors(['user to ban not found']);
-        }
-        if($user->id == $request->user)
-        {
-            return redirect()->back()->withErrors(['you cant unban yourself']);
-        }
-        $ban=\UserBanUser::where([
-            ['user_id', '=', $user->id],
-            ['ban_user_id', '=', $request->user]
-        ])->first();
-        if($ban!=null){
-            $ban->delete();
-            $banned_user = User::findOrFail($request->user)->email;
-            return redirect()->back()->with('success', 'User '. $banned_user.' unbanned!');
-        }
-        else{
-            return redirect()->back()->withErrors(['the user is not banned']);
-        }
+        $user_to_ban = User::find($user_id);
+       if($user_to_ban === null)
+       {
+           return response()->json([
+               'message' => 'This user does not exists',
+               'error' => true,
+           ]);
+       }
+
+       if($user->id == $user_to_ban->id)
+       {
+           return response()->json([
+               'message' => 'You cannot unban yourself' ,
+               'error' => true,
+           ]);
+       }
+       
+       $already_banned = $user->bans()->where('ban_user_id', $user_to_ban->id)->first();
+
+       if($already_banned !== null){
+
+        $party = Party::where('code', $code)->first();
+        $user->bans()->detach($user_to_ban->id);
+           return response()->json([
+               'message' => 'User '. $user_to_ban->name.' '.'unbanned succesfully!',
+               'error' => false,
+           ]);
+       }
+       else{
+           return response()->json([
+               'message' => 'User already banned',
+               'error' => true,
+           ]);
+       }
     }
 }

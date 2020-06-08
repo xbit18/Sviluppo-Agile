@@ -16,12 +16,16 @@
                     <div class="col-8 name">
                         
                     </div>
+
+                    @if(Auth::id() == $party->user->id)
                     <div class="col-1">
                         <i class="fa fa-times kick" aria-hidden="true"></i>
                     </div>
+                    
                     <div class="col-1 mr-2">
                         <i class="fa fa-ban ban" aria-hidden="true"></i>
                     </div>
+                    @endif
                 </div>
             </a>
         </li>
@@ -55,12 +59,15 @@
                     <div class="col-8 name">
                         
                     </div>
+                    @if(Auth::id() == $party->user->id)
                     <div class="col-1">
                         <i class="fa fa-times kick" aria-hidden="true"></i>
                     </div>
+                    
                     <div class="col-1 mr-2">
                         <i class="fa fa-ban ban" aria-hidden="true"></i>
                     </div>
+                    @endif
                 </div>
             </a>
         </li>
