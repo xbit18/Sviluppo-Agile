@@ -60,6 +60,7 @@ html, body {
 
 #party-card {
     background-color: transparent;
+    border: 0;
 }
 
 .party_name_list::after {
@@ -344,13 +345,6 @@ a h5, a small, a p, a .like, a span {
     height: 55px;
 }
 
-.card{
-    border: 0;
-}
-
-.card-footer{
-    background: none;
-}
 
  #partygenre {
     min-height: 10em;
