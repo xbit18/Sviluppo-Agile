@@ -40,7 +40,7 @@ Route::group(['middleware' => ['auth','totalban']], function () {
                 ->middleware('access');
     Route::get('party/edit/{code}', 'PartyController@edit')->name('party.edit');
     Route::post('/party/update/{code}','PartyController@update')->name('party.update');
-    Route::get('/party/{code}/delete','PartyController@delete')->name('party.delete');
+    Route::delete('/party/{code}/delete','PartyController@delete')->name('party.delete');
 
     Route::get('/party/show', 'PartyController@index')->name('parties.index');
 
