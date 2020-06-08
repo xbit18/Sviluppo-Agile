@@ -7,6 +7,7 @@
     var slider = $("#volume_range");
     var timeline = $('#timeline');
     var duration_text = $('.music-duration');
+    var my_id = $('#my_id').data('id');
     var timer, running = false;
     var channel = Echo.join(`party.${party_code}`);
     // var snapshot_id;
@@ -70,6 +71,39 @@
             }
         });
     })
+
+    
+    var channel_management = Echo.private(`party.${party_code}.${my_id}`);
+
+    channel_management.listen('.user.kicked',function(response){
+        console.log(response);
+        if(response.kicked){
+            Toast.fire({
+                type: 'warning',
+                title: 'You have been kicked from the party'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+                
+            },2000)
+        }
+    })
+
+    channel_management.listen('.user.banned',function(response){
+        console.log(response);
+        if(response.banned){
+
+            Toast.fire({
+                type: 'warning',
+                title: 'The host has banned you permanently'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+            },2000)
+        }
+    })
+
+
 
     
     

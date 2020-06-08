@@ -4,7 +4,6 @@ $( document ).ready( function() {
     var party_code = $('#party_code').attr('data-code');
     var channel = Echo.join(`party.${party_code}`);
     var my_id = $('#my_id').data('id');
-
     var user_code = $('#user_code').attr('data-code');
     var slider = $("#volume_range");
     var timeline = $('#timeline');
@@ -82,6 +81,38 @@ $( document ).ready( function() {
                 }, 1000);
             }
         });
+    })
+
+
+    var channel_management = Echo.private(`party.${party_code}.${my_id}`);
+
+    channel_management.listen('.user.kicked',function(response){
+        console.log(response);
+        if(response.kicked){
+
+            Toast.fire({
+                type: 'warning',
+                title: 'You have been kicked from the party'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+                
+            },2000)
+        }
+    })
+
+    channel_management.listen('.user.banned',function(response){
+        console.log(response);
+        if(response.banned){
+
+            Toast.fire({
+                type: 'warning',
+                title: 'The host has banned you permanently'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+            },2000)
+        }
     })
 
 
@@ -336,10 +367,21 @@ $( document ).ready( function() {
         })
 
 
+
         
 
         channel.listen('.song.voted',function(data){
-            console.log(data);
+            // console.log(data);
+        let left = $('#track_uri_side_1');
+        let right = $('#track_uri_side_2')
+        
+        if(left.data('id') == data.song_id){
+            $('#left_side').find('button').children('span').text(data.likes)
+            console.log( $('#left_side').find('button').children('span'));
+        } else {
+            $('#right_side').find('button').children('span').text(data.likes);
+            console.log($('#right_side').find('button').children('span'));
+        }
         })
     
     
@@ -431,6 +473,10 @@ $( document ).ready( function() {
      *  -------------------- Listener alle canzoni --> quando faccio click su un link della canzone ------------------
      */
     $(document).on('click', '.song_link', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.partecipant', function (event) {
         event.preventDefault();
     });
 

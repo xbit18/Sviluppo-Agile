@@ -92,6 +92,17 @@
 
       </div>
     </div>
+    @if(session('kicked'))
+    <span class="d-none" id="kicked">
+
+    </span>
+    @endif
+
+    @if(session('banned'))
+    <span class="d-none" id="banned">
+
+    </span>
+    @endif
 @endisset
     
 

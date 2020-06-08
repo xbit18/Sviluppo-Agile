@@ -16,7 +16,8 @@ class Party extends Model
                      'vote',
                      'timestamp_kick',
                      'kick_duration'
-                  ]);
+                  ])
+                  ->withTimestamps();
    }
 
    public function user(){

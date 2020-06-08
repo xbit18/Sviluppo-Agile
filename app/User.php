@@ -48,7 +48,12 @@ class User extends Authenticatable implements MustVerifyEmail
                                         'vote',
                                         'timestamp_kick',
                                         'kick_duration',
-                                    ]);
+                                    ])
+                                    ->withTimestamps();
+    }
+
+    public function bans(){
+        return $this->belongsToMany('App\User','user_ban_users','user_id','ban_user_id')->withTimestamps();
     }
 
 

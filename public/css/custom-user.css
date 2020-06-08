@@ -132,9 +132,15 @@ a h5, a small, a p, a .like, a span {
     color: red !important;
 }
 
+
 #party_playlist button{
     padding: .3rem;
     font-size: .8rem;
+}
+
+#party_playlist button:hover{
+    transform: scale(1.3,1.3);
+    transition: 0.4s all;
 }
 
 .song_row > div > button {
@@ -307,6 +313,30 @@ a h5, a small, a p, a .like, a span {
 .unlike > i{
     color: red;
 }
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button{
+    display: none;
+    -webkit-appearance: none;
+}
+
+
+i.kick, i.ban{
+    color: #f55656;
+}
+
+i.kick:hover,i.ban:hover{
+    color: rgba(255, 0, 0, 0.9);
+    transform: scale(1.2,1.2);
+    transition: 0.3s all;
+}
+
+
 
 /**
 *   SOVRASCRITTURA MOBILE

@@ -39,7 +39,7 @@
   <!-- ***** Footer Area Start ***** -->
   <div class="footer-area section-padding-80-0">
 
-  
+
     <div class="container">
       <div class="row">
 
@@ -75,7 +75,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
           </div>
           <div class="col-12 col-sm-6 col-lg-3">
               <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
-                  <h4 class="widget-title">              </h4>
+                  <h4 class="widget-title">             </h4>
                   @foreach($latest_parties->skip(3)->take(3) as $party)
                       <div class="single-latest-episodes">
                           <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
