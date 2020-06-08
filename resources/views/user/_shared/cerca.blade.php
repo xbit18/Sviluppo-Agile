@@ -1,7 +1,7 @@
 <!-- Single Widget Area -->
-<div class="single-widget-area search-widget-area mb-1">
+<div class="single-widget-area search-widget-area mb-1 mt-3">
     <form action="#" method="" autocomplete="off">
-      <input id="searchSong" type="search" name="search" class="form-control" placeholder="Search ...">
+      <input id="searchSong" type="search" name="search" class="form-control" placeholder="Search here to add songs ...">
       <button type="submit"><i class="fa fa-search"></i></button>
     </form>
 

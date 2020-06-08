@@ -1,4 +1,4 @@
-
+<footer>
 
   <!-- ***** Newsletter Area Start ***** -->
   <section class="poca-newsletter-area bg-img bg-overlay pt-50 jarallax" style="background-image: url({{ asset('img/bg-img/15.jpg')}});">
@@ -37,7 +37,9 @@
 
 
   <!-- ***** Footer Area Start ***** -->
-  <footer class="footer-area section-padding-80-0">
+  <div class="footer-area section-padding-80-0">
+
+  
     <div class="container">
       <div class="row">
 
@@ -92,5 +94,6 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
       </div>
     </div>
-  </footer>
+</div>
   <!-- ***** Footer Area End ***** -->
+</footer>

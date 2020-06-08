@@ -2,6 +2,21 @@
 
 @section('content')
 
+<div class="animated-back">
+    <ul class="squares">
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+    </ul>
+</div>
+
 
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-overlay"
@@ -24,7 +39,6 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">...</li>
                     </ol>
                 </nav>
             </div>
@@ -69,10 +83,11 @@
         </div>
 
         <div class="col-4 h-100">
-            {{-- CERCA --}}
-            @include('.user._shared.cerca')
+            
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti',['battle' => true])
+            {{-- CERCA --}}
+            @include('.user._shared.cerca')
             {{-- PLAYLIST --}}
             @include('.user._shared.playlist', ['party' => $party, 'liked' => $liked,'battle' => true])
             
@@ -258,7 +273,7 @@
     
         <!-- Modal -->
         <div class="modal fade" id="battleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
+          <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Put on the ring</h5>
@@ -266,10 +281,9 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
-                <p>The will be choise by partecipants</p>
-                <button type="button" id="left_side_button" class="btn poca-btn">Left Side</button>
-                <button type="button" id="right_side_button" class="btn poca-btn">Right Side</button>
+              <div class="modal-body d-flex justify-content-between">
+                <button type="button" id="left_side_button" class="btn poca-btn w-100">Left Side</button>
+                <button type="button" id="right_side_button" class="btn poca-btn w-100">Right Side</button>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

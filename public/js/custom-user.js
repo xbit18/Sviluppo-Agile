@@ -1,6 +1,8 @@
 $( document ).ready( function() {
 
-    
+    if($('#party_code').attr('data-code').length) {
+        $('footer').hide();
+    }
 
     const Toast = Swal.mixin({
         toast: true,

@@ -215,10 +215,10 @@
                     <div class="d-none">
                         <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="row song_row">
-                                <div class="col-sm-3 album_img_container">
+                                <div class="col-sm-2 album_img_container">
                                     <img class="album_img"/>
                                 </div>
-                                <div class="col-sm-7">
+                                <div class="col-sm-8">
                                     <div class="d-flex w-100 justify-content-between title_song" >
                                         <h5 class="mb-1"></h5>
                                         <small>
@@ -246,10 +246,10 @@
                           <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link @if($party->type == 'Battle' && $song->active != 0) d-none @endif" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                                   <div class="row song_row">
-                                      <div class="col-sm-3 album_img_container">
+                                      <div class="col-sm-2 album_img_container">
                                           <img class="album_img"/>
                                       </div>
-                                      <div class="col-sm-7">
+                                      <div class="col-sm-8">
                                           <div class="d-flex w-100 justify-content-between title_song" >
                                               <h5 class="mb-1"></h5>
                                               <small>
