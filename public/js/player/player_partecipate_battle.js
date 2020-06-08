@@ -348,14 +348,14 @@ $( document ).ready( function() {
                         $('#left_side').children('img').attr('src', track.album.images[0].url);
                         $('#left_side').find('h5').text(track.name);
                         $('#left_side').find('p').text(artists);
-                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
                         $('#left_side').find('button').attr('disabled', false);
                     }
                     else if(data.side == "2") {
                         $('#right_side').children('img').attr('src', track.album.images[0].url);
                         $('#right_side').find('h5').text(track.name);
                         $('#right_side').find('p').text(artists);
-                        $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
                         $('#right_side').find('button').attr('disabled', false);
                     }
                     
@@ -378,7 +378,7 @@ $( document ).ready( function() {
         if(left.data('id') == data.song_id){
             $('#left_side').find('button').children('span').text(data.likes)
             console.log( $('#left_side').find('button').children('span'));
-        } else {
+        } else if(right.data('id') == data.song_id) {
             $('#right_side').find('button').children('span').text(data.likes);
             console.log($('#right_side').find('button').children('span'));
         }
@@ -409,7 +409,7 @@ $( document ).ready( function() {
                         vote.removeClass('like_bat');
                         vote.addClass('unlike');
                         vote.addClass('voted');
-                        vote.children('span').text(parseInt(vote.children('span').text()) + 1);
+                        //vote.children('span').text(parseInt(vote.children('span').text()) + 1);
                     }
                     else {
                         Toast.fire({
@@ -450,7 +450,7 @@ $( document ).ready( function() {
                         vote.removeClass('unlike');
                         vote.addClass('like_bat');
                         vote.removeClass('voted');
-                        vote.children('span').text(parseInt(vote.children('span').text()) - 1);
+                        //vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                     }
                     else {
                         Toast.fire({
@@ -509,15 +509,6 @@ $( document ).ready( function() {
                 isDragging = false;
             });
 
-
-
-    /*------------VOTE A SONG ------------ */
-
-    $(document).on('click','.vote',function(event){
-        event.preventDefault();
-        let vote = $(this);
-        vote.addClass('voted');
-    });
 
 
 

@@ -44,7 +44,8 @@ class PartyController extends Controller
             $my_parties = $me->parties()->orderBy('created_at','DESC')->get();
 
             $my_parties->map(function ($party) {
-                $party->genre_id = $party->genre->first()->id;
+                $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+                $party->partecipants = $party->users()->count();
             });
 
             return view('user.pages.my_parties', ['parties' => $my_parties]);
@@ -72,6 +73,7 @@ class PartyController extends Controller
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = ( $party->genre->first()->id % 20 ) + 1; 
+        
         $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
 
         if($party->type == 'Battle') {
@@ -110,7 +112,8 @@ class PartyController extends Controller
         }
 
         $parties->map(function ($party) {
-            $party->genre_id = $party->genre->first()->id;
+            $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+            $party->partecipants = $party->users()->count();
         });
         $parties->sortBy('id');
         $parties_sorted =  $parties->reverse();
