@@ -34,7 +34,7 @@
                           </small>
                       </div>
                       <p class="mb-1"></p>
-                      <small></small>
+                      <small class="d-none"></small>
                   </div>
                   <div class="col-sm-2">
                     <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
@@ -43,7 +43,7 @@
 
           </a>
       </div>
-
+    <div class="party_playlist_container">
       <div class="list-group" id="party_playlist">
         <!-- Actual playlist-->
         @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
@@ -65,7 +65,7 @@
                                 </small>
                             </div>
                             <p class="mb-1"></p>
-                            <small></small>
+                            <small class="d-none"></small>
                         </div>
                         <div class="col-sm-2">
                         <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> <span>{{$song->votes}}</span></button>
@@ -79,6 +79,7 @@
           @endforelse
         @endif
       </div>
+    </div>
 
   </div>
 
@@ -128,7 +129,7 @@
 
           </a>
       </div>
-
+    <div class="party_playlist_container">
       <div class="list-group" id="party_playlist">
         <!-- Actual playlist-->
         @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
@@ -164,6 +165,7 @@
           @endforelse
         @endif
       </div>
+    </div>
 
   </div>
 
