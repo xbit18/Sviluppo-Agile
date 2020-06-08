@@ -17,10 +17,10 @@
                         
                     </div>
                     <div class="col-1">
-                        <i class="fa fa-times" aria-hidden="true"></i>
+                        <i class="fa fa-times kick" aria-hidden="true"></i>
                     </div>
                     <div class="col-1 mr-2">
-                        <i class="fa fa-ban" aria-hidden="true"></i>
+                        <i class="fa fa-ban ban" aria-hidden="true"></i>
                     </div>
                 </div>
             </a>
