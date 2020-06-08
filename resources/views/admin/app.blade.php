@@ -126,6 +126,10 @@
                 <li><a class="" href="/admin/bans">
                         <span class="fa fa-arrow-right">&nbsp;</span> Show all bans
                     </a></li>
+                <li>
+                <a class="" href="/admin/totalban">
+                    <span class="fa fa-arrow-right">&nbsp;</span> Show all bans
+                </a></li>
             </ul>
         </li>
         <li>

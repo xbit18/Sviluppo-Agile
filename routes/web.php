@@ -20,11 +20,11 @@ Route::get('/index', function() {
 });
 
 Auth::routes(['verify' => true]);
-
+Route::get('/ban','Admin\BansController@showban');
 /**
  * UNAUTHENTICATED ROUTES
  */
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth','totalban']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
@@ -126,6 +126,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/ban/store','Admin\BansController@store')->name('admin.ban.store');;
     Route::post('/admin/ban/update','Admin\BansController@update')->name('admin.ban.update');
     Route::get('/admin/ban/{id}/edit','Admin\BansController@edit');
+
+    Route::get('/admin/totalban','Admin\BansController@indextotalban');
+    Route::post('/admin/totalban/store','Admin\BansController@totalban');
+    Route::post('/admin/totalban/delete','Admin\BansController@totalunban');
+
+
     /**
      * Admin votes
      */
@@ -144,6 +150,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/admin/kick/store','Admin\KicksController@store')->name('admin.kick.store');;
     Route::post('/admin/kick/update','Admin\KicksController@update')->name('admin.kick.update');
     Route::get('/admin/kick/{id}/edit','Admin\KicksController@edit');
+
     /**
      * Other admin routs
      */

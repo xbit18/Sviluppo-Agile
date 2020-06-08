@@ -49,6 +49,8 @@ class BansController extends Controller
      */
     public function store(Request $request)
     {
+        $a = new MainController;
+        $a->verify();
         $user=User::where('email',$request->user)->first();
         $banned=User::where('email',$request->banned)->first();
         if ($user == null or $banned==null)
@@ -84,6 +86,8 @@ class BansController extends Controller
      */
     public function update(Request $request)
     {
+        $a = new MainController;
+        $a->verify();
         $user = User::find($request->id);
         $banned = User::where('email', $request->banned)->first();
         if ($user == null or $banned == null) {
@@ -120,6 +124,39 @@ class BansController extends Controller
         $user=UserBanUser::findOrFail($request->id);
         $user->delete();
         return back()->with('success', 'Ban deleted!');
+    }
+
+    public function indextotalban(){
+        $a = new MainController;
+        $a->verify();
+        $users=User::where('ban',1)->get();
+        return view('admin.forms.ban.definitive',compact('users'));
+    }
+    public function totalunban(Request $request){
+        $a = new MainController;
+        $a->verify();
+        $user=User::find($request->id);
+        $user->ban=0;
+        $user->save();
+        return redirect()->back()->with('success','user unbanned!');
+    }
+    public function totalban(Request $request){
+        $a = new MainController;
+        $a->verify();
+       $user=User::where('email',$request->email)->first();
+        if($user == null){
+            return redirect()->back()->with('success','user not found!');
+        }
+       if($user->id == 1){
+           return redirect()->back()->with('success','ban denied! you can\'t ban an admin');
+       }
+        $user->ban=1;
+        $user->save();
+        return redirect()->back()->with('success','user '.$request->email.' banned!');
+    }
+    function showban()
+    {
+        return view('user.pages.ban');
     }
 
 }
