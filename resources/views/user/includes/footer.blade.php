@@ -1,4 +1,4 @@
-
+<footer>
 
   <!-- ***** Newsletter Area Start ***** -->
   <section class="poca-newsletter-area bg-img bg-overlay pt-50 jarallax" style="background-image: url({{ asset('img/bg-img/15.jpg')}});">
@@ -37,7 +37,9 @@
 
 
   <!-- ***** Footer Area Start ***** -->
-  <footer class="footer-area section-padding-80-0">
+  <div class="footer-area section-padding-80-0">
+
+
     <div class="container">
       <div class="row">
 
@@ -57,23 +59,31 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             </div>
           </div>
         </div>
+          <div class="col-12 col-sm-6 col-lg-3">
+              <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
+                  <!-- Widget Title -->
+                  <h4 class="widget-title">Latest Parties</h4>
 
-        <!-- Single Footer Widget -->
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
-            <!-- Widget Title -->
-            <h4 class="widget-title">Latest Parties</h4>
-
-            <!-- Single Latest Episodes -->
-            @foreach($latest_parties as $party)
-              <div class="single-latest-episodes">
-                  <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
-                  <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                  <!-- Single Latest Episodes -->
+                  @foreach($latest_parties->take(3) as $party)
+                      <div class="single-latest-episodes">
+                          <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
+                          <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                      </div>
+                  @endforeach
               </div>
-            @endforeach
           </div>
-        </div>
-
+          <div class="col-12 col-sm-6 col-lg-3">
+              <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
+                  <h4 class="widget-title">             </h4>
+                  @foreach($latest_parties->skip(3)->take(3) as $party)
+                      <div class="single-latest-episodes">
+                          <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
+                          <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                      </div>
+                  @endforeach
+              </div>
+          </div>
         <!-- Single Footer Widget -->
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="single-footer-widget mb-80">
@@ -92,5 +102,6 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
       </div>
     </div>
-  </footer>
+</div>
   <!-- ***** Footer Area End ***** -->
+</footer>

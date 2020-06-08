@@ -21,19 +21,15 @@ class KicksController extends Controller
     {
         $a= new MainController;
         $a->verify();
-        $kicks = UserParticipatesParty::where('kick_duration','<>',null)->get();
-        return view('admin.forms.kick.index',compact('kicks'));
-
-        /*
-        if(request('email')!=null) {
-            $key = request('email');
-            $users = User::where('email', $key)->get();
-            return view('admin.forms.kick.index',compact('users'));
+        if (request('email') != null) {
+        $key = request('email');
+        $key = User::where('email', $key)->first()->id;
+        $kicks = UserParticipatesParty::where('user_id',$key)->where('kick_duration', '<>', null)->get();
+        return view('admin.forms.kick.index', compact('kicks'));
+    } else {
+            $kicks = UserParticipatesParty::where('kick_duration', '<>', null)->get();
+            return view('admin.forms.kick.index', compact('kicks'));
         }
-        else {
-            $users = User::paginate(10);
-            return view('admin.forms.kick.index',compact('users'));
-        }*/
 
     }
 
@@ -60,7 +56,7 @@ class KicksController extends Controller
             $user=User::where('email',$request->email)->first();
             if(Auth::user()->id == $user->id)
         {
-            return redirect()->back()->withErrors(['you cant unkick yourself']);
+            return redirect()->back()->withErrors(['you cant kick yourself']);
         }
             $p = Party::where('code',$request->code)->first();
         if($p == null)

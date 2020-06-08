@@ -6,9 +6,14 @@ html, body {
     height:100%;
 } 
 
-/* .party-container{
-    height: 900px;
-} */
+#scrollUp {
+    bottom: 150px!important;
+}
+
+.party-container{
+    /*height: 900px; */
+    margin-bottom: 150px;
+} 
 
 .main-container {
     margin-bottom: 100px;
@@ -39,7 +44,22 @@ html, body {
 }
 
 .participants_list{
-    margin-top: 13em;
+    margin-top: 1em;
+}
+
+.title_song + p{
+    overflow-x: hidden;
+    max-height: 2em;
+}
+
+.title_song + p + small {
+    overflow-x: hidden;
+    max-height: 1.5em;
+    display: inherit;
+}
+
+#party-card {
+    background-color: transparent;
 }
 
 
@@ -50,8 +70,48 @@ html, body {
     margin: 1em;
 }
 
+#party_playlist{
+    max-height: 530px;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,6d6d6d+0,282828+0,282828+6,282828+85,494949+100,6d6d6d+100,282828+100,6d6d6d+100 */
+  background: #282828; /* Old browsers */
+  background: -moz-linear-gradient(top,  #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #6d6d6d 0%, #282828 0%, #282828 6%, #282828 85%, #494949 100%, #6d6d6d 100%, #282828 100%, #6d6d6d 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#6d6d6d 0%,#282828 0%,#282828 6%,#282828 85%,#494949 100%,#6d6d6d 100%,#282828 100%,#6d6d6d 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#6d6d6d 0%,#282828 0%,#282828 6%,#282828 85%,#494949 100%,#6d6d6d 100%,#282828 100%,#6d6d6d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#282828', endColorstr='#6d6d6d',GradientType=0 ); /* IE6-9 */
+
+}
+
+#party_playlist{
+    background-color: transparent;
+}
+
 #party_playlist img{
-    max-height: 100px;
+    max-height: 5em;
+}
+
+#party_playlist h5{
+    font-size: 1rem;
+}
+
+#party_playlist p{
+    font-size: .8rem;
+}
+
+#party_playlist small button{
+    background: transparent;
+    border: none;
+    color: red;
+}
+
+#party_playlist button{
+    padding: .3rem;
+    font-size: .8rem;
+}
+
+.song_row > div > button {
+    background-color: transparent;
 }
 
 
@@ -60,15 +120,14 @@ html, body {
     
 }
 
-#party_playlist{
-    max-height: 530px;
-    overflow: scroll;
-}
+
 
 #joining-list{
+
     height: 513px;
     max-height: 513px;
-    overflow: scroll;  
+    overflow-y: auto;  
+    overflow-x: hidden;
 }
 
 #joining-list > li{
@@ -106,6 +165,11 @@ html, body {
     border: none;
     font-size: 2em;
     height: 34px;
+}
+
+.setting-button:hover {
+    background-color: transparent;
+    color: #f55656;
 }
 
 
@@ -184,13 +248,13 @@ html, body {
 }
 
 .result{
-    transition: all ease-in-out 1s;
+    transition: all 1s ease-in-out;
 }
 
 .item:hover{
     cursor: pointer;
-    transition: all ease-in-out .2s;
     transform: scale(1.2,1.2);
+    transition: all .2s ease-in-out;
 }
 
 #searchSong{

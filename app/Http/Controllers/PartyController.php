@@ -71,7 +71,7 @@ class PartyController extends Controller
         $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
-        $party->genre_id = $party->genre->first()->id;
+        $party->genre_id = ( $party->genre->first()->id % 20 ) + 1; 
         $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
 
         if($party->type == 'Battle') {
@@ -89,6 +89,20 @@ class PartyController extends Controller
      * Mostra i party attualmente sul sistema dal più recente
      */
     public function index() {
+        if(request('name')!=null) {
+            $key = request('name');
+            $parties = Party::where('name', $key)->get();
+            if(!$parties){
+                return response(['error' => 'This party does not exist'], 404);
+            }
+            $parties->map(function ($party) {
+                $party->genre_id = $party->genre->first()->id;
+            });
+            $parties->sortBy('id');
+
+            return view('user.pages.parties',compact('parties'));
+        }
+
         $parties = Party::all();
 
         if(!$parties){

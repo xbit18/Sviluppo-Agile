@@ -17,12 +17,18 @@ class BansController extends Controller
      */
     public function index()
     {
-        $a= new MainController;
+        $a = new MainController;
         $a->verify();
-        $bans = UserBanUser::all();
-        return view('admin.forms.ban.index',compact('bans'));
+        if (request('email') != null) {
+            $key = request('email');
+            $key = User::where('email', $key)->first()->id;
+           $bans = UserBanUser::where('user_id', $key)->get();
+            return view('admin.forms.ban.index', compact('bans'));
+        } else {
+            $bans = UserBanUser::all();
+            return view('admin.forms.ban.index', compact('bans'));
+        }
     }
-
     /**
      * Show the form for creating a new resource.
      *

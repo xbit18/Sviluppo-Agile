@@ -18,13 +18,13 @@
     @endif
 
       <!-- Prototype for adding -->
-      <div class="d-none">
+      <div class="d-none" class="playlist-proto">
           <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
               <div class="row song_row">
-                  <div class="col-sm-3 album_img_container">
+                  <div class="col-sm-2 album_img_container align-self-center">
                       <img class="album_img"/>
                   </div>
-                  <div class="col-sm-7">
+                  <div class="col-sm-8">
                       <div class="d-flex w-100 justify-content-between title_song" >
                           <h5 class="mb-1"></h5>
                           <small>
@@ -52,7 +52,7 @@
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link @if($party->type == 'Battle' && $song->active != 0) d-none @endif" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                     <div class="row song_row">
-                        <div class="col-sm-2 album_img_container">
+                        <div class="col-sm-2 album_img_container align-self-center">
                             <img class="album_img"/>
                         </div>
                         <div class="col-sm-8">
@@ -106,10 +106,10 @@
       <div class="d-none">
           <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
               <div class="row song_row">
-                  <div class="col-sm-3 album_img_container">
+                  <div class="col-sm-2 album_img_container align-self-center">
                       <img class="album_img"/>
                   </div>
-                  <div class="col-sm-7">
+                  <div class="col-sm-8">
                       <div class="d-flex w-100 justify-content-between title_song" >
                           <h5 class="mb-1"></h5>
                           <small>
@@ -119,7 +119,7 @@
                           </small>
                       </div>
                       <p class="mb-1"></p>
-                      <small></small>
+                      <small class="d-none"></small>
                   </div>
                   <div class="col-sm-2">
                     <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default  like"><i class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
@@ -137,7 +137,7 @@
             <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link @if($party->type == 'Battle' && $song->active != 0) d-none @endif" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                     <div class="row song_row">
-                        <div class="col-sm-2 album_img_container">
+                        <div class="col-sm-2 album_img_container align-self-center">
                             <img class="album_img"/>
                         </div>
                         <div class="col-sm-8">
@@ -150,7 +150,7 @@
                                 </small>
                             </div>
                             <p class="mb-1"></p>
-                            <small></small>
+                            <small class="d-none"></small>
                         </div>
                         <div class="col-sm-2">
                         <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1" aria-hidden="true"></i> <span>{{$song->votes}}</span></button>

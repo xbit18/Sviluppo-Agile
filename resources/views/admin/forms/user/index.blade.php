@@ -111,7 +111,7 @@
                             @endforeach
                         </select>
                         <input name="id" value="{{$user->id}}" hidden >
-                        <em onclick="leaveFunc{{$id}}()" class="fa fa-xl fa-trash color-red" style="cursor: pointer" ></em>
+                        <em onclick="leaveFunc{{$id}}()" class="fa fa-xl fa-times color-red" style="cursor: pointer" ></em>
 
                         <script>
                             function leaveFunc{{$id}}() {

@@ -40,15 +40,28 @@
         <div class="clear"></div>
     </div>
     <div class="divider"></div>
-    @if(!empty($users) or !empty($parties))
+    @if(!empty($users) or !empty($parties)or !empty($bans) or !empty($kicks)or !empty($votes))
     <form role="search">
         <div class="form-group">
             @if(!empty($users))
             <input type="text" class="form-control" placeholder="Search by email" name="email">
                 <input type="submit" hidden>
-                @else
+            @endif
+                @if(!empty($parties))
                 <input type="text" class="form-control" placeholder="Search by name" name="name">
                 <input type="submit" hidden>
+                @endif
+                @if(!empty($bans))
+                    <input type="text" class="form-control" placeholder="Search by email" name="email">
+                    <input type="submit" hidden>
+                @endif
+                @if(!empty($kicks))
+                    <input type="text" class="form-control" placeholder="Search by email" name="email">
+                    <input type="submit" hidden>
+                @endif
+                @if(!empty($votes))
+                    <input type="text" class="form-control" placeholder="Search by email" name="email">
+                    <input type="submit" hidden>
                 @endif
         </div>
     </form>

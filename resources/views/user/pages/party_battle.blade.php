@@ -2,6 +2,21 @@
 
 @section('content')
 
+<div class="animated-back">
+    <ul class="squares">
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+        <li class="square"></li>
+    </ul>
+</div>
+
 
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/bg-img/party-type/battle1.jpg') }});
@@ -23,7 +38,6 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">...</li>
                     </ol>
                 </nav>
             </div>
@@ -68,10 +82,11 @@
         </div>
 
         <div class="col-4 h-100">
-            {{-- CERCA --}}
-            @include('.user._shared.cerca')
+            
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti',['battle' => true])
+            {{-- CERCA --}}
+            @include('.user._shared.cerca')
             {{-- PLAYLIST --}}
             @include('.user._shared.playlist', ['party' => $party, 'liked' => $liked,'battle' => true])
 

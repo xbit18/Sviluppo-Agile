@@ -39,8 +39,9 @@
             </div>
         </div>
     </div>
+    @foreach($bans as $ban)
     <div class="panel panel-container">
-        @foreach($bans as $ban)
+
             @php
             $user=\App\User::find($ban->user_id);
             $banned=\App\User::find($ban->ban_user_id);
@@ -92,6 +93,6 @@
                 </div>
             </div>
         </div>
-        @endforeach
     </div>
+    @endforeach
 @endsection

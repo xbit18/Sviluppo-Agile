@@ -22,7 +22,6 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="fa fa-home"></i> Home</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">...</li>
                     </ol>
                 </nav>
             </div>
@@ -58,7 +57,8 @@
 
 
                 <div class="col-12 h-75">
-                    
+                    {{-- CERCA --}}
+                    @include('.user._shared.cerca')
                     {{-- PLAYLIST --}}
                     @include('.user._shared.playlist', ['party' => $party, 'liked' => $liked])
                     
@@ -68,8 +68,6 @@
         </div>
 
         <div class="col-4 h-100">
-            {{-- CERCA --}}
-            @include('.user._shared.cerca')
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti')
             @include('.user._shared.player', ['party' => $party])
