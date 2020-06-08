@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Party;
 use App\Track;
 use App\User;
 use App\UserParticipatesParty;
@@ -22,14 +23,15 @@ class VotesController extends Controller
         $a->verify();
         if(request('email')!=null) {
             $key = request('email');
-            $users = User::where('email', $key)->get();
-            return view('admin.forms.vote.index',compact('users'));
+            $key = User::where('email', $key)->first()->id;
+            $votes = UserParticipatesParty::where('user_id',$key)->where('vote', '<>', null)->get();
+            return view('admin.forms.vote.index',compact('votes'));
         }
         else {
-            $users = User::paginate(10);
-            return view('admin.forms.vote.index',compact('users'));
-        }
+            $votes = UserParticipatesParty::where('vote', '<>', null)->get();
 
+            return view('admin.forms.vote.index', compact('votes'));
+        }
     }
 
     /**
@@ -57,12 +59,16 @@ class VotesController extends Controller
         {
             return redirect()->back()->withErrors(['this email doesn\'t exist']);
         }
-        $party=UserParticipatesParty::where('user_id',$user->id)->first();
+        $x=Party::where('code',$request->code)->first();
+        if($x == null) {
+            return redirect()->back()->withErrors(['Party doesn\'t exist']);
+        }
+        $party=UserParticipatesParty::where('user_id',$user->id)->where('party_id',$x->id)->first();
         if($party == null) {
-            return redirect()->back()->withErrors(['User not partecipate in any parties']);
+            return redirect()->back()->withErrors(['User not partecipate in this party']);
         }
         if($party->vote==false) {
-            $party->vote = true;
+            $party->vote = $request->track_id;
             $track_to_vote = $request->track_id;
 
             $track = Track::find($track_to_vote);
@@ -71,7 +77,7 @@ class VotesController extends Controller
                 return redirect()->back()->withErrors(['this track doesnt exist']);
             }
 
-            $track->vote = $track->vote + 1;
+            $track->votes = $track->vote + 1;
             $party->save();
             $track->save();
             return redirect()->route('admin.vote.index')->with('success', 'track voted!');
@@ -87,21 +93,19 @@ class VotesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function update(Request $request)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        $vote=UserParticipatesParty::where('user_id',$request->id)->first();
+        $track = Track::where('id',$vote->vote)->first();
+        $track->votes -=1;
+        $track->save();
+         $request->track_id;
+        $track = Track::find($request->track_id);
+        $track->votes += 1;
+        $track->save();
+        $vote->vote=$request->track_id;
+        $vote->save();
+        return redirect()->back()->with('success','vote changed successfully');
     }
 
     /**
@@ -110,8 +114,15 @@ class VotesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete(Request $request)
     {
-        //
+        $vote=UserParticipatesParty::find($request->id);
+        if($vote == null) { return redirect()->back();}
+        $track=Track::find($vote->vote);
+        $track->votes -= 1;
+        $track->save();
+        $vote->vote=null;
+        $vote->save();
+        return redirect()->back()->with('success','vote deleted!');
     }
 }

@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Party;
+use App\Track;
 use App\User;
+use App\UserBanUser;
+use App\UserParticipatesParty;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +28,7 @@ class UsersController extends Controller
             return view('admin.forms.user.index',compact('users'));
         }
         else {
-            $users = User::paginate(10);
+            $users = User::all();
             return view('admin.forms.user.index',compact('users'));
         }
     }
@@ -99,5 +104,39 @@ class UsersController extends Controller
         $email=$user->email;
         $user->delete();
         return back()->with('success', 'User '. $email.' deleted!');
+    }
+
+    function joinparty(Request $request)
+    {
+        $a= new MainController;
+        $a->verify();
+        $party=Party::where('code',$request->code)->first();
+        if($party == null) {
+            return back()->with('Success','cant find party');
+        }
+        $ban=UserBanUser::where('user_id',$party->user_id)->where('ban_user_id',$request->id)->first();
+        if($ban != null){
+            return back()->with('Success','can\'t add, user banned');
+        }
+
+        $partecipate = new UserParticipatesParty();
+        $partecipate->user_id =$request->id;
+        $partecipate->party_id= $party->id;
+        $partecipate->save();
+
+        return back()->with('Success','Joined successfully');
+    }
+    function leaveparty(Request $request)
+    {
+        $a= new MainController;
+        $a->verify();
+        $partecipate = UserParticipatesParty::where('user_id',$request->id)->where('party_id',$request->party)->first();
+        if($partecipate->vote != null){
+            $track = Track::where('id',$partecipate->vote)->first();
+            $track->votes = $track->votes-1;
+            $track->save();
+        }
+        $partecipate->delete();
+        return back()->with('Success','Kicked successfully');
     }
 }

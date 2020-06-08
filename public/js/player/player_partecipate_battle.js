@@ -4,7 +4,6 @@ $( document ).ready( function() {
     var party_code = $('#party_code').attr('data-code');
     var channel = Echo.join(`party.${party_code}`);
     var my_id = $('#my_id').data('id');
-
     var user_code = $('#user_code').attr('data-code');
     var slider = $("#volume_range");
     var timeline = $('#timeline');
@@ -42,7 +41,7 @@ $( document ).ready( function() {
             console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             var new_partecipant_link = new_partecipant.find('a');
-            new_partecipant_link.text(user.name);
+            new_partecipant_link.find('.name').text(user.name);
             new_partecipant.removeAttr('id');
             new_partecipant_link.attr('data-id', user.id);
             $('#joining-list').append(new_partecipant);
@@ -60,7 +59,7 @@ $( document ).ready( function() {
         var new_partecipant = $('#partecipant-prototype').clone();
         var new_partecipant_link = new_partecipant.find('a');
         new_partecipant.removeAttr('id');
-        new_partecipant_link.text(user.name);
+        new_partecipant_link.find('.name').text(user.name);
         new_partecipant_link.attr('data-id', user.id);
         $('#joining-list').append(new_partecipant);
     })
@@ -76,12 +75,44 @@ $( document ).ready( function() {
             var partecipant_link = $(this).find('a');
             console.log(partecipant_link);
             if (partecipant_link.attr('data-id') == leaving_user.id) {
-                partecipant_link.text(partecipant_link.text() + " (leaving party...)");
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
                 setTimeout(function () {
                     user.remove();
                 }, 1000);
             }
         });
+    })
+
+
+    var channel_management = Echo.private(`party.${party_code}.${my_id}`);
+
+    channel_management.listen('.user.kicked',function(response){
+        console.log(response);
+        if(response.kicked){
+
+            Toast.fire({
+                type: 'warning',
+                title: 'You have been kicked from the party'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+                
+            },2000)
+        }
+    })
+
+    channel_management.listen('.user.banned',function(response){
+        console.log(response);
+        if(response.banned){
+
+            Toast.fire({
+                type: 'warning',
+                title: 'The host has banned you permanently'
+            })
+            setTimeout(function(){
+                location.replace('/party/show');
+            },2000)
+        }
     })
 
 
@@ -276,8 +307,13 @@ $( document ).ready( function() {
         }
         
 
+        $(document).on('click', '.genre', function (event) {
+            event.preventDefault();
+        });
 
-
+        $(document).on('click', '.search', function (event) {
+            event.preventDefault();
+        });
         
         
         channel.listen('.battle.selected',function(data){
@@ -317,14 +353,14 @@ $( document ).ready( function() {
                         $('#left_side').children('img').attr('src', track.album.images[0].url);
                         $('#left_side').find('h5').text(track.name);
                         $('#left_side').find('p').text(artists);
-                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
                         $('#left_side').find('button').attr('disabled', false);
                     }
                     else if(data.side == "2") {
                         $('#right_side').children('img').attr('src', track.album.images[0].url);
                         $('#right_side').find('h5').text(track.name);
                         $('#right_side').find('p').text(artists);
-                        $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '></span>');
+                        $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
                         $('#right_side').find('button').attr('disabled', false);
                     }
                     
@@ -336,10 +372,21 @@ $( document ).ready( function() {
         })
 
 
+
         
 
         channel.listen('.song.voted',function(data){
-            console.log(data);
+            // console.log(data);
+        let left = $('#track_uri_side_1');
+        let right = $('#track_uri_side_2')
+        
+        if(left.data('id') == data.song_id){
+            $('#left_side').find('button').children('span').text(data.likes)
+            console.log( $('#left_side').find('button').children('span'));
+        } else if(right.data('id') == data.song_id) {
+            $('#right_side').find('button').children('span').text(data.likes);
+            console.log($('#right_side').find('button').children('span'));
+        }
         })
     
     
@@ -367,7 +414,7 @@ $( document ).ready( function() {
                         vote.removeClass('like_bat');
                         vote.addClass('unlike');
                         vote.addClass('voted');
-                        vote.children('span').text(parseInt(vote.children('span').text()) + 1);
+                        //vote.children('span').text(parseInt(vote.children('span').text()) + 1);
                     }
                     else {
                         Toast.fire({
@@ -408,7 +455,7 @@ $( document ).ready( function() {
                         vote.removeClass('unlike');
                         vote.addClass('like_bat');
                         vote.removeClass('voted');
-                        vote.children('span').text(parseInt(vote.children('span').text()) - 1);
+                        //vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                     }
                     else {
                         Toast.fire({
@@ -431,6 +478,10 @@ $( document ).ready( function() {
      *  -------------------- Listener alle canzoni --> quando faccio click su un link della canzone ------------------
      */
     $(document).on('click', '.song_link', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.partecipant', function (event) {
         event.preventDefault();
     });
 
@@ -463,15 +514,6 @@ $( document ).ready( function() {
                 isDragging = false;
             });
 
-
-
-    /*------------VOTE A SONG ------------ */
-
-    $(document).on('click','.vote',function(event){
-        event.preventDefault();
-        let vote = $(this);
-        vote.addClass('voted');
-    });
 
 
 

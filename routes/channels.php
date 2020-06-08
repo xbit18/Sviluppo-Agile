@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Broadcast;
 use App\Broadcasting\PartyChannel;
 use App\Broadcasting\SyncronizeChannel;
+use App\Broadcasting\ManagementChannel;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +25,6 @@ Broadcast::channel('party.{partyCode}', PartyChannel::class);
 
 Broadcast::channel('party-sync.{user_id}', SyncronizeChannel::class);
 
+Broadcast::channel('party.{partyCode}.{user_id}', ManagementChannel::class);
 
 

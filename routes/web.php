@@ -36,7 +36,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/party/create', 'PartyController@create')->name('party.create');
     Route::post('/party', 'PartyController@store')->name('party.store');
     Route::get('/me/party/show', 'PartyController@get_parties_by_user')->name('me.parties.show');
-    Route::get('/party/show/{code}', 'PartyController@show')->name('party.show');
+    Route::get('/party/show/{code}', 'PartyController@show')->name('party.show')
+                ->middleware('access');
     Route::get('party/edit/{code}', 'PartyController@edit')->name('party.edit');
     Route::post('/party/update/{code}','PartyController@update')->name('party.update');
     Route::get('/party/{code}/delete','PartyController@delete')->name('party.delete');
@@ -54,11 +55,12 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::post('/party/release_track', 'TrackController@setTrackNotActive')->name('party.releaseTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
 
-    Route::get('/prova', function(){
-        $user = Auth::user();
-        $party = \App\Party::find(5);
-        return $user->participates()->where('party_id',$party->id)->first()->pivot->vote === NULL;
-    });
+
+    /* PARTY KICK & BAN */
+
+    Route::post('/party/{code}/user/{user_id}/kick/', 'PartyManagerController@kick')->name('kick.user');
+    Route::get('/party/{code}/user/{user_id}/ban', 'PartyManagerController@ban')->name('ban.user');
+    Route::get('/party/{code}/user/{user_id}/unban', 'PartyManagerController@unban')->name('unban.user');
 
 
     /* PLAYER MANAGEMENT */
@@ -103,6 +105,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/admin/user/new','Admin\UsersController@create');
     Route::post('/admin/user/store','Admin\UsersController@store');
     Route::post('/admin/user/update','Admin\UsersController@update');
+    Route::post('/admin/user/joinparty','Admin\UsersController@joinparty');
+    Route::post('/admin/user/leaveparty','Admin\UsersController@leaveparty');
     Route::get('/admin/user/{id}/edit','Admin\UsersController@edit');
     /**
      * Admin party
@@ -134,7 +138,7 @@ Route::group(['middleware' => ['auth']], function () {
     /**
      * Admin kicks
      */
-    Route::get('/admin/kicks','KAdmin\icksController@index')->name('admin.kick.index');
+    Route::get('/admin/kicks','Admin\KicksController@index')->name('admin.kick.index');
     Route::post('/admin/kick/delete','Admin\KicksController@delete');
     Route::get('/admin/kick/new','Admin\KicksController@create');
     Route::post('/admin/kick/store','Admin\KicksController@store')->name('admin.kick.store');;

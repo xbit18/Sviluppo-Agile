@@ -215,10 +215,10 @@
                     <div class="d-none">
                         <a id="playlist_song_prototype" href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="row song_row">
-                                <div class="col-sm-3 album_img_container">
+                                <div class="col-sm-2 album_img_container">
                                     <img class="album_img"/>
                                 </div>
-                                <div class="col-sm-7">
+                                <div class="col-sm-8">
                                     <div class="d-flex w-100 justify-content-between title_song" >
                                         <h5 class="mb-1"></h5>
                                         <small>
@@ -246,10 +246,10 @@
                           <a href="#" class="list-group-item list-group-item-action flex-column align-items-start song_link @if($party->type == 'Battle' && $song->active != 0) d-none @endif" data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                                   <div class="row song_row">
-                                      <div class="col-sm-3 album_img_container">
+                                      <div class="col-sm-2 album_img_container">
                                           <img class="album_img"/>
                                       </div>
-                                      <div class="col-sm-7">
+                                      <div class="col-sm-8">
                                           <div class="d-flex w-100 justify-content-between title_song" >
                                               <h5 class="mb-1"></h5>
                                               <small>
@@ -374,7 +374,7 @@
 
             <!-- Single Widget Area -->
             <div class="single-widget-area adds-widget mb-15 mb-sm-30 mb-md-80 mb-lg-100">
-              <a href="#"><img class="w-100" src="./img/bg-img/banner.png" alt=""></a>
+              <a href="#"><img class="w-100" alt=""></a>
             </div>
 
             <!-- Single Widget Area -->
@@ -441,7 +441,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="description" for="partygenre">Party Genre <small>(You can choise multiple genres)</small></label>
+                                <label class="description" for="partygenre">Party Genre (You can choise multiple genres)</label>
                                 <select class="form-control form-control-sm" id="partygenre" name="genre[]" multiple="multiple">
                                     @foreach($genre_list as $genre)
                                         <option value="{{ $genre->id }}"
@@ -539,5 +539,5 @@
   @endisset
 
 
-@include('user._shared.events.partyEvents')
+ @include('user._shared.events.partyEvents') 
 @endsection

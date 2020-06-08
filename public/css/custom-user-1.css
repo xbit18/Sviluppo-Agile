@@ -1,0 +1,238 @@
+body {
+    overflow-x: hidden ; 
+}
+
+.party-container{
+    height: 700px;
+    border: 1px solid #666666;
+}
+
+.main-container {
+    margin-bottom: 100px;
+}
+
+
+.classy-nav-container {
+    background-color: #000000 !important; 
+}
+
+
+.custom-link {
+    text-transform: uppercase;
+    color: #666666;
+    font-size: 14px;
+}
+
+.custom-link:hover {
+    color: #f55656;
+}
+
+.form-control {
+    text-transform: none !important;
+}
+
+#invite_list {
+    font-family: cursive !important;
+}
+
+
+
+.party_img {
+    max-width: 100%;
+    height: auto;
+    margin: 1em;
+}
+
+.party_img_container {
+    padding-left: 0 !important;
+    
+}
+
+.setting-button {
+    padding: 0px;
+    font-size: 1em;
+    max-width: 2em;
+    min-width: 2em;
+    border-radius: 1px;
+    text-align: center;
+    padding-bottom: .1em;
+    PADDING-TOP: .2em;
+    border: none;
+    font-size: 2em;
+}
+
+
+.vs-cont {
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    max-width: 15%;
+    max-height: 20%;
+    z-index: 5;
+    animation: scale_vs 0.8s ease infinite;
+}
+
+.poca-back {
+    background-color: #f55656;
+    color: white;
+}
+
+@keyframes scale_vs {
+	0% {
+        transform: scale(1.2, 1.2);
+	}
+	50% {
+		transform: scale(1, 1);
+	}
+	100% {
+		transform: scale(1.2, 1.2);
+	}
+}
+
+.ring {
+    position: relative;
+}
+
+.battle-box {
+    box-shadow: 0 1px 30px rgba(0, 0, 0, 0.6);
+    border: 2em solid transparent;
+    margin: 10px;
+    border-image: url(border.png) 30 stretch;
+    background: linear-gradient(-45deg, #ff02ff, #f55656, #1DB954, rgb(0, 225, 255));
+    background-size: 300% 300%;
+    animation: gradient 12s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.battle-box > div {
+    padding: 1em;
+    overflow: hidden;
+    box-shadow: 0 1px 30px rgba(255, 249, 140, 0.6);
+}
+
+
+.battle-box p {
+    font-size: 0.8em;
+}
+
+.side {
+    box-shadow: 0px 50px 13px 0px rgba(0, 0, 0, 0.6);
+}
+
+.result{
+    transition: all ease-in-out 1s;
+}
+
+.item:hover{
+    cursor: pointer;
+    transition: all ease-in-out .2s;
+    transform: scale(1.2,1.2);
+}
+
+
+ #partygenre {
+    min-height: 10em;
+}
+
+.unlike > i{
+    color: red;
+}
+
+/**
+*   SOVRASCRITTURA MOBILE
+*/
+@media only screen and (max-width: 1199px) {
+    
+    /* OVERRIDE TOP CONTENT */
+    .welcome-text h2, .welcome-text h5, .welcome-btn-group {
+      text-align: center !important;
+    }
+
+    /* OVERRIDE BOTTOM CONTENT */
+    .newsletter-content {
+        text-align: center !important;
+    }
+
+    
+
+    
+  }
+
+  @media (max-width: 768px) { 
+    .post-share {
+        display: none;
+    }
+
+    .podcast-details-content {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .party_img {
+        margin: 0;
+        padding: 0;
+        padding-bottom: 1em;
+    }  
+
+    
+  }
+
+  @media (max-width: 576px){
+    .item:hover{
+        cursor: pointer;
+        transition: all ease-in-out .2s;
+        transform: scale(1.0,1.0);
+    }
+  }
+
+  @media (max-width:420px){
+      .battle-box > div{
+        padding: 0 !important;
+      }
+  }
+
+  @media (max-width: 490px){
+      .battle-box >div{
+          flex: 0 0 100%;
+          max-width: 100%;
+          padding: 3em !important;
+      }
+  }
+
+  @media (max-width: 400px){
+    .battle-box > div{
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 1em !important;
+    }
+}
+
+@media (max-width: 280){
+    .battle-box > div{
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 !important;
+    }
+}
+
+
+  /* @media (max-width: 720px){
+      .battle-box{
+          height: 500px;
+      }
+  } */

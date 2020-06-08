@@ -1,5 +1,4 @@
-$( document ).ready( function() {
-    'use strict';
+ 'use strict';
 
 
     var party_code = $('#party_code').attr('data-code');
@@ -29,9 +28,40 @@ $( document ).ready( function() {
         timer: 6000
     });
 
+    
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
+    })
 
     
- 
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
         const token = $('#mytoken').text();
@@ -51,6 +81,8 @@ $( document ).ready( function() {
         player.addListener('player_state_changed', state => {
 
             var track_uri;
+
+            if(state == null) return;
 
             if (state) {
 
@@ -136,7 +168,7 @@ $( document ).ready( function() {
                     }
                     
     
-               // });
+                // });
                 increment_timeline(false);
                 $.ajax({
                     url: "/party/" + party_code + "/pause",
@@ -188,7 +220,7 @@ $( document ).ready( function() {
         // Connect to the player!
         player.connect();
 
-           
+            
 
     function millisToMinutesAndSeconds(millis) {
         var minutes = Math.floor(millis / 60000);
@@ -423,21 +455,29 @@ $( document ).ready( function() {
 
                         
                     }).catch((error)=> {
+                        var message = '';
                         if (error.response) {
-                          // The request was made and the server responded with a status code
-                          // that falls out of the range of 2xx
-                          console.log(error.response.data);
-                          console.log(error.response.status);
-                          console.log(error.response.headers);
+                            // The request was made and the server responded with a status code
+                            // that falls out of the range of 2xx
+                            console.log(error.response.data);
+                            console.log(error.response.status);
+                            console.log(error.response.headers);
+                            message += error.response.status + ': ' + error.response.data;
                         } else if (error.request) {
-                          // The request was made but no response was received
-                          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-                          // http.ClientRequest in node.js
-                          console.log(error.request);
+                            // The request was made but no response was received
+                            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                            // http.ClientRequest in node.js
+                            console.log(error.request);
+                            message += error.request;
                         } else {
-                          // Something happened in setting up the request that triggered an Error
-                          console.log('Error', error.message);
+                            // Something happened in setting up the request that triggered an Error
+                            console.log('Error', error.message);
+                            message += error.message;
                         }
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Spotify play error: ' + message
+                            });
                     });
 
                 },
@@ -541,12 +581,155 @@ $( document ).ready( function() {
         // Se ho cliccato su elimina non deve partire
         if( event.target.classList.contains('_delete') ||  event.target.classList.contains('fa-times')) return;
 
-        if(party_type == 1) {
+        // if(party_type == 1) {
             $('#battleModal').modal();
             selected_track = track_uri;
-        } 
+        //} 
 
     });
+    
+
+    $(document).on('click', '.partecipant', function (event) {
+        event.preventDefault();
+    });
+
+
+
+    $(document).on('click', 'i.kick', function (event) {
+        event.preventDefault();
+        let user_id = $(this).parents('a').data('id');
+        let kick_form = $('#kick_form');
+        kick_form.unbind('submit');
+        $('#kickModal').modal();
+
+        kick_form.on('submit',function(event){
+            event.preventDefault();
+            let date = $("input[name='date']").val();
+            let hour = $("input[name='hour']").val();
+            let kick_duration = date + ' ' + hour +':00'
+            $.ajax({
+                type: "POST",
+                url: `/party/${party_code}/user/${user_id}/kick`,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    "kick_duration": kick_duration
+                },
+                dataType: "json",
+                success: function (response) {
+                    $('#kickModal').modal('hide');
+
+                    if(response.error){
+                      Toast.fire({
+                        type: 'warning',
+                        title: response.message
+                    })  
+                    } else {
+                        Toast.fire({
+                            type: 'success',
+                            title: response.message
+                        })  
+                    }
+                    
+                 
+                },
+                error: function(error){
+                    console.log(error);
+                }
+            });
+        })
+       
+    });
+
+    $(document).on('click', 'i.ban', function (event) {
+        event.preventDefault();
+        var user_id = $(this).parents('a').data('id');
+        var user_name = $(this).parents('a').find('.name').text();
+        let ban_form = $('#ban_form');
+        ban_form.unbind('submit');
+        $('#banModal').modal();
+
+        ban_form.on('submit',function(event){
+            event.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: `/party/${party_code}/user/${user_id}/ban`,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: "json",
+                success: function (response) {
+
+                    $('#banModal').modal('hide');
+                    if(response.error){
+                        Toast.fire({
+                          type: 'warning',
+                          title: response.message
+                      })  
+                      } else {
+                        Toast.fire({
+                            type: 'success',
+                            title: response.message
+                        })  
+
+                        let user_prototype = $('#user-prototype').clone();
+                        user_prototype.removeAttr('id');
+                        user_prototype.removeClass('d-none');
+                        user_prototype.attr('data-id',user_id);
+                        user_prototype.find('.ban-name').text(user_name);
+                        $('#ban-list').append(user_prototype);
+                      }
+                },
+                error: function(error){
+                    
+                    console.log(error);
+                }
+            });
+        })
+       
+    });
+
+    $(document).on('click', '.user', function (event) {
+        
+
+        let user = $(this)
+      console.log('clicked');
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/user/${user.data('id')}/unban`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+
+                if (response.error) {
+                    Toast.fire({
+                        type: 'warning',
+                        title: response.message
+                    })
+
+                } else {
+                    Toast.fire({
+                        type: 'success',
+                        title: response.message
+                    })
+
+                    user.fadeOut(800,function(){
+                        user.remove()
+                    })
+                }
+            },
+            error: function (error) {
+
+                console.log(error);
+            }
+        });
+
+
+    });
+
 
 
         /** -------------- Play Button Listener ----------------------- */
@@ -604,7 +787,7 @@ $( document ).ready( function() {
             
         /** ---------------- TIMELINE Listener ----------------- */
 
-         //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
+            //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
         var timeline_mob = document.getElementById('timeline');
 
         var mc_timeline = new Hammer.Manager(timeline_mob);
@@ -617,7 +800,7 @@ $( document ).ready( function() {
             if(timeline.val() != 0) {
                 player.seek(timeline.val()).then(() => {
                     //console.log('Changed position mob!');
-                  });
+                    });
             }
             
         }); 
@@ -630,7 +813,7 @@ $( document ).ready( function() {
                     ///console.log('Changed position!');
                 });
             }
-              
+                
         });
 
     /*----------------------- CERCARE UNA CANZONE --------------------*/
@@ -666,15 +849,15 @@ $( document ).ready( function() {
 
             $.each(tracks, function (index, element) { 
 
-               let item = $('#song-prototype').clone();
-               let img = item.children('div').children('div').first().find('img');
-               img.attr('src',element.album.images[0].url);
+                let item = $('#song-prototype').clone();
+                let img = item.children('div').children('div').first().find('img');
+                img.attr('src',element.album.images[0].url);
                 
-               let content = item.children('div').children('div').last();
-               content.children('div').first().find('h6').text(element.name);
-               content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
+                let content = item.children('div').children('div').last();
+                content.children('div').first().find('h6').text(element.name);
+                content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
 
-               let artists = "";
+                let artists = "";
                 $.each(element.artists, function (index, artist) {
                     artists += artist.name +' ';
                 });
@@ -689,10 +872,10 @@ $( document ).ready( function() {
                 item.addClass('item');
                 item.removeAttr('id');
                 result.append(item).hide().fadeIn();            
-               
+                
 
             });
-   
+    
         })
         .catch(function(error){
             console.log('search error: ');
@@ -717,7 +900,7 @@ $( document ).ready( function() {
 
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-       
+        
         $.ajax({
         url: `/party/${party_code}/tracks`,
         method: 'POST',
@@ -763,6 +946,10 @@ $( document ).ready( function() {
             })
             .catch(function(error){
                 console.log(error);
+                Toast.fire({
+                    type: 'error',
+                    title: 'Spotify error ( call track details )'
+                    });
             });
 
         }
@@ -771,6 +958,13 @@ $( document ).ready( function() {
         
     })
 
+    $(document).on('click', '.genre', function (event) {
+        event.preventDefault();
+    });
+
+    $(document).on('click', '.search', function (event) {
+        event.preventDefault();
+    });
     /* ---------------- RIMUOVERE UNA CANZONE --------------*/
 
     var song_uri;
@@ -786,7 +980,7 @@ $( document ).ready( function() {
     $('#deleteSongModal').on('submit', function(event) {
         event.preventDefault();
 
-         /**
+            /**
          * Logica eliminazione canzone dalla playlist
          */
 
@@ -808,12 +1002,107 @@ $( document ).ready( function() {
             }
         });
 
-           
+            
     })
 
 
+
+      /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        var new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.find('.name').text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/join/" + user.id,
+            data: "data",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(user.name + 'presenza registrata')
+            },
+            error: function(e){
+                console.log(e)
+            }
+        });
+        
+        setTimeout(function () {
+
+            if (!paused) {
+                console.log('syncronizing');
+
+                player.getCurrentState().then(state => {
+                    var position = state.position;
+                    var track_uri = state.track_window.current_track.uri
+                    $.ajax({
+                        url: "/party/" + party_code + "/syncronize",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "user_id": user.id,
+                            "track_uri": track_uri,
+                            "position_ms": position
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+
+                            // console.log(data);
+                            // DEBUGGING
+                            // console.log(data);
+                        },
+                        error: function (e) {
+                            console.log(e)
+                        }
+                        //function (xhr, ajaxOptions, thrownError) {
+                        //     /**
+                        //      * Error Handling
+                        //      */
+                        //     if (xhr.status == 404) {
+                        //         console.log("404 NOT FOUND");
+                        //     } else if (xhr.status == 500) {
+                        //         console.log("500 INTERNAL SERVER ERROR");
+                        //     } else {
+                        //         console.log("errore " + xhr.status);
+                        //     }
+                        // }
+                    });
+                })
+            }
+
+        }, 4000)
+    })
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+   
+
     channel.listen('.song.voted',function(data){
-        console.log(data);
+        // console.log(data);
+        let left = $('#track_uri_side_1');
+        let right = $('#track_uri_side_2')
+        
+        if(left.data('id') == data.song_id){
+            $('#left_side').find('button').children('span').text(data.likes)
+            console.log( $('#left_side').find('button').children('span'));
+        } else {
+            $('#right_side').find('button').children('span').text(data.likes);
+            console.log($('#right_side').find('button').children('span'));
+        }
+
     })
 
 
@@ -827,7 +1116,8 @@ $( document ).ready( function() {
             song_id = $('#track_uri_side_1').attr('data-id');
         else if($(this).attr('id') == 'vote_right')
             song_id = $('#track_uri_side_2').attr('data-id');
-        
+        console.log(song_id,' canzone a votare');
+        // console.log($(this).attr('id'),'canzone votata');
         $.ajax({
             type: "GET",
             url: `/party/${party_code}/tracks/${song_id}/vote`,
@@ -841,7 +1131,6 @@ $( document ).ready( function() {
                     vote.removeClass('like_bat');
                     vote.addClass('unlike');
                     vote.addClass('voted');
-                    vote.children('span').text(parseInt(vote.children('span').text()) + 1);
                 }
                 else {
                     Toast.fire({
@@ -882,7 +1171,6 @@ $( document ).ready( function() {
                     vote.removeClass('unlike');
                     vote.addClass('like_bat');
                     vote.removeClass('voted');
-                    vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                 }
                 else {
                     console.log(`/party/${party_code}/tracks/${song_id}/unvote`)
@@ -944,21 +1232,20 @@ $( document ).ready( function() {
                 },
                 success: function (response) {
                     console.log(response, 'setactiveresponse');
+                    var elem;
                     if(side == 1) {
-                        $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
-                        $('#left_side').find('h5').text($(item).find('h5').text());
-                        $('#left_side').find('p').text($(item).find('p').text());
-                        $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
-                        
-                        $('#left_side').find('button').attr('disabled', false);
-                        console.log('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '></span>')
+                        elem = $('#left_side');
+                        var idd = 'track_uri_side_1';
                     } else {
-                        $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
-                        $('#right_side').find('h5').text($(item).find('h5').text());
-                        $('#right_side').find('p').text($(item).find('p').text());
-                        $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
-                        $('#right_side').find('button').attr('disabled', false);
+                        elem = $('#right_side');
+                        var idd = 'track_uri_side_2';
                     }
+                    elem.children('img').attr('src', $(item).find('img').attr('src'));
+                    elem.find('h5').text($(item).find('h5').text());
+                    elem.find('p').text($(item).find('p').text());
+                    elem.prepend('<span id="' + idd + '" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
+                    elem.find('button').addClass('like_bat');
+                    elem.find('button').attr('disabled', false);
                 },
                 error: function(error){
                     Toast.fire({
@@ -973,10 +1260,6 @@ $( document ).ready( function() {
 
 
     };
-
-    // FINE onSpotifyWebPlaybackSDKReady
-
     
 
-
-});
+    // FINE onSpotifyWebPlaybackSDKReady

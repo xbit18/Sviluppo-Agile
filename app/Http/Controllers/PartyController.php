@@ -13,6 +13,7 @@ use App\Genre;
 use App\Party;
 use App\User;
 use App\Track;
+use Carbon\Carbon;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -43,7 +44,8 @@ class PartyController extends Controller
             $my_parties = $me->parties()->orderBy('created_at','DESC')->get();
 
             $my_parties->map(function ($party) {
-                $party->genre_id = $party->genre->first()->id;
+                $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+                $party->partecipants = $party->users()->count();
             });
 
             return view('user.pages.my_parties', ['parties' => $my_parties]);
@@ -67,20 +69,21 @@ class PartyController extends Controller
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
-        $user->participates()->sync($party->id);
+        $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
-        $party->genre_id = $party->genre->first()->id;
+        $party->genre_id = ( $party->genre->first()->id % 20 ) + 1; 
+        
         $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
 
         if($party->type == 'Battle') {
             $side1 = $party->tracks()->where('active', 1)->first();
             $side2 = $party->tracks()->where('active', 2)->first();
 
-            return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
+            return view('user.pages.party_battle', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
         }
 
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
+        return view('user.pages.party_democracy', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
 
@@ -88,6 +91,20 @@ class PartyController extends Controller
      * Mostra i party attualmente sul sistema dal più recente
      */
     public function index() {
+        if(request('name')!=null) {
+            $key = request('name');
+            $parties = Party::where('name', $key)->get();
+            if(!$parties){
+                return response(['error' => 'This party does not exist'], 404);
+            }
+            $parties->map(function ($party) {
+                $party->genre_id = $party->genre->first()->id;
+            });
+            $parties->sortBy('id');
+
+            return view('user.pages.parties',compact('parties'));
+        }
+
         $parties = Party::all();
 
         if(!$parties){
@@ -95,7 +112,8 @@ class PartyController extends Controller
         }
 
         $parties->map(function ($party) {
-            $party->genre_id = $party->genre->first()->id;
+            $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+            $party->partecipants = $party->users()->count();
         });
         $parties->sortBy('id');
         $parties_sorted =  $parties->reverse();

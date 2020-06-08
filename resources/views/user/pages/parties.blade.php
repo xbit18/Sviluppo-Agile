@@ -44,15 +44,9 @@
                 <div class="poca-music-content text-center">
                   
                 <span class="music-published-date mb-2">{{ $party->created_at }}</span>
-                <h2><a href="{{ route('party.show', [ 'code' => $party->code]) }}">@if(Auth::user()->id == $party->user->id) (Hosting) @endif {{ $party->name }}</a></h2>
+                <h2><a class="party_name_list" href="{{ route('party.show', [ 'code' => $party->code]) }}">@if(Auth::user()->id == $party->user->id) (Hosting) @endif {{ $party->name }}</a></h2>
                 <div class="music-meta-data">
                     <p>By <a href="#" class="music-author">{{ $party->user->name }}</a></p>
-                </div>
-                <!-- Music Player -->
-                <div class="poca-music-player">
-                    <audio preload="auto" controls>
-                        <source src="audio/dummy-audio.mp3">
-                    </audio>
                 </div>
                 <!-- Likes, Share & Download -->
                 <div class="likes-share-download d-flex align-items-center justify-content-between">
@@ -92,6 +86,17 @@
 
       </div>
     </div>
+    @if(session('kicked'))
+    <span class="d-none" id="kicked">
+
+    </span>
+    @endif
+
+    @if(session('banned'))
+    <span class="d-none" id="banned">
+
+    </span>
+    @endif
 @endisset
     
 
