@@ -57,7 +57,7 @@
                                 <span>{{ $party->user->name }}</span>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div id="card-footer" class="card-footer">
                         <ul class="tags-list">
                             @foreach($party->genre as $genre)
                             <li class="genre"><a href="#">{{ $genre->genre }}</a></li>

@@ -63,6 +63,10 @@ html, body {
     border: 0;
 }
 
+#card-footer{
+    background: none;
+}
+
 .party_name_list::after {
     transition: all .3s ease;
 }
