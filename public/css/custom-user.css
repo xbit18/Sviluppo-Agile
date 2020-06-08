@@ -116,6 +116,7 @@ html, body {
     transition: 0.4s all;
 }
 
+
 .song_row > div > button {
     background-color: transparent;
 }

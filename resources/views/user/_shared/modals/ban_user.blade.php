@@ -12,7 +12,7 @@
                 </div>
                 <div class="modal-footer">
                     <input id="delButton" type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                    <input type="submit" class="btn btn-danger" value="Delete">
+                    <input type="submit" class="btn btn-danger" value="Ban">
                 </div>
             </form>
         </div>
