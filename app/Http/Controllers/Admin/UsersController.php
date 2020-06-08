@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Party;
 use App\Track;
 use App\User;
+use App\UserBanUser;
 use App\UserParticipatesParty;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -110,11 +112,16 @@ class UsersController extends Controller
         $a->verify();
         $party=Party::where('code',$request->code)->first();
         if($party == null) {
-            return back()->with('Success','cant find party');;
+            return back()->with('Success','cant find party');
         }
+        $ban=UserBanUser::where('user_id',$party->user_id)->where('ban_user_id',$request->id)->first();
+        if($ban != null){
+            return back()->with('Success','can\'t add, user banned');
+        }
+
         $partecipate = new UserParticipatesParty();
         $partecipate->user_id =$request->id;
-        $partecipate->party_id= Party::where('code',$request->code)->first()->id;
+        $partecipate->party_id= $party->id;
         $partecipate->save();
 
         return back()->with('Success','Joined successfully');
