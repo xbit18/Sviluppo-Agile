@@ -28,7 +28,7 @@ class UsersController extends Controller
             return view('admin.forms.user.index',compact('users'));
         }
         else {
-            $users = User::paginate(10);
+            $users = User::all();
             return view('admin.forms.user.index',compact('users'));
         }
     }
