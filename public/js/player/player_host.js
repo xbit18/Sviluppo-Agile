@@ -572,7 +572,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             let kick_duration = date + ' ' + hour + ':00'
             $.ajax({
                 type: "POST",
-                url: `/party/{code}/user/${user_id}/kick`,
+                url: `/party/${party_code}/user/${user_id}/kick`,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
