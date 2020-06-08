@@ -108,7 +108,7 @@
     
     
     function order_playlist() {
-        playlist_dom.children().sort(sort_li).appendTo(playlist_dom);
+        playlist_dom.children().sort(sort_li).appendTo(playlist_dom).hide().fadeIn(500);
         function sort_li(a, b) {
           return ($(b).find('button').eq(1).find('span').text()) < ($(a).find('button').eq(1).find('span').text()) ? -1 : 1;
         }

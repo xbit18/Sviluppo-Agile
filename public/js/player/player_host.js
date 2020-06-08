@@ -23,57 +23,7 @@
     var prec_play = false;
 
   
-      /**
-     * Comunica a tutti i partecipanti del canale quando un utente si unisce
-     */
-    channel.here((users) => {
-        console.log(users);
-        $('#joining-list').empty();
-        $.each(users, function (index, user) {
-            console.log(user);
-            var new_partecipant = $('#partecipant-prototype').clone();
-            var new_partecipant_link = new_partecipant.find('a');
-            new_partecipant_link.find('.name').text(user.name);
-            new_partecipant.removeAttr('id');
-            new_partecipant_link.attr('data-id', user.id);
-            $('#joining-list').append(new_partecipant);
-
-        });
-
-    });
-
-    /**
-     *  Action a utente entrante
-     */
-    channel.joining((user) => {
-        //console.log('joining')
-        //console.log(user)
-        var new_partecipant = $('#partecipant-prototype').clone();
-        var new_partecipant_link = new_partecipant.find('a');
-        new_partecipant.removeAttr('id');
-        new_partecipant_link.find('.name').text(user.name);
-        new_partecipant_link.attr('data-id', user.id);
-        $('#joining-list').append(new_partecipant);
-    })
-
-    /**
-     *  Comunica a tutti che un utente lascia il canale
-     */
-    channel.leaving((leaving_user) => {
-        //console.log('leaving')
-        console.log(leaving_user)
-        $('#joining-list li').each(function (index, user) {
-            console.log(user);
-            var partecipant_link = $(this).find('a');
-            console.log(partecipant_link);
-            if (partecipant_link.attr('data-id') == leaving_user.id) {
-                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
-                setTimeout(function () {
-                    user.remove();
-                }, 1000);
-            }
-        });
-    })
+  
 
     
 
@@ -126,7 +76,7 @@
         }
 
         function order_playlist() {
-            playlist_dom.children().sort(sort_li).appendTo(playlist_dom);
+            playlist_dom.children().sort(sort_li).appendTo(playlist_dom).hide().fadeIn(500);;
             function sort_li(a, b) {
               return ($(b).find('button').eq(1).find('span').text()) < ($(a).find('button').eq(1).find('span').text()) ? -1 : 1;
             }
@@ -137,6 +87,10 @@
         //console.log('sono in populate')
         //console.log(item)
         //console.log(track)
+        console.log(item,'item');
+        console.log(track,'track');
+        console.log(id,'id');
+        console.log(bool,'bool');
         item.find('h5').text(track.name);
         item.data('song-id',id);
         var artists = "";
@@ -162,6 +116,8 @@
             return item;
         }
     }
+
+    
 
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
@@ -669,6 +625,44 @@
             player.pause()
         });
 
+        /** ---------------- NEXT TRACK  ***/
+
+        $('#spotify_next_form').on('submit', function (event) {
+            event.preventDefault();
+            $.ajax({
+                url: "/party/" + party_code + "/getNextTrack",
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: 'json',
+                success: function (data) {
+                    // console.log(data);
+                    // DEBUGGING
+                    //console.log(data);
+                    console.log(data.track_uri);
+                    $('.song_link').each( function(index, item) {
+                        if( $(this).attr('data-track') == data.track_uri ) {
+                            $(this).click();
+                        }
+                    });
+                    console.log(data, 'next_track');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    /**
+                     * Error Handling
+                     */
+                    if (xhr.status == 404) {
+                        console.log("Next Track 404 NOT FOUND");
+                    } else if (xhr.status == 500) {
+                        console.log("Next Track 500 INTERNAL SERVER ERROR");
+                    } else {
+                        console.log("Next Track errore " + xhr.status);
+                    }
+                }
+            });
+        });
+
 
         /** -------------- Volume Listener ----------------------- */
 
@@ -840,9 +834,10 @@
                 dataType: 'json',
             }).then(function (data) {
                 // console.log(data, 'track_info');
-
+                console.log(data);
                 let song_link = $('#playlist_song_prototype').clone();
-
+                song_link.removeAttr('id');
+                song_link.attr('data-track',data.data.uri);
                 let item = populate_song_link(song_link, data.data,song_id,true);
                 playlist_dom.append(item).hide().fadeIn(1000);
 
@@ -947,6 +942,122 @@
         });
 
            
+    })
+
+        /**
+     * Comunica a tutti i partecipanti del canale quando un utente si unisce
+     */
+    channel.here((users) => {
+        console.log(users);
+        $('#joining-list').empty();
+        $.each(users, function (index, user) {
+            console.log(user);
+            var new_partecipant = $('#partecipant-prototype').clone();
+            var new_partecipant_link = new_partecipant.find('a');
+            new_partecipant_link.find('.name').text(user.name);
+            new_partecipant.removeAttr('id');
+            new_partecipant_link.attr('data-id', user.id);
+            $('#joining-list').append(new_partecipant);
+
+        });
+
+    });
+
+    /**
+     *  Action a utente entrante
+     */
+    channel.joining((user) => {
+        //console.log('joining')
+        //console.log(user)
+        var new_partecipant = $('#partecipant-prototype').clone();
+        var new_partecipant_link = new_partecipant.find('a');
+        new_partecipant.removeAttr('id');
+        new_partecipant_link.find('.name').text(user.name);
+        new_partecipant_link.attr('data-id', user.id);
+        $('#joining-list').append(new_partecipant);
+
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/join/" + user.id,
+            data: "data",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(user.name + 'presenza registrata')
+            },
+            error: function(e){
+                console.log(e)
+            }
+        });
+        
+        setTimeout(function () {
+
+            if (!paused) {
+                console.log('syncronizing');
+
+                player.getCurrentState().then(state => {
+                    var position = state.position;
+                    var track_uri = state.track_window.current_track.uri
+                    $.ajax({
+                        url: "/party/" + party_code + "/syncronize",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "user_id": user.id,
+                            "track_uri": track_uri,
+                            "position_ms": position
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+
+                            // console.log(data);
+                            // DEBUGGING
+                            // console.log(data);
+                        },
+                        error: function (e) {
+                            console.log(e)
+                        }
+                        //function (xhr, ajaxOptions, thrownError) {
+                        //     /**
+                        //      * Error Handling
+                        //      */
+                        //     if (xhr.status == 404) {
+                        //         console.log("404 NOT FOUND");
+                        //     } else if (xhr.status == 500) {
+                        //         console.log("500 INTERNAL SERVER ERROR");
+                        //     } else {
+                        //         console.log("errore " + xhr.status);
+                        //     }
+                        // }
+                    });
+                })
+            }
+
+        }, 4000)
+    })
+
+    /**
+     *  Comunica a tutti che un utente lascia il canale
+     */
+    channel.leaving((leaving_user) => {
+        //console.log('leaving')
+        console.log(leaving_user)
+        $('#joining-list li').each(function (index, user) {
+            console.log(user);
+            var partecipant_link = $(this).find('a');
+            console.log(partecipant_link);
+            if (partecipant_link.attr('data-id') == leaving_user.id) {
+                partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
+                setTimeout(function () {
+                    user.remove();
+                }, 1000);
+            }
+        });
     })
     /* ------------------------------LISTENER AL CHANNEL DELLE VOTAZIONI ------------------------- */
 
