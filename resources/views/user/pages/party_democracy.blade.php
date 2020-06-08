@@ -3,6 +3,23 @@
 @section('content')
 
 
+<div class="animated-back-democracy">
+    <ul class="squares">
+        <li class="square_d"><i class="fa fa-thumbs-up" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-down" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-users" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-down" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-up" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-users" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></li>
+        <li class="square_d"><i class="fa fa-thumbs-up" aria-hidden="true"></i></li>
+    </ul>
+</div>
+
+
+
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-overlay"
     style="background-image: url({{ asset('img/bg-img/party-type/democracy.jpg') }});">

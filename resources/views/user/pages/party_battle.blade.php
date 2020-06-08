@@ -285,10 +285,6 @@
                 <button type="button" id="left_side_button" class="btn poca-btn w-100">Left Side</button>
                 <button type="button" id="right_side_button" class="btn poca-btn w-100">Right Side</button>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
-              </div>
             </div>
           </div>
         </div>

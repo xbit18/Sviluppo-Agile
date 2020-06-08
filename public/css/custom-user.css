@@ -70,25 +70,52 @@ html, body {
     margin: 1em;
 }
 
+.party_playlist_container {
+    background-color: rgba(40, 40, 40, .7) !important;
+    padding: .2em;
+    border-radius: 5px;
+}
+
 #party_playlist{
     max-height: 530px;
     overflow-y: auto; 
     overflow-x: hidden;
-    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,282828+0,6d6d6d+0,282828+0,282828+6,282828+85,494949+100,6d6d6d+100,282828+100,6d6d6d+100 */
-  background: #282828; /* Old browsers */
-  background: -moz-linear-gradient(top,  #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #282828 0%, #6d6d6d 0%, #282828 0%, #282828 6%, #282828 85%, #494949 100%, #6d6d6d 100%, #282828 100%, #6d6d6d 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(top,  #282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#6d6d6d 0%,#282828 0%,#282828 6%,#282828 85%,#494949 100%,#6d6d6d 100%,#282828 100%,#6d6d6d 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to bottom,  #282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#282828 0%,#6d6d6d 0%,#282828 0%,#282828 6%,#282828 85%,#494949 100%,#6d6d6d 100%,#282828 100%,#6d6d6d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#282828', endColorstr='#6d6d6d',GradientType=0 ); /* IE6-9 */
+    background-color: rgba(40, 40, 40, .4) !important;
+}
 
+#party_playlist > a {
+    background: rgba(40, 40, 40, .4); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(40, 40, 40, .4) 0%, rgba(40, 40, 40, .4) 6%, rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='rgba(40, 40, 40, .4)', endColorstr='#6d6d6d',GradientType=0 ); /* IE6-9 */
+}
+
+a h5, a small, a p, a .like, a span {
+    color: white!important;
+}
+
+
+#party_playlist a:hover .title_song + p::before{
+    content: 'Artists: ';
+}
+
+#party_playlist a:hover .title_song + p + small::before {
+    content: 'Album: ';
 }
 
 #party_playlist{
     background-color: transparent;
 }
 
+#party_playlist a:hover small{
+    display: inherit !important;
+}
+
+
 #party_playlist img{
     max-height: 5em;
+    box-shadow: 0 1px 5px white;
 }
 
 #party_playlist h5{
@@ -102,7 +129,7 @@ html, body {
 #party_playlist small button{
     background: transparent;
     border: none;
-    color: red;
+    color: red !important;
 }
 
 #party_playlist button{
@@ -364,3 +391,134 @@ html, body {
           height: 500px;
       }
   } */
+
+
+  /** SFONDO ANIMATO */
+
+.animated-back-democracy {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}    
+.animated-back-democracy::before {
+      z-index: 1000;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60vh;
+      background-image: linear-gradient(
+        -180deg,
+        #ffffff 0%,
+        rgba(255, 255, 255, 0) 100%
+      );
+}
+.animated-back-democracy::after {
+      z-index: 1000;
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20vh;
+      background-image: linear-gradient(
+        0deg,
+        #ebebeb 0%,
+        rgba(235, 235, 235, 0) 100%
+      );
+    }
+  
+  .squares {
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    overflow: hidden;
+  }
+  .square_d {
+    animation: squares 9.5s linear infinite;
+    align-self: flex-end;
+    width: 4em;
+    height: 4em;
+    font-size: 4em;
+    display: inline-block;
+    transform: translateY(100%);
+    color: #1DB954;
+  }
+  .square_d:nth-child(2) {
+      height: 1.5em;
+      width: 3em;
+      animation-delay: 1s;
+      animation-duration: 17s;
+      -webkit-filter: blur(5px);
+    }
+    .square_d:nth-child(3) {
+      height: 2em;
+      width: 1em;
+      animation-delay: 1.5s;
+      animation-duration: 8s;
+      -webkit-filter: blur();
+      color: #f55656;
+    }
+    .square_d:nth-child(4) {
+      height: 1em;
+      width: 1.5em;
+      animation-delay: 0.5s;
+      -webkit-filter: blur(3px);
+      animation-duration: 13s;
+    }
+    .square_d:nth-child(5) {
+      height: 1.25em;
+      width: 2em;
+      animation-delay: 4s;
+      -webkit-filter: blur(2px);
+      animation-duration: 11s;
+      color: #f55656;
+    }
+    .square_d:nth-child(6) {
+      height: 2.5em;
+      width: 2em;
+      animation-delay: 2s;
+      -webkit-filter: blur(1px);
+      animation-duration: 9s;
+    }
+    .square_d:nth-child(7) {
+      height: 5em;
+      width: 2em;
+      -webkit-filter: blur(2.5px);
+      animation-duration: 12s;
+    }
+    .square_d:nth-child(8) {
+      height: 1em;
+      width: 3em;
+      animation-delay: 5s;
+      -webkit-filter: blur(6px);
+      animation-duration: 18s;
+      color:#f55656;
+    }
+    .square_d:nth-child(9) {
+      height: 1.5em;
+      width: 2em;
+      -webkit-filter: blur(0.5px);
+      animation-duration: 9s;
+    }
+    .square_d:nth-child(9) {
+      height: 3em;
+      width: 2.4em;
+      animation-delay: 6s;
+      -webkit-filter: blur(0.5px);
+      animation-duration: 12s;
+      color:#f55656;
+    }
+  
+  @keyframes squares {
+    from {
+      transform: translateY(100%) rotate(-50deg);
+    }
+    to {
+      transform: translateY(calc(-100vh + -100%)) rotate(20deg);
+    }
+  }
