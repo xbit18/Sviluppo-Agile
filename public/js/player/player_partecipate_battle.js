@@ -355,7 +355,7 @@ $( document ).ready( function() {
                         $('#right_side').children('img').attr('src', track.album.images[0].url);
                         $('#right_side').find('h5').text(track.name);
                         $('#right_side').find('p').text(artists);
-                        $('#right_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
+                        $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
                         $('#right_side').find('button').attr('disabled', false);
                     }
                     

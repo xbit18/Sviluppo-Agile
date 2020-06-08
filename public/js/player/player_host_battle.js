@@ -1058,7 +1058,7 @@
             song_id = $('#track_uri_side_1').attr('data-id');
         else if($(this).attr('id') == 'vote_right')
             song_id = $('#track_uri_side_2').attr('data-id');
-        // console.log(song_id,' canzone a votare');
+        console.log(song_id,' canzone a votare');
         // console.log($(this).attr('id'),'canzone votata');
         $.ajax({
             type: "GET",
@@ -1177,13 +1177,15 @@
                     var elem;
                     if(side == 1) {
                         elem = $('#left_side');
+                        var idd = 'track_uri_side_1';
                     } else {
                         elem = $('#right_side');
+                        var idd = 'track_uri_side_2';
                     }
                     elem.children('img').attr('src', $(item).find('img').attr('src'));
                     elem.find('h5').text($(item).find('h5').text());
                     elem.find('p').text($(item).find('p').text());
-                    elem.prepend('<span id="track_uri_side_1" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
+                    elem.prepend('<span id="' + idd + '" data-id="' + track_real_id + '" data-track="' + track_uri + '"></span>');
                     elem.find('button').addClass('like_bat');
                     elem.find('button').attr('disabled', false);
                 },
