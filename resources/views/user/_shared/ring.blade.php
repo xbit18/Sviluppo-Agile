@@ -20,7 +20,7 @@
               !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
           </button>
           @else
-          <button id="vote_right" type="button"
+          <button id="vote_left" type="button"
             class="btn poca-back @if($liked == $side_1->id) unlike @else like_bat @endif">
             <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">@if(isset($side_1) &&
               !empty($side_1)) {{$side_1->votes}} @else 0 @endif</span>
@@ -42,7 +42,7 @@
           <h5>Right Side</h5>
           <p class="card-text">No song selected</p>
           @if(!isset($side_2) || empty($side_2))
-          <button id="vote_left" disabled type="button" class="btn poca-back like_bat">
+          <button id="vote_right" disabled type="button" class="btn poca-back like_bat">
             <i class="fa fa-heart mr-1" aria-hidden="true"></i> <span class="badge badge-light">0</span>
           </button>
           @else

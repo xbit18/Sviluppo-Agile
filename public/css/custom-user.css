@@ -62,6 +62,15 @@ html, body {
     background-color: transparent;
 }
 
+.party_name_list::after {
+    transition: all .3s ease;
+}
+
+.party_name_list:hover::after {
+    font: normal normal normal 36px/1 FontAwesome;
+    content: "\00a0\f090";
+    transition: all .3s ease;
+}
 
 
 .party_img {
@@ -85,9 +94,9 @@ html, body {
 
 #party_playlist > a {
     background: rgba(40, 40, 40, .4); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(40, 40, 40, .4) 0%, rgba(40, 40, 40, .4) 6%, rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top,  rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 95%, rgba(73, 73, 73, .4) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: -moz-linear-gradient(top, rgba(40, 40, 40, .4) 0%, rgba(40, 40, 40, .4) 6%, rgba(40, 40, 40, .4) 75%, rgba(73, 73, 73, .4) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top,  rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 75%, rgba(73, 73, 73, .4) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(40, 40, 40, .4) 0%,rgba(40, 40, 40, .4) 6%,rgba(40, 40, 40, .4) 75%, rgba(73, 73, 73, .4) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='rgba(40, 40, 40, .4)', endColorstr='#6d6d6d',GradientType=0 ); /* IE6-9 */
 }
 
@@ -115,7 +124,17 @@ a h5, a small, a p, a .like, a span {
 
 #party_playlist img{
     max-height: 5em;
-    box-shadow: 0 1px 5px white;
+    box-shadow: 0 1px 1px white;
+}
+
+.poca-music-area.style-2 .poca-music-thumbnail {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
 }
 
 #party_playlist h5{
@@ -304,7 +323,11 @@ a h5, a small, a p, a .like, a span {
 }
 
 .result{
-    transition: all 1s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+.item {
+    transition: all .2s ease-in-out;
 }
 
 .item:hover{

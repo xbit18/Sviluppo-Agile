@@ -42,20 +42,14 @@
                 <img src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}" alt="">
                 </div>
                 <div class="poca-music-content text-center">
-                <span class="music-published-date mb-2">{{ $party->created_at }}</span>
-                <h2><a href="{{ route('party.show', [ 'code' => $party->code]) }}">{{ $party->name }}</a></h2>
+                <span class="music-published-date mb-2">{{ $party->created_at->format('d/m/Y H:m') }}</span>
+                <h2><a class="party_name_list" href="{{ route('party.show', [ 'code' => $party->code]) }}">{{ $party->name }}</a></h2>
                 <div class="music-meta-data">
                     <p>By <a href="#" class="music-author">{{ $party->user->name }}</a></p>
                 </div>
-                <!-- Music Player -->
-                <div class="poca-music-player">
-                    <audio preload="auto" controls>
-                        <source src="audio/dummy-audio.mp3">
-                    </audio>
-                </div>
                 <!-- Likes, Share & Download -->
                 <div class="likes-share-download d-flex align-items-center justify-content-between">
-                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants (0)</a>
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{ $party->partecipants }})</a>
                     <div>
                     <a href="#" class="mr-4"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
                     </div>
@@ -86,6 +80,7 @@
                 </div>
               </div>
             </div>
+          </div>
          @endforelse
         
 
