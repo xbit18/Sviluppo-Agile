@@ -21,20 +21,17 @@ class VotesController extends Controller
     {
         $a= new MainController;
         $a->verify();
-        $votes=UserParticipatesParty::where('vote','<>',null)->get();
-
-        return view('admin.forms.vote.index',compact('votes'));
-        /*
         if(request('email')!=null) {
             $key = request('email');
-            $users = User::where('email', $key)->get();
+            $key = User::where('email', $key)->first()->id;
+            $votes = UserParticipatesParty::where('user_id',$key)->where('vote', '<>', null)->get();
             return view('admin.forms.vote.index',compact('votes'));
         }
         else {
-            $users = User::paginate(10);
-            return view('admin.forms.vote.index',compact('votes'));
+            $votes = UserParticipatesParty::where('vote', '<>', null)->get();
+
+            return view('admin.forms.vote.index', compact('votes'));
         }
-        */
     }
 
     /**

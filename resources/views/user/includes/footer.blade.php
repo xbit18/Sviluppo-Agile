@@ -59,23 +59,31 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             </div>
           </div>
         </div>
+          <div class="col-12 col-sm-6 col-lg-3">
+              <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
+                  <!-- Widget Title -->
+                  <h4 class="widget-title">Latest Parties</h4>
 
-        <!-- Single Footer Widget -->
-        <div class="col-12 col-sm-6 col-lg-3">
-          <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
-            <!-- Widget Title -->
-            <h4 class="widget-title">Latest Parties</h4>
-
-            <!-- Single Latest Episodes -->
-            @foreach($latest_parties as $party)
-              <div class="single-latest-episodes">
-                  <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
-                  <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                  <!-- Single Latest Episodes -->
+                  @foreach($latest_parties->take(3) as $party)
+                      <div class="single-latest-episodes">
+                          <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
+                          <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                      </div>
+                  @endforeach
               </div>
-            @endforeach
           </div>
-        </div>
-
+          <div class="col-12 col-sm-6 col-lg-3">
+              <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
+                  <h4 class="widget-title">              </h4>
+                  @foreach($latest_parties->skip(3)->take(3) as $party)
+                      <div class="single-latest-episodes">
+                          <p class="episodes-date">{{ $party->created_at->format('d/m/y H:i') }}</p>
+                          <a href="/party/show/{{ $party->code }}" class="episodes-title">{{ $party->name }}</a>
+                      </div>
+                  @endforeach
+              </div>
+          </div>
         <!-- Single Footer Widget -->
         <div class="col-12 col-sm-6 col-lg-3">
           <div class="single-footer-widget mb-80">

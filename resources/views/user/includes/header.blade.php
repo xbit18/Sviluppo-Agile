@@ -7,7 +7,7 @@
         <nav class="classy-navbar justify-content-between" id="pocaNav">
 
           <!-- Logo -->
-          <a class="nav-brand" href="index.html"><img src="{{ asset('img/core-img/logo2.png')}}" alt=""></a>
+          <a class="nav-brand" href="/"><img src="{{ asset('img/core-img/logo2.png')}}" alt=""></a>
 
           <!-- Navbar Toggler -->
           <div class="classy-navbar-toggler">
@@ -82,8 +82,9 @@
               <!--
               Top Search Area - Per il momento non ci serve  -->
               <div class="top-search-area">
-                <form action="index.html" method="post">
-                  <input type="search" name="top-search-bar" class="form-control" placeholder="Search and hit enter...">
+                <form action="{{route('parties.index')}}" method="get">
+                            <input type="text" class="form-control" placeholder="Search party by name" name="name">
+                            <input type="submit" hidden>
                   <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
               </div>
