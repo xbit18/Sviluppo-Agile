@@ -217,6 +217,30 @@ html, body {
     color: red;
 }
 
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button{
+    display: none;
+    -webkit-appearance: none;
+}
+
+
+i.kick, i.ban{
+    color: #f55656;
+}
+
+i.kick:hover,i.ban:hover{
+    color: rgba(255, 0, 0, 0.9);
+    transform: scale(1.2,1.2);
+    transition: 0.3s all;
+}
+
+
+
 /**
 *   SOVRASCRITTURA MOBILE
 */

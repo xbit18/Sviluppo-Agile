@@ -13,6 +13,7 @@ use App\Genre;
 use App\Party;
 use App\User;
 use App\Track;
+use Carbon\Carbon;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -67,7 +68,7 @@ class PartyController extends Controller
         if(!$party){
             return response(['error' => 'This party does not exist'], 404);
         }
-        $user->participates()->sync($party->id);
+        $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
         $party->genre_id = $party->genre->first()->id;

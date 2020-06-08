@@ -552,6 +552,100 @@
 
         });
 
+        $(document).on('click', '.partecipant', function (event) {
+            event.preventDefault();
+        });
+    
+    
+    
+        $(document).on('click', 'i.kick', function (event) {
+            event.preventDefault();
+            let user_id = $(this).parents('a').data('id');
+            let kick_form = $('#kick_form');
+            kick_form.unbind('submit');
+            $('#kickModal').modal();
+    
+            kick_form.on('submit',function(event){
+                event.preventDefault();
+                let date = $("input[name='date']").val();
+                let hour = $("input[name='hour']").val();
+                let kick_duration = date + ' ' + hour +':00'
+                $.ajax({
+                    type: "POST",
+                    url: `/party/{code}/user/${user_id}/kick`,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: {
+                        "kick_duration": kick_duration
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        $('#kickModal').modal('hide');
+    
+                        if(response.error){
+                          Toast.fire({
+                            type: 'warning',
+                            title: response.message
+                        })  
+                        } else {
+                            Toast.fire({
+                                type: 'success',
+                                title: response.message
+                            })  
+                        }
+                        
+                     
+                    },
+                    error: function(error){
+                        console.log(error);
+                    }
+                });
+            })
+           
+        });
+    
+        $(document).on('click', 'i.ban', function (event) {
+            event.preventDefault();
+            let user_id = $(this).parents('a').data('id');
+            let ban_form = $('#ban_form');
+            ban_form.unbind('submit');
+            $('#banModal').modal();
+    
+            ban_form.on('submit',function(event){
+                event.preventDefault();
+                $.ajax({
+                    type: "GET",
+                    url: `/party/${party_code}/user/${user_id}/ban`,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                       
+                        $('#banModal').modal('hide');
+                        if(response.error){
+                            Toast.fire({
+                              type: 'warning',
+                              title: response.message
+                          })  
+                          
+                          } else {
+                            Toast.fire({
+                                type: 'success',
+                                title: response.message
+                            })  
+                          }
+                    },
+                    error: function(error){
+                        
+                        console.log(error);
+                    }
+                });
+            })
+           
+        });
+
 
         /** -------------- Play Button Listener ----------------------- */
         $('#spotify_play_form').on('submit', function (event) {
