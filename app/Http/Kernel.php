@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Totalban;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -69,5 +70,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'kicked' => \App\Http\Middleware\Kicked::class,
         'banned' => \App\Http\Middleware\Banned::class,
+        'totalban' => \App\Http\Middleware\Totalban::class,
     ];
 }

@@ -16,7 +16,7 @@ class UserBanUsers extends Migration
         Schema::create('user_ban_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('ban_user_id')->unique();
+            $table->unsignedBigInteger('ban_user_id');
             $table->timestamps();
         });
     }

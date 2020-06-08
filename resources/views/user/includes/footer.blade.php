@@ -20,8 +20,13 @@
       <!-- Newsletter Content -->
       <div class="col-12 col-lg-12">
           <div class="newsletter-content mb-50">
+              @if(\Illuminate\Support\Facades\Auth::user()->ban == 0)
             <h2>Let's go!</h2>
             <h6>Start to create and share parties with your friends!</h6>
+                  @else
+                  <h2>YOU ARE BANNED!</h2>
+                  <h6>Please contact the admin</h6>
+              @endif
           </div>
         </div>
       @endauth
@@ -63,7 +68,10 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
               <div class="single-footer-widget mb-30 mb-sm-50 mb-md-80 mb-lg-100">
                   <!-- Widget Title -->
                   <h4 class="widget-title">Latest Parties</h4>
-
+                  @php
+                      $party_controller = new \App\Http\Controllers\PartyController();
+                      $latest_parties = $party_controller->getLatestParties();
+                  @endphp
                   <!-- Single Latest Episodes -->
                   @foreach($latest_parties->take(3) as $party)
                       <div class="single-latest-episodes">

@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
+    {/*
         $party_controller = new PartyController();
         $latest_parties = $party_controller->getLatestParties();
-        View::share('latest_parties', $latest_parties);
+        View::share('latest_parties', $latest_parties);*/
     }
 }

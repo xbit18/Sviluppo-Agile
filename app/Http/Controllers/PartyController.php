@@ -72,8 +72,8 @@ class PartyController extends Controller
         $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
-        $party->genre_id = ( $party->genre->first()->id % 20 ) + 1; 
-        
+        $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+
         $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
 
         if($party->type == 'Battle') {
