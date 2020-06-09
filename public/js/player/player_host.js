@@ -168,8 +168,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     // Error handling
     player.addListener('initialization_error', ({ message }) => { console.log(message) });
-    player.addListener('authentication_error', ({ message }) => { /* window.location.replace('/loginspotify')*/ });
-    player.addListener('account_error', ({ message }) => { /*window.location.replace('/loginspotify') */ });
+    player.addListener('authentication_error', ({ message }) => {  window.location.replace('/loginspotify') });
+    player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
     player.addListener('player_state_changed', state => {
@@ -935,6 +935,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     playlist_dom.append(item).hide().fadeIn(1000);
 
 
+
+
+
                     const Toast = Swal.mixin({
                         toast: true,
                         position: 'top-end',
@@ -991,6 +994,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 item_s.addClass('song_link');
                 $('#party_playlist').append(item_s);
                 */
+            },
+            error: function(e){
+                console.log(e);
             }
         })
 

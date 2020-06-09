@@ -8,6 +8,8 @@ use App\Party;
 use App\Track;
 use App\Events\VoteEvent;
 use App\Events\BattleSelectedEvent;
+use App\Events\SongAdded;
+use App\Events\SongRemoved;
 
 
 class TrackController extends Controller
@@ -53,12 +55,15 @@ class TrackController extends Controller
         
         if(Auth::user()->id == $party->user->id ) {
 
-            Track::find($id)->delete();
+            $track = Track::find($id);
+            $track->delete();
             
             $votes = $party->users()->where('vote',$id)->get();
             foreach($votes as $vote){
                 $vote->participates()->updateExistingPivot($party->id,['vote' => null]);
             }
+            broadcast(new SongRemoved($party,$track));
+
             return response()->json('completed');
 
         }
@@ -74,6 +79,8 @@ class TrackController extends Controller
            $track = $party->tracks()->create([
                 'track_uri' => $request->track_uri
             ]);
+
+            broadcast(new SongAdded($party, $track));
 
             return response()->json(['id' => $track->id]);
 

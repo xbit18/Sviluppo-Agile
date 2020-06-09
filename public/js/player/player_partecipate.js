@@ -483,6 +483,62 @@
          * Per i partecipanti : ascolta l'evento paused
         */
 
+        channel.listen('.song.added',function(data){
+            console.log(data);
+
+            let track_id = data.track.track_uri.replace('spotify:track:', '');
+            let song_id = data.track.id;
+
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+                console.log(data);
+                let song_link = $('#playlist_song_prototype').clone();
+                song_link.removeAttr('id');
+                song_link.attr('data-track', data.data.uri);
+                let item = populate_song_link(song_link, data.data, song_id, true);
+                playlist_dom.append(item).hide().fadeIn(1000);
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new son has been added to the playlist!'
+                });
+
+            })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        });
+
+        channel.listen('.song.removed',function(data){
+            console.log(data);
+
+            $('.song_link').each(function (index, item) {
+
+                if ($(item).attr('data-song-id') == data.track.id) {
+                    
+                    $(item).fadeOut(300,function(){
+                        $(item).remove();
+                    });
+
+                }
+            });
+
+        })
+
        channel.listen('.player.paused', (data) => {
         player.pause();
     });
