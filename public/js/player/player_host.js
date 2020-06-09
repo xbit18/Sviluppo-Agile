@@ -15,6 +15,7 @@ var actual_dur = 0;
 var actual_track;
 var playlist_uri;
 var selected_track;
+var selected_song_id;
 
 var party_type = $('#p_type').attr('data-type');
 
@@ -154,6 +155,72 @@ function populate_song_link(item, track, id, bool = false) {
     }
 }
 
+function delete_song(code, id) {
+    $.ajax({
+        url: "/party/" + code + "/tracks/" + id,
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: 'json',
+        success: function (data) {
+            console.log(data);
+            console.log('canzone eliminata');
+            // DEBUGGING
+            //console.log(data);
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            /**
+             * Error Handling
+             */
+            console.log(xhr);
+            if (xhr.status == 404) {
+                console.log("404 NOT FOUND");
+            } else if (xhr.status == 500) {
+                console.log("500 INTERNAL SERVER ERROR");
+            } else {
+                console.log("errore " + xhr.status);
+            }
+        }
+    });
+}
+
+function get_next_song(code) {
+    $.ajax({
+        url: "/party/" + code + "/getNextTrack",
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: 'json',
+        success: function (data) {
+            // console.log(data);
+            // DEBUGGING
+            //console.log(data);
+            delete_song(party_code, selected_song_id);
+            selected_song_id = data.id;
+            $('.song_link').each(function (index, item) {
+                if ($(this).attr('data-track') == data.track_uri) {
+                    $(this).click();
+                }
+            });
+            console.log(data, 'next_track');
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            /**
+             * Error Handling
+             */
+            if (xhr.status == 404) {
+                console.log("Next Track 404 NOT FOUND");
+            } else if (xhr.status == 500) {
+                console.log("Next Track 500 INTERNAL SERVER ERROR");
+            } else {
+                console.log("Next Track errore " + xhr.status);
+            }
+        }
+    });
+}
+
 
 
 window.onSpotifyWebPlaybackSDKReady = () => {
@@ -198,6 +265,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             timeline.attr('max', dur);
 
             if (!($('#title-player').text() === state.track_window.current_track.name)) {
+                
                 $('#title-player').text(state.track_window.current_track.name);
 
                 var artists = "";
@@ -280,38 +348,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
             if (!paused && prec_play) {
                 //console.error('canzone finita');
-                $.ajax({
-                    url: "/party/" + party_code + "/getNextTrack",
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        // console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                        console.log(data.track_uri);
-                        $('.song_link').each(function (index, item) {
-                            if ($(this).attr('data-track') == data.track_uri) {
-                                $(this).click();
-                            }
-                        });
-                        console.log(data, 'next_track');
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("Next Track 404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("Next Track 500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("Next Track errore " + xhr.status);
-                        }
-                    }
-                });
+                get_next_song(party_code);
                 prec_play = false;
             }
 
@@ -441,7 +478,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         var track_uri = $(this).attr('data-track');
         var link = $(this);
-        var song_id = $(this).data('song-id');
+        selected_song_id = $(this).data('song-id');
+        var song_id = selected_song_id;
 
         // Se ho cliccato su elimina non deve partire
         if (event.target.classList.contains('_delete') || event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
@@ -507,33 +545,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 link.fadeOut('normal', () => {
                     link.remove();
 
-                    $.ajax({
-                        url: "/party/" + party_code + "/tracks/" + song_id,
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            console.log(data);
-                            console.log('canzone eliminata');
-                            // DEBUGGING
-                            //console.log(data);
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            /**
-                             * Error Handling
-                             */
-                            console.log(xhr);
-                            if (xhr.status == 404) {
-                                console.log("404 NOT FOUND");
-                            } else if (xhr.status == 500) {
-                                console.log("500 INTERNAL SERVER ERROR");
-                            } else {
-                                console.log("errore " + xhr.status);
-                            }
-                        }
-                    });
+                    
+
+                    
 
                 });
 
@@ -722,38 +736,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     $('#spotify_next_form').on('submit', function (event) {
         event.preventDefault();
-        $.ajax({
-            url: "/party/" + party_code + "/getNextTrack",
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            dataType: 'json',
-            success: function (data) {
-                // console.log(data);
-                // DEBUGGING
-                //console.log(data);
-                console.log(data.track_uri);
-                $('.song_link').each(function (index, item) {
-                    if ($(this).attr('data-track') == data.track_uri) {
-                        $(this).click();
-                    }
-                });
-                console.log(data, 'next_track');
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                /**
-                 * Error Handling
-                 */
-                if (xhr.status == 404) {
-                    console.log("Next Track 404 NOT FOUND");
-                } else if (xhr.status == 500) {
-                    console.log("Next Track 500 INTERNAL SERVER ERROR");
-                } else {
-                    console.log("Next Track errore " + xhr.status);
-                }
-            }
-        });
+        get_next_song(party_code);
     });
 
 
