@@ -265,6 +265,15 @@
                 var position = 0;
             }
 
+            if($('#animation-container .wrapper').lenght) {
+                if(state.paused) {
+                    $('#animation-container .wrapper').addClass('wrapper_hidden');
+                }
+                else {
+                    $('#animation-container .wrapper').removeClass('wrapper_hidden');
+                }
+            }
+
             
 
 

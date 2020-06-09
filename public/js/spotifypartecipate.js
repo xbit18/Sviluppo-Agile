@@ -100,6 +100,15 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         if (!($('#artist-player').text() === artists))
             $('#artist-player').text(artists);
 
+        if($('#animation-container .wrapper').lenght) {
+            if(state.paused) {
+                $('#animation-container .wrapper').addClass('wrapper_hidden');
+            }
+            else {
+                $('#animation-container .wrapper').removeClass('wrapper_hidden');
+            }
+        }
+
 
     });
 
