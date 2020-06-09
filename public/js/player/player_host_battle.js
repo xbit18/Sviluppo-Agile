@@ -14,6 +14,7 @@
     var actual_track;
     var playlist_uri;
     var selected_track;
+    var selected_song_id;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -125,7 +126,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     data: {
-                        "track_uri": track_uri,
+                        "track_id": selected_song_id,
                         "position_ms": position
                     },
                     dataType: 'json',
@@ -342,7 +343,7 @@
                     var instance = axios.create();
                     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
                     console.log(instance.defaults.headers)
-                    
+                    selected_song_id = data.id
 
                     // Riproduco la canzone sul player
                     instance({
@@ -372,7 +373,7 @@
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             data: {
-                                "track_uri": track_uri,
+                                "track_id": selected_song_id,
                                 "position_ms": 0
                             },
                             dataType: 'json',
@@ -1103,6 +1104,10 @@
             console.log($('#right_side').find('button').children('span'));
         }
 
+    })
+
+    channel.listen('.song.auto-skip', function () {
+        play_next_song_battle(devId, token, party_code)
     })
 
 

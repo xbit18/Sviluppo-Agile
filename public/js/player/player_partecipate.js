@@ -16,6 +16,7 @@
     var actual_track;
     var playlist_uri;
     var selected_track;
+    var selected_song_id;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -172,12 +173,13 @@
             dataType: "json",
             success: function (response) {
 
-                console.log(response);
+                // console.log(response);
                 if(!response.error){
                     Toast.fire({
                         type: 'success',
                         title: 'Voted Successfully'
                     });
+                    console.log(response);
                 }
                 else {
                     Toast.fire({
@@ -317,8 +319,10 @@
          * Per i partecipanti : ascolta l'evento play
          */
         channel.listen('.player.played', (data) => {
+            console.log(data, 'data pay');
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+            selected_song_id = data.track.id;
             console.log(devId);
             console.log(data.position_ms);
             instance({
@@ -328,7 +332,7 @@
                     'Authorization': 'Bearer ' + token,
                 },
                 data: {
-                    "uris": [data.track_uri],
+                    "uris": [data.track.track_uri],
                     "position_ms": data.position_ms
                 },
                 dataType: 'json',
@@ -382,12 +386,10 @@
         });
 
         channel.listen('.song.removed',function(data){
-            console.log(data);
-
+            console.log(data,'removed');
             $('.song_link').each(function (index, item) {
 
                 if ($(item).attr('data-song-id') == data.track.id) {
-                    
                     $(item).fadeOut(300,function(){
                         $(item).remove();
                     });
@@ -806,14 +808,7 @@
     $(document).on('click','.button-skip',function(event){
         event.preventDefault();
         event.stopPropagation();
-        let vote = $(this);
-        let parent = playlist_dom.children('a.song_link[track_uri="' + actual_track + '"]');
-        console.log(parent)
-        let song_id = parent.data('song-id');
-
-        vote_to_skip(party_code, song_id);
-        
-
+        vote_to_skip(party_code, selected_song_id);
     });
 
 

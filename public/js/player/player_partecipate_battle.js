@@ -14,6 +14,8 @@
     var actual_dur = 0;
     var actual_track;
     var playlist_uri;
+    var selected_song_id;
+
     var selected_track;
 
     var party_type = $('#p_type').attr('data-type');
@@ -117,7 +119,36 @@
 
 
     
+    function vote_to_skip(code, track_id) {
+        $.ajax({
+            type: "GET",
+            url: `/party/${code}/tracks/${track_id}/skip`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
 
+                // console.log(response);
+                if(!response.error){
+                    Toast.fire({
+                        type: 'success',
+                        title: 'Voted Successfully'
+                    });
+                    console.log(response);
+                }
+                else {
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                    });
+                }
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+    }
     
 
     function millisToMinutesAndSeconds(millis) {
@@ -227,8 +258,10 @@
          * Per i partecipanti : ascolta l'evento play
          */
         channel.listen('.player.played', (data) => {
+            console.log(data,' dataaaaaaaaaaaaaaaaaaaaaa');
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+             selected_song_id = data.track.id;
             console.log(devId);
             console.log(data.position_ms);
             instance({
@@ -238,13 +271,19 @@
                     'Authorization': 'Bearer ' + token,
                 },
                 data: {
-                    "uris": [data.track_uri],
+                    "uris": [data.track.track_uri],
                     "position_ms": data.position_ms
                 },
                 dataType: 'json',
             }).then(function (data) {
 
             });
+        });
+
+        $(document).on('click','.button-skip',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            vote_to_skip(party_code, selected_song_id);
         });
 
         /**

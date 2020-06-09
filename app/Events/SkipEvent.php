@@ -15,17 +15,16 @@ class SkipEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $track, $party;
+    public $party;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party, $track)
+    public function __construct($party)
     {
         $this->party = $party;
-        $this->track = $track;
     }
 
     /**
@@ -50,7 +49,7 @@ class SkipEvent implements ShouldBroadcastNow
 
     public function broadcastWith(){
         return [
-            'track' => $this->track,
+            'message' => 'Voted to skip'
         ];
     }
 

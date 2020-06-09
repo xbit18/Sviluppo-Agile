@@ -16,7 +16,6 @@ var actual_track;
 var playlist_uri;
 var selected_track;
 var selected_song_id;
-
 var party_type = $('#p_type').attr('data-type');
 
 var paused = true;
@@ -183,28 +182,35 @@ function delete_song(code, id) {
             }
         }
     });
+
 }
 
 function get_next_song(code) {
+
+    // var track_uri;
+
     $.ajax({
         url: "/party/" + code + "/getNextTrack",
         method: 'GET',
+        // async: false,
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         dataType: 'json',
         success: function (data) {
-            // console.log(data);
+            // console.log(data,'next song');
             // DEBUGGING
             //console.log(data);
-            delete_song(party_code, selected_song_id);
-            selected_song_id = data.id;
+            // track_uri = data.track_uri;
+
+
             $('.song_link').each(function (index, item) {
                 if ($(this).attr('data-track') == data.track_uri) {
-                    $(this).click();
+                    $(this).click()
                 }
             });
-            console.log(data, 'next_track');
+
+            // console.log(data, 'next_track');
         },
         error: function (xhr, ajaxOptions, thrownError) {
             /**
@@ -219,8 +225,75 @@ function get_next_song(code) {
             }
         }
     });
+    // return track_uri;
+
+
 }
 
+const play_song = function (code, id, position_ms) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "/party/" + code + "/play",
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                "track_id": id,
+                "position_ms": position_ms
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+                console.log(data);
+                resolve(data);
+                // DEBUGGING
+                //console.log(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                /**
+                 * Error Handling
+                 */
+                if (xhr.status == 404) {
+                    console.log("404 NOT FOUND");
+                } else if (xhr.status == 500) {
+                    console.log("500 INTERNAL SERVER ERROR");
+                } else {
+                    console.log("errore " + xhr.status);
+                }
+                reject(xhr);
+            }
+        });
+    });
+    
+}
+
+// function spotify_play(devId, token, track_uri,slider, player, code, song_id){
+
+//     var instance = axios.create();
+//     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+//     instance({
+//         url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+//         method: 'PUT',
+//         headers: {
+//             'Authorization': 'Bearer ' + token,
+//         },
+//         data: {
+//             "uris": [track_uri],
+//             "position_ms": 0
+//         },
+//         dataType: 'json'
+//     }).then(function (data) {
+
+//         player.setVolume(slider.val() / 100);
+//         console.log("uri " + track_uri);
+//         paused = false;
+
+//         play_song(code, song_id, 0);
+
+//     });
+// }
 
 
 window.onSpotifyWebPlaybackSDKReady = () => {
@@ -235,7 +308,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     // Error handling
     player.addListener('initialization_error', ({ message }) => { console.log(message) });
-    player.addListener('authentication_error', ({ message }) => {  window.location.replace('/loginspotify') });
+    player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
     player.addListener('playback_error', ({ message }) => { console.error(message); });
 
@@ -265,7 +338,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             timeline.attr('max', dur);
 
             if (!($('#title-player').text() === state.track_window.current_track.name)) {
-                
+
                 $('#title-player').text(state.track_window.current_track.name);
 
                 var artists = "";
@@ -298,38 +371,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
             // console.log("uri " + track_uri);
             // console.log('position ' + position);
-            $.ajax({
-                url: "/party/" + party_code + "/play",
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    "track_uri": track_uri,
-                    "position_ms": position
-                },
-                dataType: 'json',
-                success: function () {
-                    console.log('success play');
-                    // console.log(data);
-                    // DEBUGGING
-                    //console.log(data);
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    /**
-                     * Error Handling
-                     */
-                    console.log('party/code/play error');
-                    console.log(xhr);
-                    if (xhr.status == 404) {
-                        console.log("404 NOT FOUND");
-                    } else if (xhr.status == 500) {
-                        console.log("500 INTERNAL SERVER ERROR");
-                    } else {
-                        console.log("errore " + xhr.status);
-                    }
-                }
-            });
+            play_song(party_code, selected_song_id, position)
+
         } else if (state.paused) {
 
             //console.log('position ' + act_pos);
@@ -476,86 +519,55 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     $(document).on('click', '.song_link', function (event) {
         event.preventDefault();
 
+        // Se ho cliccato su elimina non deve partire
+        if (event.target.classList.contains('_delete') || event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
+
         var track_uri = $(this).attr('data-track');
         var link = $(this);
         selected_song_id = $(this).data('song-id');
         var song_id = selected_song_id;
-
-        // Se ho cliccato su elimina non deve partire
-        if (event.target.classList.contains('_delete') || event.target.classList.contains('fa-times') || event.target.classList.contains('like') || event.target.classList.contains('unlike')) return;
+        console.log(selected_song_id, 'selected song in song link');
 
         // console.log('clicked');
 
 
-        if (party_type == 1) {
-            $('#battleModal').modal();
-            selected_track = track_uri;
-        }
-        else {
+        /**
+         * AJAX CALL FOR PLAY THAT SONG
+         */
+        instance({
+            url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            data: {
+                "uris": [track_uri],
+                "position_ms": 0
+            },
+            dataType: 'json'
+        }).then(function (data) {
 
-            /**
-             * AJAX CALL FOR PLAY THAT SONG
-             */
-            instance({
-                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                data: {
-                    "uris": [track_uri],
-                    "position_ms": 0
-                },
-                dataType: 'json'
-            }).then(function (data) {
+            player.setVolume(slider.val() / 100);
+            console.log("uri " + track_uri);
+            paused = false;
 
-                player.setVolume(slider.val() / 100);
-                console.log("uri " + track_uri);
-                paused = false;
-                $.ajax({
-                    url: "/party/" + party_code + "/play",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        "track_uri": track_uri,
-                        "position_ms": 0
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
+            play_song(party_code, song_id,0).then((response) => {
+                delete_song(party_code, song_id);
+            })
+                .catch((e) => {
+                    console.log(e);
                 });
 
-                link.fadeOut('normal', () => {
-                    link.remove();
 
-                    
-
-                    
-
-                });
-
+            link.fadeOut('normal', () => {
+                link.remove();
             });
 
+        });
 
 
-        }
+
+
 
     });
 
@@ -654,7 +666,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         let user_prototype = $('#user-prototype').clone();
                         user_prototype.removeAttr('id');
                         user_prototype.removeClass('d-none');
-                        user_prototype.attr('data-id',user_id);
+                        user_prototype.attr('data-id', user_id);
                         user_prototype.find('.ban-name').text(user_name);
                         $('#ban-list').append(user_prototype);
 
@@ -670,10 +682,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
     $(document).on('click', '.user', function (event) {
-        
+
 
         let user = $(this)
-      console.log('clicked');
+        console.log('clicked');
         $.ajax({
             type: "GET",
             url: `/party/${party_code}/user/${user.data('id')}/unban`,
@@ -695,7 +707,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                         title: response.message
                     })
 
-                    user.fadeOut(800,function(){
+                    user.fadeOut(800, function () {
                         user.remove()
                     })
                 }
@@ -736,7 +748,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     $('#spotify_next_form').on('submit', function (event) {
         event.preventDefault();
+        // let track_uri = get_next_song(party_code);
         get_next_song(party_code);
+        // spotify_play(devId, token, track_uri, slider, player, party_code, selected_song_id);
     });
 
 
@@ -978,7 +992,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 $('#party_playlist').append(item_s);
                 */
             },
-            error: function(e){
+            error: function (e) {
                 console.log(e);
             }
         })
@@ -1154,6 +1168,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
         //    }
 
+    })
+
+    channel.listen('.song.auto-skip', function () {
+        get_next_song(party_code)
     })
 
 

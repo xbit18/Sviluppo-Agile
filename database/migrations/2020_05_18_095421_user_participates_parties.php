@@ -18,7 +18,7 @@ class UserParticipatesParties extends Migration
             $table->unsignedBigInteger('party_id');
             $table->unsignedBigInteger('user_id');
             $table->integer('vote')->default(null)->nullable();
-            $table->integer('skip')->default(null)->nullable();
+            $table->boolean('skip')->default(0);
             $table->timestamp('timestamp_kick')->nullable();
             $table->timestamp('kick_duration')->nullable();
             $table->timestamps();
