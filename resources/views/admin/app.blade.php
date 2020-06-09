@@ -34,7 +34,7 @@
             <img src="/img/admin.png" class="img-responsive" alt="">
         </div>
         <div class="profile-usertitle">
-            <div class="profile-usertitle-name">Admin</div>
+            <div class="profile-usertitle-name">{{\Illuminate\Support\Facades\Auth::user()->name}}</div>
             <div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
         </div>
         <div class="clear"></div>
@@ -128,7 +128,7 @@
                     </a></li>
                 <li>
                 <a class="" href="/admin/totalban">
-                    <span class="fa fa-arrow-right">&nbsp;</span> Show all total bans
+                    <span class="fa fa-arrow-right">&nbsp;</span> Show all totally bans
                 </a></li>
             </ul>
         </li>
