@@ -4,7 +4,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Total banned users</h1>
+            <h1 class="page-header">Totally banned users</h1>
             @if (\Session::has('success'))
                 <div class="alert alert-success">
                     <ul>

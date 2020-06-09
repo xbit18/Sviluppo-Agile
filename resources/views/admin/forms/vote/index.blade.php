@@ -76,8 +76,7 @@
                                     document.getElementById('edit-form-{{$id}}').submit();
                                 }
                             </script>
-
-                            <input name="id" value="{{$user->id}}" hidden >
+                            <input name="id" value="{{$id}}" hidden >
                             <input name="track_id" id="track_id{{$id}}" hidden>
                         </form>
                     </div>

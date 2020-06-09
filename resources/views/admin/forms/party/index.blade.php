@@ -86,7 +86,9 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
+                    <a href="/party/show/{{$party->code}}" target="_blank">
                     {{$party->name}}
+                    </a>
                 </div>
             </div>
             <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
