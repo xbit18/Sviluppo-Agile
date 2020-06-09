@@ -116,10 +116,10 @@
         <a id="playlist_song_prototype" href="#"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="row song_row">
-                <div class="col-sm-2 album_img_container align-self-center">
+                <div class="col-sm-3 album_img_container align-self-center">
                     <img class="album_img" />
                 </div>
-                <div class="col-sm-8">
+                <div class="col-sm-9">
                     <div class="d-flex w-100 justify-content-between title_song">
                         <h5 class="mb-1"></h5>
                         <small>
@@ -130,10 +130,6 @@
                     </div>
                     <p class="mb-1"></p>
                     <small class="d-none"></small>
-                </div>
-                <div class="col-sm-2">
-                    <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default like"><i
-                            class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
                 </div>
             </div>
 
@@ -150,10 +146,10 @@
                 data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                 <div class="row song_row">
-                    <div class="col-sm-2 album_img_container align-self-center">
+                    <div class="col-sm-3 album_img_container align-self-center">
                         <img class="album_img" />
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-sm-9">
                         <div class="d-flex w-100 justify-content-between title_song">
                             <h5 class="mb-1"></h5>
                             <small>
@@ -164,11 +160,6 @@
                         </div>
                         <p class="mb-1"></p>
                         <small class="d-none"></small>
-                    </div>
-                    <div class="col-sm-2">
-                        <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default
-                            {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1"
-                                aria-hidden="true"></i> <span>{{$song->votes}}</span></button>
                     </div>
                 </div>
 
