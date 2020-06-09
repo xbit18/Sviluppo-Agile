@@ -62,6 +62,11 @@ class TrackController extends Controller
             foreach($votes as $vote){
                 $vote->participates()->updateExistingPivot($party->id,['vote' => null]);
             }
+
+            foreach($party->users as $user) {
+                $user->participates()->updateExistingPivot($party->id,['skip' => null]);
+            }
+
             broadcast(new SongRemoved($party,$track));
 
             return response()->json('completed');
@@ -193,7 +198,7 @@ class TrackController extends Controller
             ]);
         }
 
-}
+    }
 
     /**
      * @param Request $request
@@ -239,5 +244,50 @@ class TrackController extends Controller
                 'error' => 'You have already voted, please remove your vote before voting again',
             ]);
         }
-}
+    }   
+
+    /*
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * campi di request : track_id // traccia che si vuole votare
+     */
+   public function vote_to_skip($code, $id){
+
+        $user=Auth::user();
+
+        $party = Party::where('code',$code)->first();
+
+        $user_participates = $party->users()->where('user_id','=',$user->id)
+        ->first()->pivot;
+
+        if(!$user_participates){
+            return response()->json([
+                'error' => 'You do not participate in this party!'
+            ]);
+        }
+
+
+        if($user_participates->skip === null) {
+
+            $track = Track::find($id);
+            if($track == null) {
+                return response()->json([
+                    'error' => 'track not found'
+                ]);
+            }
+            $track->skip += 1;
+            $track->save();
+            broadcast(new SkipEvent($party,$track));
+            $user->participates()->updateExistingPivot($party->id,['skip' => $id]);
+            return response()->json([
+                'message' => 'track voted to skip successfully'
+            ]);
+        }
+        else{
+            return response()->json([
+                'error' => 'You have already voted to skip',
+            ]);
+        }
+
+    }
 }

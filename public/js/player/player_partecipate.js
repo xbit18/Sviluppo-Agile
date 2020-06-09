@@ -130,48 +130,6 @@
         return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
     }
 
-    
-        function increment_timeline(data) {
-            //console.log('funzione increment timeline chiamata');
-            if(data) {
-                if(!running) {
-                    running = true;
-                    timer = setInterval( () => { 
-                        //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
-                        timeline.val( parseInt(timeline.val()) + 1000 );
-                        duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
-                        //console.log('incrementing ' + timeline.val()); 
-                        var v = ( timeline.val() ) / actual_dur;
-                        act_pos = timeline.val();
-
-                        timeline.css('background-image', [
-                            '-webkit-gradient(',
-                            'linear, ',
-                            'left top, ',
-                            'right top, ',
-                            'color-stop(' + v + ', #1DB954), ',
-                            'color-stop(' + v + ', #535353)',
-                            ')'
-                        ].join(''));
-                        timeline.css('background-image', [
-                            '-moz-linear-gradient(',
-                            'linear, ',
-                            'left top, ',
-                            'right top, ',
-                            'color-stop(' + v + ', #1DB954), ',
-                            'color-stop(' + v + ', #535353)',
-                            ')'
-                        ].join(''));
-                        
-                    },1000);
-                }
-            } else {
-                //console.log('clearing');
-                clearInterval(timer);
-                running = false;
-            }
-        }
-
 
 
     function populate_song_link(item, track, id, bool = false) {
@@ -202,6 +160,36 @@
         if(bool){
             return item;
         }
+    }
+
+    function vote_to_skip(code, track_id) {
+        $.ajax({
+            type: "GET",
+            url: `/party/${code}/tracks/${track_id}/skip`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+
+                console.log(response);
+                if(!response.error){
+                    Toast.fire({
+                        type: 'success',
+                        title: 'Voted Successfully'
+                    });
+                }
+                else {
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                    });
+                }
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
     }
 
     window.onSpotifyWebPlaybackSDKReady = () => {
@@ -261,153 +249,23 @@
                 var position = state.position;
                 track_uri = state.track_window.current_track.uri;
                 actual_dur = parseInt(state.track_window.current_track.duration_ms);
+
+                if($('#animation-container .wrapper').lenght) {
+                    if(state.paused) {
+                        $('#animation-container .wrapper').addClass('wrapper_hidden');
+                    }
+                    else {
+                        $('#animation-container .wrapper').removeClass('wrapper_hidden');
+                    }
+                }
+
+
             } else {
                 var position = 0;
             }
-
-            if($('#animation-container .wrapper').lenght) {
-                if(state.paused) {
-                    $('#animation-container .wrapper').addClass('wrapper_hidden');
-                }
-                else {
-                    $('#animation-container .wrapper').removeClass('wrapper_hidden');
-                }
-            }
-
             
-
-
-            if (!state.paused) {
-                prec_play = true;
-                paused = false;
-                if(position == 0) timeline.val(0);
-                increment_timeline(true);
-    
-                
-                
-                // console.log("uri " + track_uri);
-                // console.log('position ' + position);
-                $.ajax({
-                    url: "/party/" + party_code + "/play",
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        "track_uri": track_uri,
-                        "position_ms": position
-                    },
-                    dataType: 'json',
-                    success: function () {
-                        console.log('success play');
-                        // console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        console.log('party/code/play error');
-                        console.log(xhr);
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
-                });
-            } else if (state.paused) {
-                
-                //console.log('position ' + act_pos);
-                /*
-                instance({
-                    url: "https://api.spotify.com/v1/me/player",
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                    },
-                    dataType: 'json',
-                }).then(function () {
-                */
-                    //console.log(data, 'track_info');
-
-                    // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
-                    if(!paused && prec_play) {
-                        //console.error('canzone finita');
-                        $.ajax({
-                            url: "/party/" + party_code + "/getNextTrack",
-                            method: 'GET',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                // console.log(data);
-                                // DEBUGGING
-                                //console.log(data);
-                                console.log(data.track_uri);
-                                $('.song_link').each( function(index, item) {
-                                    if( $(this).attr('data-track') == data.track_uri ) {
-                                        $(this).click();
-                                    }
-                                });
-                                console.log(data, 'next_track');
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                /**
-                                 * Error Handling
-                                 */
-                                if (xhr.status == 404) {
-                                    console.log("Next Track 404 NOT FOUND");
-                                } else if (xhr.status == 500) {
-                                    console.log("Next Track 500 INTERNAL SERVER ERROR");
-                                } else {
-                                    console.log("Next Track errore " + xhr.status);
-                                }
-                            }
-                        });
-                        prec_play = false;
-                    }
-                    
-    
-               // });
-                increment_timeline(false);
-                $.ajax({
-                    url: "/party/" + party_code + "/pause",
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    dataType: 'json',
-                    success: function () {
-                        console.log('success pause');
-                        // console.log(data);
-                        // DEBUGGING
-                        //console.log(data);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        /**
-                         * Error Handling
-                         */
-                        console.log('party/code/pause error');
-                        console.log(xhr);
-                        if (xhr.status == 404) {
-                            console.log("404 NOT FOUND");
-                        } else if (xhr.status == 500) {
-                            console.log("500 INTERNAL SERVER ERROR");
-                        } else {
-                            console.log("errore " + xhr.status);
-                        }
-                    }
-                });
-            }
-
             actual_track = state.track_window.current_track.uri;
     
-
         });
 
 
@@ -943,6 +801,20 @@
     })
 
 
+    /*------------VOTE TO SKIP SONG ------------ */
+
+    $(document).on('click','.button-skip',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        let vote = $(this);
+        let parent = playlist_dom.children('a.song_link[track_uri="' + actual_track + '"]');
+        console.log(parent)
+        let song_id = parent.data('song-id');
+
+        vote_to_skip(party_code, song_id);
+        
+
+    });
 
 
     /*------------VOTE A SONG ------------ */

@@ -428,8 +428,7 @@ class PartyController extends Controller
             $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
 
             $tracks = array();
-            
-            if(!$response['tracks']) return redirect()->route('spotify.login');
+            if( !isset($response['tracks'])) return redirect()->route('spotify.login');
             $tracks = $response['tracks'];
 
             $tracks_uris = array();

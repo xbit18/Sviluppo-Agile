@@ -46,6 +46,7 @@ Route::group(['middleware' => ['auth','totalban']], function () {
 
     Route::get('/party/{code}/tracks/{id}/vote', 'TrackController@vote')->name('party.voteTrack');
     Route::get('/party/{code}/tracks/{id}/unvote', 'TrackController@unvote')->name('party.unvoteTrack');
+    Route::get('/party/{code}/tracks/{id}/skip', 'TrackController@vote_to_skip')->name('party.skipSong');
 
     Route::get('/party/{code}/getNextTrack', 'TrackController@getMostVotedSong')->name('party.nextTrack');
     Route::post('/party/{code}/tracks/', 'TrackController@addTrackToPlaylist')->name('party.addTrack');
