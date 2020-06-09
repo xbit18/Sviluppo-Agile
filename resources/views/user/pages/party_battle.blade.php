@@ -2,6 +2,7 @@
 
 @section('content')
 
+<!--
 <div class="animated-back">
     <ul class="squares">
         <li class="square"></li>
@@ -16,7 +17,7 @@
         <li class="square"></li>
     </ul>
 </div>
-
+-->
 
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/bg-img/party-type/battle1.jpg') }});

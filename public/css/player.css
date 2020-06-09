@@ -59,6 +59,27 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.15);
  }
 
+ .button-skip i {
+  color: #f55656 !important;
+}
+
+ .button-skip {
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0.4em;
+    padding: 0;
+    width: 3em;
+    height: 3em;
+    text-transform: uppercase;
+    border-radius: 50px;
+    z-index: 10;
+    /*background-color: #1DB954;*/
+    background-color: transparent;
+    border: 1px solid #f55656;
+    color: #f55656;
+    font-size: 1em;
+ }
+
  
 
 .player-button-play {
