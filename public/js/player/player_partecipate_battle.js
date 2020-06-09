@@ -153,12 +153,15 @@
                 var track_uri = state.track_window.current_track.uri;
                 actual_dur = parseInt(state.track_window.current_track.duration_ms);
 
-                if(state.paused) {
-                    $('#animation-container .wrapper').addClass('wrapper_hidden');
+                if($('#animation-container .wrapper').lenght) {
+                    if(state.paused) {
+                        $('#animation-container .wrapper').addClass('wrapper_hidden');
+                    }
+                    else {
+                        $('#animation-container .wrapper').removeClass('wrapper_hidden');
+                    }
                 }
-                else {
-                    $('#animation-container .wrapper').removeClass('wrapper_hidden');
-                }
+                
             }
 
             console.log(state);
