@@ -1,5 +1,10 @@
  'use strict';
 
+ if($('#party_code').attr('data-code').length) {
+    // Sono in una delle pagine del party
+    $('footer').hide();
+}
+
 
     var party_code = $('#party_code').attr('data-code');
     var user_code = $('#user_code').attr('data-code');

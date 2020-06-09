@@ -1,6 +1,13 @@
 
     'use strict';
 
+
+    if($('#party_code').attr('data-code').length) {
+        // Sono in una delle pagine del party
+        $('footer').hide();
+    }
+
+
     var party_code = $('#party_code').attr('data-code');
     var channel = Echo.join(`party.${party_code}`);
     var my_id = $('#my_id').data('id');

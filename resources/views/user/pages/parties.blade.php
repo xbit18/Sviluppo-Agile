@@ -50,10 +50,15 @@
                 </div>
                 <!-- Likes, Share & Download -->
                 <div class="likes-share-download d-flex align-items-center justify-content-between">
-                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants (0)</a>
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{$party->users()->count()}})</a>
                     <div>
-                    <a href="#" class="mr-4"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
+                    <a href="#" class="mr-1"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
                     </div>
+                    @if($party->user->id == Auth::id())
+                    <div>
+                    <a href="#"><i class="fa fa-times delete_party" aria-hidden="true" data-id="{{$party->id}}"></i></a>
+                    </div>
+                    @endif
                 </div>
                 </div>
             </div>
@@ -86,6 +91,9 @@
 
       </div>
     </div>
+
+    @include('user._shared.modals.party_delete')
+
     @if(session('kicked'))
     <span class="d-none" id="kicked">
 
