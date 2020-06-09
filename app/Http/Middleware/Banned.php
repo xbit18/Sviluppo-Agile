@@ -20,6 +20,9 @@ class Banned
         $code = $request->route('code');
         $party = Party::where('code','=',$code)->first();
         $user = Auth::user();
+        if(!$party){
+            return redirect('/party/show');
+        }
         $party_owner = $party->user;
 
         if($party_owner->bans()->where('ban_user_id',$user->id)->first() != null){
