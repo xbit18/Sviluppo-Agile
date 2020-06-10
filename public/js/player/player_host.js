@@ -292,6 +292,39 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         getOAuthToken: cb => { cb(token); }
     });
 
+    const play = ({
+        spotify_uri,
+        playerInstance: {
+          _options: {
+            getOAuthToken,
+            id
+          }
+        }
+      }, track_uri) => {
+          return new Promise((resolve, reject) => {
+            getOAuthToken(access_token => {
+                fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+                  method: 'PUT',
+                  body: JSON.stringify({ uris: [spotify_uri] }),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                }).then((data) => {
+                    console.log(data)
+                    if(data.status == '403' && data.statusText == "") {
+                      play({
+                          playerInstance: player,
+                          spotify_uri: track_uri,
+                      });   
+                    } else {
+                        resolve();
+                    }
+                  });;
+              });
+          });
+      };
+
     var devId;
 
     // Error handling
@@ -552,36 +585,60 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         /**
          * AJAX CALL FOR PLAY THAT SONG
          */
-        instance({
-            url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-            },
-            data: {
-                "uris": [track_uri],
-                "position_ms": 0
-            },
-            dataType: 'json'
-        }).then(function (data) {
+        // instance({
+        //     url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+        //     method: 'PUT',
+        //     headers: {
+        //         'Authorization': 'Bearer ' + token,
+        //     },
+        //     data: {
+        //         "uris": [track_uri],
+        //         "position_ms": 0
+        //     },
+        //     dataType: 'json'
+        // }).then(function (data) {
 
-            player.setVolume(slider.val() / 100);
-            console.log("uri " + track_uri);
-            paused = false;
+        //     player.setVolume(slider.val() / 100);
+        //     console.log("uri " + track_uri);
+        //     paused = false;
 
-            play_song(party_code, song_id,0).then((response) => {
-                delete_song(party_code, song_id);
-            })
-                .catch((e) => {
-                    console.log(e);
+        //     play_song(party_code, song_id,0).then((response) => {
+        //         delete_song(party_code, song_id);
+        //     })
+        //         .catch((e) => {
+        //             console.log(e);
+        //         });
+
+
+        //     link.fadeOut('normal', () => {
+        //         link.remove();
+        //     });
+
+        // });
+
+        play({
+            playerInstance: player,
+            spotify_uri: track_uri,
+        }, track_uri).then(function (data) {
+
+                player.setVolume(slider.val() / 100);
+                console.log("uri " + track_uri);
+                paused = false;
+    
+                play_song(party_code, song_id,0).then((response) => {
+                    delete_song(party_code, song_id);
+                })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+    
+    
+                link.fadeOut('normal', () => {
+                    link.remove();
                 });
-
-
-            link.fadeOut('normal', () => {
-                link.remove();
+    
             });
-
-        });
+        
 
 
 
