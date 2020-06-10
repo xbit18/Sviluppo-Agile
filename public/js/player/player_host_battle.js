@@ -404,7 +404,7 @@
                 
                 play({
                     playerInstance: player,
-                    spotify_uri: 'spotify:track:6SKxEiP89WRgniJuQ5gR94',
+                    spotify_uri: track_uri,
                 }, track_uri).then(() => {
                     console.log(data, 'spo_play');
 

@@ -207,6 +207,39 @@
             name: 'Web Player Party App',
             getOAuthToken: cb => { cb(token); }
         });
+
+        const play = ({
+            spotify_uri,
+            playerInstance: {
+              _options: {
+                getOAuthToken,
+                id
+              }
+            }
+          }, track_uri) => {
+              return new Promise((resolve, reject) => {
+                getOAuthToken(access_token => {
+                    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+                      method: 'PUT',
+                      body: JSON.stringify({ uris: [spotify_uri] }),
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                    }).then((data) => {
+                        console.log(data)
+                        if(data.status == '403' && data.statusText == "") {
+                          play({
+                              playerInstance: player,
+                              spotify_uri: track_uri,
+                          });   
+                        } else {
+                            resolve();
+                        }
+                      });;
+                  });
+              });
+          };
     
         var devId;
     
@@ -364,18 +397,10 @@
             selected_song_id = data.track.id;
             console.log(devId);
             console.log(data.position_ms);
-            instance({
-                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-                method: 'PUT',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                data: {
-                    "uris": [data.track.track_uri],
-                    "position_ms": data.position_ms
-                },
-                dataType: 'json',
-            }).then(function (data) {
+            play({
+                playerInstance: player,
+                spotify_uri: track_uri,
+            }, data.track.track_uri).then(function (data) {
 
             });
         });
