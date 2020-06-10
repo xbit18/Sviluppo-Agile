@@ -35,14 +35,19 @@
   width: 35% !important;
 }
 
-.song-details-container {
+.song-details-container > div{
+  
+  width: 30vw;
+  overflow: hidden;
 }
 .song-details-container h3, .song-details-container p{
   color: white !important;
+  white-space: nowrap;
 }
 
 .song-details-container span {
   color: rgba(255,255,255,0.5) !important;
+  white-space: nowrap;
 }
 
 .song-details-container h3{
@@ -245,6 +250,10 @@
         justify-content: center !important;
     }
 
+    .album_img_container {
+      text-align: center;
+    }
+
     #timeline-container p {
       margin: 0;
     }
@@ -274,8 +283,8 @@
       /*box-shadow: 0px 0px 0px 0px #000000;
       border: 1px solid #1DB954;*/
       box-shadow: 0 1px 2px rgba(0,0,0,0.4);
-      height: 15px;
-      width: 15px;
+      height: .9rem;
+      width: .9rem;
       margin-right : 1px;
       border-radius: 25px;
       background: white;
@@ -321,26 +330,111 @@
 
     @media (max-width: 1199px) { 
 
-        .player-button-adders {
-          width: 4em;
-        }
-
-        .player-button-play {
-          width: 4em;
-        }
-
-        .player-button-stop {
-          width: 4em;
-        }
-
-        .poca-music-area .poca-music-content-play {
-          padding: 2em;
-        }
-
+        
     }
 
 
    @media (max-width: 768px) { 
+
+      #scrollUp {
+        display: none !important;
+      }
+
+      #animation-container {
+        width: 100% !important;
+      }
+
+        #volume_range {
+            height: 2px;
+        }
+
+        #timeline {
+            height: 3.5px;
+        }
+
+        #timeline::-moz-range-thumb, #volume_range::-moz-range-thumb, #volume_range::-webkit-slider-thumb {
+            max-height: .5rem;
+            max-width: .5rem;
+        }
+
+        #timeline::-webkit-slider-thumb {
+          visibility: hidden;
+      }
+
+      .song-details-container {
+        width: 100%;
+      }
+
+      .song-details-container > div {
+        position: relative;
+        max-width: 100%;
+        overflow: unset;
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .player-box span {
+        text-transform: none !important;
+        color: white !important;
+        font-family: "HK Grotesk";
+        line-height: 1.4;
+        font-weight: 600;
+      }
+
+      .player-box span::after {
+        content: ' - \0020\0020\0020';
+      }
+
+      .player-box h3 {
+        margin-left: 3px;
+        margin: 0;
+      }
+
+      .player-box h3 i {
+        display: none;
+      }
+
+      .player-button-stop, .player-button-play {
+        font-size: 1em !important;
+      }
+
+      .player-box p {
+        font-size: .9em !important;
+      }
+
+      .player-box h3, .player-box span {
+        font-size: 1.2em !important;
+      }
+
+      .slidecontainer {
+        width: 20%;
+      }
+
+      .player-box {
+        flex-direction: column!important;
+      }
+
+      #player-controls-container {
+        align-self: center !important;
+        width: 100% !important;
+      }
+
+      .slidecontainer {
+        width: 100% !important;
+        justify-content: center;
+        line-height: .3em;
+      }
+
+
+      .button-skip {
+        font-size: .6em;
+      }
+
+
+      
 
         .album_img {
           max-width: 100%;
@@ -370,10 +464,6 @@
         /* La durata della canzone */
         #party_playlist a div div div small {
           display: none;
-        }
-
-        .title_song {
-          justify-content: center !important;
         }
 
         .song_row {
@@ -408,7 +498,7 @@
       align-items: center;
       justify-content: center;
       height: 100px;
-      width: 100%;
+      width: 30%;
       overflow: hidden;
     }
     

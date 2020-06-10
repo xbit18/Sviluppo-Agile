@@ -62,7 +62,7 @@
 
     <div class="row h-100">
 
-        <div class="col-8 h-100">
+        <div class="col-lg-8 col-md-12 h-100">
             <div class="row h-100">
 
 
@@ -82,12 +82,16 @@
             </div>
         </div>
 
-        <div class="col-4 h-100">
+        <div class="col-lg-4 col-md-12 h-100">
             
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti',['battle' => true])
+
+            @if(Auth::user()->id == $party->user->id)
             {{-- CERCA --}}
             @include('.user._shared.cerca')
+            @endif
+
             {{-- PLAYLIST --}}
             @include('.user._shared.playlist', ['party' => $party, 'liked' => $liked,'battle' => true])
 

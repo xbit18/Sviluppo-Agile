@@ -16,6 +16,7 @@
     var actual_track;
     var playlist_uri;
     var selected_track;
+    var scrolling;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -245,12 +246,45 @@
     
                 if (!($('#artist-player').text() === artists)) {
                     $('#artist-player').text(artists);
+
+                    /** AUTOSCROLLING CODE */
+                    var text = $('.song-details-container > div');
+                    var text_len = parseInt(text.width());
+                    var inner_len;
+                    if(parseInt($(document).width()) <= 768) {
+                        inner_len = ( parseInt($('.song-details-container > div > h3').width()) + parseInt($('.song-details-container > div > span').width()) + 3);
+                        //console.log(inner_len + '    ' + text_len, 'autoscroll debug');
+                        var pos = 0;
+                        text.css('left', '0px');
+                        if( text_len < inner_len) {
+                            text.css('justify-content', 'unset');
+                            var diff = inner_len - text_len;
+                            if (!scrolling) {
+                                scrolling = setInterval(function() {
+                                    pos = (pos+1) % (diff + 50);
+                                    if(pos <= diff) text.css('left', parseInt(0 - pos) + 'px');
+                                }, 1000 / 20);
+                            }
+                            
+                        }
+                        else {
+                            text.css('justify-content', 'center');
+                            clearInterval(scrolling);
+                            scrolling = null;
+                        }
+                    } else if(scrolling) {
+                        text.css('justify-content', 'center');
+                        clearInterval(scrolling);
+                        scrolling = null;
+                    }
+                    
+                    /*** END */
                 }
                 var position = state.position;
                 track_uri = state.track_window.current_track.uri;
                 actual_dur = parseInt(state.track_window.current_track.duration_ms);
 
-                if($('#animation-container .wrapper').lenght) {
+                if($('#animation-container .wrapper').length) {
                     if(state.paused) {
                         $('#animation-container .wrapper').addClass('wrapper_hidden');
                     }
@@ -432,7 +466,7 @@
             var track_uri = song_link.attr('data-track'); 
             var track_id = track_uri.replace('spotify:track:', '');
             let song_id = $(this).data('song-id');
-            console.log('track: ' + track_uri)       
+            //console.log('track: ' + track_uri)       
 
             // Chiamo per ottenere i dati della traccia
             instance({

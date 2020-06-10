@@ -5,11 +5,11 @@
 {{-- PLAYLIST --}}
 <div class="single-widget-area catagories-widget mt-3 mb-40 h-50">
     @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
-    <div class="row justify-content-between  mt-20 ">
-        <div class="col-4">
+    <div class="row justify-content-between  mt-20 mb-2">
+        <div class="col-md-4 col-12 text-center">
             <h5 class="widget-title">SONGS</h5>
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-12 text-center">
             @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn" data-toggle="modal"
                 data-target="#addSongsModal">+10 songs</button> @endif
         </div>
@@ -21,10 +21,10 @@
         <a id="playlist_song_prototype" href="#"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="row song_row">
-                <div class="col-sm-2 album_img_container align-self-center">
+                <div class="col-md-3 col-sm-2 col-2 album_img_container align-self-center">
                     <img class="album_img" />
                 </div>
-                <div class="col-sm-8">
+                <div class="col-md-7 col-sm-8 col-8">
                     <div class="d-flex w-100 justify-content-between title_song">
                         <h5 class="mb-1"></h5>
                         <small>
@@ -38,7 +38,7 @@
                     <p class="mb-1"></p>
                     <small class="d-none"></small>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2 col-2">
                     <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default like"><i
                             class="fa fa-heart mr-1" aria-hidden="true"></i><span>0</span></button>
                 </div>
@@ -57,10 +57,10 @@
                 data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                 <div class="row song_row">
-                    <div class="col-sm-2 album_img_container align-self-center">
+                    <div class="col-md-3 col-sm-2 col-2 album_img_container align-self-center">
                         <img class="album_img" />
                     </div>
-                    <div class="col-sm-8">
+                    <div class="col-md-7 col-sm-8 col-8">
                         <div class="d-flex w-100 justify-content-between title_song">
                             <h5 class="mb-1"></h5>
                             <small>
@@ -74,7 +74,7 @@
                         <p class="mb-1"></p>
                         <small class="d-none"></small>
                     </div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-2 col-2">
                         <button @if($party->type == 'Battle') disabled="disabled" @endif class="btn btn-default
                             {{$liked == $song->id ? 'unlike' : 'like'  }}"><i class="fa fa-heart mr-1"
                                 aria-hidden="true"></i> <span>{{$song->votes}}</span></button>
@@ -101,25 +101,27 @@
 <div class="single-widget-area catagories-widget h-50" id="battle-playlist">
     @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
     <div class="row justify-content-around  mt-12 mb-2 ">
-        <div class="col-4">
+        <div class="col-md-4 col-12 text-center">
             <h5 class="widget-title">SONGS</h5>
         </div>
-        <div class="col-4">
+        <div class="col-md-4 col-12 text-center">
             @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn" data-toggle="modal"
                 data-target="#addSongsModal">+10 songs</button> @endif
         </div>
     </div>
     @endif
 
+    @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
+
     <!-- Prototype for adding -->
     <div class="d-none">
         <a id="playlist_song_prototype" href="#"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="row song_row">
-                <div class="col-sm-3 album_img_container align-self-center">
+                <div class="col-sm-2 col-md-3 album_img_container align-self-center">
                     <img class="album_img" />
                 </div>
-                <div class="col-sm-9">
+                <div class="col-sm-10 col-md-9">
                     <div class="d-flex w-100 justify-content-between title_song">
                         <h5 class="mb-1"></h5>
                         <small>
@@ -138,7 +140,7 @@
     <div class="party_playlist_container">
         <div class="list-group" id="party_playlist">
             <!-- Actual playlist-->
-            @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
+            
             @forelse($party->tracks->sortBy('votes')->reverse() as $song)
 
             <a href="#"
@@ -146,10 +148,10 @@
                 data-track="{{ $song->track_uri }}" data-song-id="{{ $song->id }}">
 
                 <div class="row song_row">
-                    <div class="col-sm-3 album_img_container align-self-center">
+                    <div class="col-md-3 col-sm-2 col-2 album_img_container align-self-center">
                         <img class="album_img" />
                     </div>
-                    <div class="col-sm-9">
+                    <div class="col-md-9 col-sm-10 col-10">
                         <div class="d-flex w-100 justify-content-between title_song">
                             <h5 class="mb-1"></h5>
                             <small>
@@ -168,10 +170,11 @@
             @empty
             <p>No songs</p>
             @endforelse
-            @endif
+            
         </div>
     </div>
 
+    @endif
 </div>
 
 @endif

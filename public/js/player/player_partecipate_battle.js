@@ -15,6 +15,7 @@
     var actual_track;
     var playlist_uri;
     var selected_track;
+    var scrolling;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -35,10 +36,10 @@
      * Comunica a tutti i partecipanti del canale quando un utente si unisce
      */
     channel.here((users) => {
-        console.log(users);
+        //console.log(users);
         $('#joining-list').empty();
         $.each(users, function (index, user) {
-            console.log(user);
+            //console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             var new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.find('.name').text(user.name);
@@ -69,7 +70,7 @@
      */
     channel.leaving((leaving_user) => {
         //console.log('leaving')
-        console.log(leaving_user)
+        //console.log(leaving_user)
         $('#joining-list li').each(function (index, user) {
             console.log(user);
             var partecipant_link = $(this).find('a');
@@ -153,7 +154,7 @@
                 var track_uri = state.track_window.current_track.uri;
                 actual_dur = parseInt(state.track_window.current_track.duration_ms);
 
-                if($('#animation-container .wrapper').lenght) {
+                if($('#animation-container .wrapper').length) {
                     if(state.paused) {
                         $('#animation-container .wrapper').addClass('wrapper_hidden');
                     }
@@ -173,8 +174,42 @@
                 artists += artist.name;
             });
 
-            if (!($('#artist-player').text() === artists))
+            if (!($('#artist-player').text() === artists)) {
                 $('#artist-player').text(artists);
+
+                /** AUTOSCROLLING CODE */
+                var text = $('.song-details-container > div');
+                var text_len = parseInt(text.width());
+                var inner_len;
+                if(parseInt($(document).width()) <= 768) {
+                    inner_len = ( parseInt($('.song-details-container > div > h3').width()) + parseInt($('.song-details-container > div > span').width()) + 3);
+                    //console.log(inner_len + '    ' + text_len, 'autoscroll debug');
+                    var pos = 0;
+                    text.css('left', '0px');
+                    if( text_len < inner_len) {
+                        text.css('justify-content', 'unset');
+                        var diff = inner_len - text_len;
+                        if (!scrolling) {
+                            scrolling = setInterval(function() {
+                                pos = (pos+1) % (diff + 50);
+                                if(pos <= diff) text.css('left', parseInt(0 - pos) + 'px');
+                            }, 1000 / 20);
+                        }
+                        
+                    }
+                    else {
+                        text.css('justify-content', 'center');
+                        clearInterval(scrolling);
+                        scrolling = null;
+                    }
+                } else if(scrolling) {
+                    text.css('justify-content', 'center');
+                    clearInterval(scrolling);
+                    scrolling = null;
+                }
+                
+                /*** END */
+            }  
 
         });
 

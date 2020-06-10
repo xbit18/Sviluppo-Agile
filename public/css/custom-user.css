@@ -72,7 +72,7 @@ html, body {
 }
 
 .party_name_list:hover::after {
-    font: normal normal normal 36px/1 FontAwesome;
+    font: normal normal normal 1.2em/1 FontAwesome;
     content: "\00a0\f090";
     transition: all .3s ease;
 }

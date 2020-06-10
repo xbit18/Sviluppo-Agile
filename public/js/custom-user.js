@@ -3,6 +3,8 @@ $( document ).ready( function() {
     if($('#party_code').attr('data-code').length) {
         // Sono in una delle pagine del party
         $('footer').hide();
+
+        
     }
 
     const Toast = Swal.mixin({

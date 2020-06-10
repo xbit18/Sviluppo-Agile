@@ -51,7 +51,7 @@
                 <div class="likes-share-download d-flex align-items-center justify-content-between">
                     <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{ $party->partecipants }})</a>
                     <div>
-                    <a href="#" class="mr-4"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
+                    <a href="#" class="mr-4">{{ $party->type }}</a>
                     </div>
                 </div>
                 </div>
