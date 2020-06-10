@@ -19,7 +19,6 @@ class CreateTracksTable extends Migration
             $table->string('track_uri');
             $table->integer('votes')->default(0);
             $table->integer('active')->default(0);
-            $table->integer('skip')->default(0);
             $table->timestamps();
         });
     }

@@ -95,7 +95,7 @@ class VotesController extends Controller
      */
     public function update(Request $request)
     {
-        $vote=UserParticipatesParty::where('user_id',$request->id)->first();
+        $vote=UserParticipatesParty::find($request->id);
         $track = Track::where('id',$vote->vote)->first();
         $track->votes -=1;
         $track->save();

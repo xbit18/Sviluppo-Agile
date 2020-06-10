@@ -22,6 +22,9 @@ class Kicked
 
         $party = Party::where('code','=',$code)->first();
 
+        if(!$party){
+            return redirect('/party/show');
+        }
         $user = Auth::user();
 
         $kick_duration = $party->users()->where('user_id',$user->id)->first();

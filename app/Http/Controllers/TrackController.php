@@ -10,7 +10,8 @@ use App\Events\VoteEvent;
 use App\Events\BattleSelectedEvent;
 use App\Events\SongAdded;
 use App\Events\SongRemoved;
-
+use App\Events\SkipEvent;
+use App\Events\AutoSkip;
 
 class TrackController extends Controller
 {
@@ -64,7 +65,7 @@ class TrackController extends Controller
             }
 
             foreach($party->users as $user) {
-                $user->participates()->updateExistingPivot($party->id,['skip' => null]);
+                $user->participates()->updateExistingPivot($party->id,['skip' => 0]);
             }
 
             broadcast(new SongRemoved($party,$track));
@@ -267,21 +268,20 @@ class TrackController extends Controller
         }
 
 
-        if($user_participates->skip === null) {
+        if($user_participates->skip === 0) {
 
-            $track = Track::find($id);
-            if($track == null) {
-                return response()->json([
-                    'error' => 'track not found'
-                ]);
+        
+            broadcast(new SkipEvent($party));
+            $user->participates()->updateExistingPivot($party->id,['skip' => 1]);
+
+            if($party->users()->where('skip',1)->count() >= ($party->users()->count() * 0.5)){
+                broadcast(new AutoSkip($party));
             }
-            $track->skip += 1;
-            $track->save();
-            broadcast(new SkipEvent($party,$track));
-            $user->participates()->updateExistingPivot($party->id,['skip' => $id]);
             return response()->json([
                 'message' => 'track voted to skip successfully'
             ]);
+
+
         }
         else{
             return response()->json([

@@ -54,6 +54,11 @@
                     <div>
                     <a href="#" class="mr-4">{{ $party->type }}</a>
                     </div>
+                    @if($party->user->id == Auth::id())
+                    <div>
+                    <a href="#"><i class="fa fa-times delete_party" aria-hidden="true" data-id="{{$party->id}}"></i></a>
+                    </div>
+                    @endif
                 </div>
                 </div>
             </div>
@@ -86,6 +91,9 @@
 
       </div>
     </div>
+
+    @include('user._shared.modals.party_delete')
+
     @if(session('kicked'))
     <span class="d-none" id="kicked">
 
