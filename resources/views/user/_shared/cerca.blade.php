@@ -8,10 +8,10 @@
     <div class="d-none">
       <div id="song-prototype" class="list-group-item list-group-item-action flex-column align-items-start p-0">
         <div class="row align-items-center">
-          <div class="col-3 col-sm-3">
+          <div class="col-2 col-sm-2 col-md-2 col-lg-2 col-xl-2">
             <img  src="https://i.scdn.co/image/ab67616d0000b2731f7077ae1018b5fbab08dfa8" alt="">
           </div>
-          <div class="col-9 col-sm-9">
+          <div class="col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
             <div class="d-flex w-100 justify-content-between">
               <h6>Nome canzone</h6>
               <small class="mr-1">2:23</small>

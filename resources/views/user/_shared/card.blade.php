@@ -2,7 +2,7 @@
     <div class="col-12 h-100">
         <div  id="party-card" class="card h-100">
             <div class="row">
-                <div class="col-md-4 align-self-center">
+                <div id="img_container" class="col-md-4 align-self-center">
 
                     <img id="party_img_genre "
                         src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}"
