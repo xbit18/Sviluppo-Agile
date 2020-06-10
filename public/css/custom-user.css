@@ -290,13 +290,14 @@ a h5, a small, a p, a .like, a span {
     overflow-x: hidden;
     height: 200px;
     max-height: 300px;
+    transition: 0.3s all;
 }
 
 .user:hover{
     cursor:pointer;
     background-color: rgb(255, 246, 255);
     transform: scale(1.1,1.1);
-    transition: 0.3s all;
+    
 }
 
 .unban{
@@ -669,3 +670,4 @@ i.kick:hover,i.ban:hover{
       transform: translateY(calc(-100vh + -100%)) rotate(20deg);
     }
   }
+
