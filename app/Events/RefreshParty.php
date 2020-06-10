@@ -10,23 +10,21 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 
-class SongAdded implements ShouldBroadcastNow
+class RefreshParty implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $tracks, $party;
+    public $party;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party, $tracks)
+    public function __construct($party)
     {
         $this->party = $party;
-        $this->tracks = $tracks;
     }
 
     /**
@@ -46,17 +44,17 @@ class SongAdded implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'song.added';
+        return 'refresh.party';
     }
 
     public function broadcastWith(){
         return [
-            'tracks' => $this->tracks,
+            'refreshed' => true
         ];
     }
 
     public function broadcastWhen(){
-        $user_id = Auth::id();
-        return $this->party->user->id === $user_id;
+        $this->party->user->id === Auth::id();
     }
+
 }

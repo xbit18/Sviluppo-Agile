@@ -393,9 +393,6 @@
                         },
                         data: {
                                 "uris": [track_uri],
-                                "offset": {
-                                    "uri": track_uri,
-                                },
                                 "position_ms": 0
                             },
                         dataType: 'json'
@@ -954,46 +951,11 @@
         },
         dataType: 'json',
         success: function(response){
-            // snapshot_id = response.data.snapshot_id;
-            // console.log(snapshot_id);
-            console.log(response);
-            instance({
-                url: "https://api.spotify.com/v1/tracks/" + track_id,
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                },
-                dataType: 'json',
-            }).then(function (data) {
-                // console.log(data, 'track_info');
+           console.log(response);
+        },
+        error: function(error){
 
-                let song_link = $('#playlist_song_prototype').clone();
-
-                let item = populate_song_link(song_link, data.data,true);
-                playlist_dom.append(item).hide().fadeIn(1000);
-
-
-                const Toast = Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 6000
-                });
-    
-                Toast.fire({
-                    type: 'success',
-                    title: 'The song has been added to the Playlist!'
-                    });
-
-            })
-            .catch(function(error){
-                console.log(error);
-                Toast.fire({
-                    type: 'error',
-                    title: 'Spotify error ( call track details )'
-                    });
-            });
-
+            console.log(object);
         }
         })
         
@@ -1149,6 +1111,96 @@
 
     channel.listen('.song.auto-skip', function () {
         play_next_song_battle(devId, token, party_code)
+    })
+
+    channel.listen('.song.added', function(data){
+        console.log(data.tracks);
+    
+        // data.tracks.forEach(element => {
+        //     console.log(element);
+        // });
+    
+        if(data.tracks.length > 1){
+           $.each(data.tracks, function (index, element) { 
+    
+            let track_id = element.track_uri.replace('spotify:track:', '');
+            let song_id = element.id;
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+                console.log(data);
+                let song_link = $('#playlist_song_prototype').clone();
+                song_link.removeAttr('id');
+                song_link.attr('data-track', data.data.uri);
+                song_link.attr('data-song-id', track_id);
+                let item = populate_song_link(song_link, data.data, song_id, true);
+                playlist_dom.append(item).hide().fadeIn();
+    
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+    
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new son has been added to the playlist!'
+                });
+    
+            })
+                .catch(function (error) {
+                    console.log(error);
+                });
+    
+        }); 
+        } else{
+            let track_id = data.tracks.track_uri.replace('spotify:track:', '');
+            let song_id = data.tracks.id;
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+                console.log(data);
+                let song_link = $('#playlist_song_prototype').clone();
+                song_link.removeAttr('id');
+                song_link.attr('data-track', data.data.uri);
+                song_link.attr('data-song-id', track_id);
+                let item = populate_song_link(song_link, data.data, song_id, true);
+                playlist_dom.append(item).hide().fadeIn();
+    
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+    
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new son has been added to the playlist!'
+                });
+    
+            })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        
+        
+    
+    
     })
 
 

@@ -86,6 +86,8 @@ class TrackController extends Controller
                 'track_uri' => $request->track_uri
             ]);
 
+            $track_array = collect();
+            $track_array->push($track);
             broadcast(new SongAdded($party, $track));
 
             return response()->json(['id' => $track->id]);

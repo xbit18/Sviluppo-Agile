@@ -480,6 +480,9 @@
         }
         })
     
+        channel.listen('.refresh.party',function(){
+            location.reload();
+        })
     
         /*------------VOTE A SONG ------------ */
     

@@ -563,6 +563,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         selected_song_id = $(this).data('song-id');
         var song_id = selected_song_id;
         console.log(selected_song_id, 'selected song in song link');
+        console.log(typeof (track_uri), "type of track uri");
 
         // console.log('clicked');
 
@@ -600,6 +601,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             });
 
         });
+
 
 
 
@@ -756,6 +758,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
     });
+
 
 
     /** -------------- Play Button Listener ----------------------- */
@@ -947,86 +950,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             },
             dataType: 'json',
             success: function (response) {
-                // snapshot_id = response.data.snapshot_id;
-                // console.log(snapshot_id);
-                console.log(response);
-                song_id = response.id;
-                instance({
-                    url: "https://api.spotify.com/v1/tracks/" + track_id,
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                    },
-                    dataType: 'json',
-                }).then(function (data) {
-                    // console.log(data, 'track_info');
-                    console.log(data);
-                    let song_link = $('#playlist_song_prototype').clone();
-                    song_link.removeAttr('id');
-                    song_link.attr('data-track', data.data.uri);
-                    let item = populate_song_link(song_link, data.data, song_id, true);
-                    playlist_dom.append(item).hide().fadeIn(1000);
-
-
-
-
-
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 6000
-                    });
-
-                    Toast.fire({
-                        type: 'success',
-                        title: 'The song has been added to the Playlist!'
-                    });
-
-                })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-
-
-
-
-                // instance({
-                //     url: `https://api.spotify.com/v1/me/player/queue?uri=` + track_uri,
-                //     method: 'POST',
-                //     headers: {
-                //         'Authorization': 'Bearer ' + token,
-                //     },
-                //     data: {
-                //         'uri' : track_uri,
-                //         'device_id' : devId,
-                //     },
-                //     dataType: 'json',
-                //     })
-                // .then(function(response){
-                //     console.log('canzone aggiunta alla coda')
-                // });
-                /*
-                var item_s = $('#playlist_song_prototype').clone();
-                let index = $('#party_playlist').children().last().data('number');
-                item_s.find('h5').text(track_name);
-                
-                item_s.find('p').text(track_artists);
-                // append_song(my_party_playlist, track_id, track_uri, track_name, track_artists, track_img_src, track_album)
-    
-                var thumb = item_s.find('img');
-                thumb.attr('src', track_img_src);
-                
-                item_s.children('div').children('div').children('small').text(track_album);
-                item_s.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
-                item_s.children('div').children('div').children('div').children('small').children('a').attr('data-id', track_id);
-                item_s.attr('data-id', track_id);
-                item_s.attr('data-uri', track_uri);
-                item_s.attr('data-number', index + 1);
-                item_s.attr('data-playlist-uri', my_party_playlist.uri);
-                item_s.addClass('song_link');
-                $('#party_playlist').append(item_s);
-                */
+               console.log(response);
             },
             error: function (e) {
                 console.log(e);
@@ -1206,8 +1130,132 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     })
 
+    $(document).on('submit', '#playlistPopolate', function(event){
+        event.preventDefault();
+
+        let genre = $('#genre').val();
+        $('#addSongsModal').modal('hide');
+
+        $.ajax({
+            type: "POST",
+            url: "/party/playlist/populate",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            data: {
+                "genre_id": genre,
+                "party_code": party_code
+            },
+            success: function (response) {
+                console.log(response);
+                if (!response.error) {
+                    vote.removeClass('like');
+                    vote.addClass('unlike');
+                }
+
+               
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    })
+
     channel.listen('.song.auto-skip', function () {
         get_next_song(party_code)
+    })
+
+    channel.listen('.song.added', function(data){
+        console.log(data.tracks);
+
+        // data.tracks.forEach(element => {
+        //     console.log(element);
+        // });
+
+        if(data.tracks.length > 1){
+           $.each(data.tracks, function (index, element) { 
+   
+            let track_id = element.track_uri.replace('spotify:track:', '');
+            let song_id = element.id;
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+                console.log(data);
+                let song_link = $('#playlist_song_prototype').clone();
+                song_link.removeAttr('id');
+                song_link.attr('data-track', data.data.uri);
+                song_link.attr('data-song-id', track_id);
+                let item = populate_song_link(song_link, data.data, song_id, true);
+                playlist_dom.append(item).hide().fadeIn();
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new son has been added to the playlist!'
+                });
+
+            })
+                .catch(function (error) {
+                    console.log(error);
+                });
+
+        }); 
+        } else{
+            let track_id = data.tracks.track_uri.replace('spotify:track:', '');
+            let song_id = data.tracks.id;
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                // console.log(data, 'track_info');
+                console.log(data);
+                let song_link = $('#playlist_song_prototype').clone();
+                song_link.removeAttr('id');
+                song_link.attr('data-track', data.data.uri);
+                song_link.attr('data-song-id', track_id);
+                let item = populate_song_link(song_link, data.data, song_id, true);
+                playlist_dom.append(item).hide().fadeIn();
+
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 6000
+                });
+
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new son has been added to the playlist!'
+                });
+
+            })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        
+        
+
+
     })
 
 
