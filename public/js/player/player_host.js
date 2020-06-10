@@ -126,36 +126,22 @@ function order_playlist() {
 };
 
 
-function populate_song_link(item, track, id, bool = false) {
-    //console.log('sono in populate')
-    //console.log(item)
-    //console.log(track)
-    //console.log(item, 'item');
-    //console.log(track, 'track');
-    //console.log(id, 'id');
-    //console.log(bool, 'bool');
-    item.find('h5').text(track.name);
-    item.data('song-id', id);
+function populate_song_link(item, track, id = null, bool = false) {
     var artists = "";
     $.each(track.artists, function (index, artist) {
         artists += " " + artist.name;
     });
 
-    item.find('p').text(artists);
-
     var thumb = item.find('img');
     thumb.attr('src', track.album.images[0].url);
-
+    item.find('h5').text(track.name);
+    item.find('p').text(artists);
     item.children('div').children('div').children('small').text(track.album.name);
-    //item.children('div').children('div').children('div').children('small').text(millisToMinutesAndSeconds(track_duration));
     item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
-    //item.attr('data-id', track.id);
-    //item.attr('data-uri', track.uri);
-    //item.attr('data-number', index + 1);
-    //item.attr('data-playlist-uri', my_party_playlist.uri);
     item.addClass('song_link');
 
-    if (bool) {
+    if (bool && id) {
+        item.data('song-id', id);
         return item;
     }
 }
@@ -171,13 +157,9 @@ function delete_song(code, id) {
         success: function (data) {
             console.log(data);
             console.log('canzone eliminata');
-            // DEBUGGING
-            //console.log(data);
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            /**
-             * Error Handling
-             */
+            /** Error Handling */
             console.log(xhr);
             if (xhr.status == 404) {
                 console.log("404 NOT FOUND");
@@ -491,7 +473,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     /**
      * Popolo i dati della playlist
      */
-
     $('.song_link').each(function (index, item) {
         var song_link = $(this);
         var track_uri = song_link.attr('data-track');
@@ -928,14 +909,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         let track_uri = $(this).data('uri');
         let track_id = $(this).data('id');
         let song_id;
-        // let track_img_src = $(this).children('div').children('div').first().find('img').attr('src');
-        // let track_duration = $(this).data('duration');
-        // let track_artists = $(this).children('div').children('div').last().children('div').last().children().first().text();
-        // let track_album = $(this).children('div').children('div').last().children('div').last().children().last().text();
-        // let track_name = $(this).children('div').first().find('h6').text();
-
-
-
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 

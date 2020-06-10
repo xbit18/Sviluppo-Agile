@@ -3,7 +3,7 @@
  if($('#party_code').attr('data-code').length) {
     // Sono in una delle pagine del party
     $('footer').hide();
-}
+    }   
 
 
     var party_code = $('#party_code').attr('data-code');
@@ -21,6 +21,7 @@
     var selected_track;
     var scrolling;
     var selected_song_id;
+    var device;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -34,6 +35,57 @@
         showConfirmButton: false,
         timer: 6000
     });
+
+    function millisToMinutesAndSeconds(millis) {
+        var minutes = Math.floor(millis / 60000);
+        var seconds = ((millis % 60000) / 1000).toFixed(0);
+        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    
+    function increment_timeline(data) {
+        if(data) {
+            if(!running) {
+                running = true;
+                timer = setInterval( () => { 
+                    //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
+                    timeline.val( parseInt(timeline.val()) + 1000 );
+                    duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
+                    //console.log('incrementing ' + timeline.val()); 
+                    var v = ( timeline.val() ) / actual_dur;
+                    act_pos = timeline.val();
+
+                    timeline.css('background-image', [
+                        '-webkit-gradient(',
+                        'linear, ',
+                        'left top, ',
+                        'right top, ',
+                        'color-stop(' + v + ', #1DB954), ',
+                        'color-stop(' + v + ', #535353)',
+                        ')'
+                    ].join(''));
+                    timeline.css('background-image', [
+                        '-moz-linear-gradient(',
+                        'linear, ',
+                        'left top, ',
+                        'right top, ',
+                        'color-stop(' + v + ', #1DB954), ',
+                        'color-stop(' + v + ', #535353)',
+                        ')'
+                    ].join(''));
+                    
+                },1000);
+            }
+        } else {
+            //console.log('clearing');
+            clearInterval(timer);
+            running = false;
+        }
+    }
+
+
+
+
 
     
     channel.here((users) => {
@@ -69,6 +121,10 @@
     })
 
     
+      
+      
+
+    
     window.onSpotifyWebPlaybackSDKReady = () => {
         //const token = 'BQCuguaURpWrApdQ0lkd0xLCl_W8TEVTE0p7LcnHgj1Bn0Dm9AqbhnogAMRx2oOwL7GemNvloRy73NprTPRCqeQX_ifEOY3fzgmGyH9YW9TP5uZSkOB2Z4rAVVUEHB1BxodMvunn5EfRjmFSLLFhgQBuQ9YJ2t_aaKr6uYVPjplCA5AqBr4KxmXDcHxqiANOOrClo9zb';
         const token = $('#mytoken').text();
@@ -76,6 +132,39 @@
             name: 'Web Player Party App',
             getOAuthToken: cb => { cb(token); }
         });
+
+        const play = ({
+            spotify_uri,
+            playerInstance: {
+              _options: {
+                getOAuthToken,
+                id
+              }
+            }
+          }, track_uri) => {
+              return new Promise((resolve, reject) => {
+                getOAuthToken(access_token => {
+                    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+                      method: 'PUT',
+                      body: JSON.stringify({ uris: [spotify_uri] }),
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                    }).then((data) => {
+                        console.log(data)
+                        if(data.status == '403' && data.statusText == "") {
+                          play({
+                              playerInstance: player,
+                              spotify_uri: track_uri,
+                          });   
+                        } else {
+                            resolve();
+                        }
+                      });;
+                  });
+              });
+          };
     
         var devId;
     
@@ -84,6 +173,7 @@
         player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
         player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
         player.addListener('playback_error', ({ message }) => { console.error(message); });
+        
 
         player.addListener('player_state_changed', state => {
 
@@ -203,7 +293,7 @@
 
                     // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
                     if(!paused && prec_play) {
-                        play_next_song_battle(devId, token, party_code);
+                        play_next_song_battle(devId, token, party_code, player, play);
                         prec_play = false;
                     }
                     
@@ -250,6 +340,7 @@
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
             devId = device_id;
+            device = devId;
         });
 
         // Not Ready
@@ -260,86 +351,184 @@
         // Connect to the player!
         player.connect();
 
-            
-
-    function millisToMinutesAndSeconds(millis) {
-        var minutes = Math.floor(millis / 60000);
-        var seconds = ((millis % 60000) / 1000).toFixed(0);
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-    }
-
-    
-    function increment_timeline(data) {
-        //console.log('funzione increment timeline chiamata');
-        if(data) {
-            if(!running) {
-                running = true;
-                timer = setInterval( () => { 
-                    //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
-                    timeline.val( parseInt(timeline.val()) + 1000 );
-                    duration_text.text( millisToMinutesAndSeconds( parseInt(timeline.val()) ) );
-                    //console.log('incrementing ' + timeline.val()); 
-                    var v = ( timeline.val() ) / actual_dur;
-                    act_pos = timeline.val();
-
-                    timeline.css('background-image', [
-                        '-webkit-gradient(',
-                        'linear, ',
-                        'left top, ',
-                        'right top, ',
-                        'color-stop(' + v + ', #1DB954), ',
-                        'color-stop(' + v + ', #535353)',
-                        ')'
-                    ].join(''));
-                    timeline.css('background-image', [
-                        '-moz-linear-gradient(',
-                        'linear, ',
-                        'left top, ',
-                        'right top, ',
-                        'color-stop(' + v + ', #1DB954), ',
-                        'color-stop(' + v + ', #535353)',
-                        ')'
-                    ].join(''));
-                    
-                },1000);
-            }
-        } else {
-            //console.log('clearing');
-            clearInterval(timer);
-            running = false;
-        }
-    }
-
-
-
-    function populate_song_link(item, track, bool) {
-        item.find('h5').text(track.name);
-    
+        
+        
+    function populate_song_link(item, track, id = null, bool = false) {
+        
+        // SET ARTISTS STRING
         var artists = "";
         $.each(track.artists, function (index, artist) {
             artists += " " + artist.name;
         });
 
-        item.find('p').text(artists);
-
+        // POPOULATE LINK FIELDS
         var thumb = item.find('img');
         thumb.attr('src', track.album.images[0].url);
+        item.find('p').text(artists);
         
+        item.find('h5').text(track.name);
         item.children('div').children('div').children('small').text(track.album.name);
         item.children('div').children('div').children('div').children('small').children('button').attr('data-uri', track.uri);
         item.addClass('song_link');
 
-        if(bool){
+        if(bool && id){
+            item.data('song-id', id);
             return item;
         }
     }
 
+    
+    function play_next_song_battle(deviceId, token, code, player, play)  {
+
+        console.log(deviceId + " " + token)
+
+        // CALL FOR GETTING NEXT SONG
+        $.ajax({
+            url: "/party/" + code + "/getNextTrack",
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: 'json',
+            success: function (data) {
+                var track_real_id = data.id;
+                var track_uri = data.track_uri;
+                console.log(data, 'next_track');
+                var instance = axios.create();
+                delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+                console.log(instance.defaults.headers)
+                selected_song_id = data.id;
+
+
+                console.log(track_uri, 'track uri before play');
+                
+                play({
+                    playerInstance: player,
+                    spotify_uri: 'spotify:track:6SKxEiP89WRgniJuQ5gR94',
+                }, track_uri).then(() => {
+                    console.log(data, 'spo_play');
+
+                    player.setVolume(slider.val() / 100);
+                    paused = false;
+                    $.ajax({
+                        url: "/party/" + party_code + "/play",
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            "track_id": selected_song_id,
+                            "position_ms": 0
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data);
+                            
+                            $.ajax({
+                                url: "/party/" + party_code + "/resetbattle",
+                                method: 'GET',
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    console.log(data, 'party battle resetted');
+
+                                    $('#left_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                                    $('#left_side > span').remove();
+                                    $('#left_side').find('h5').text('Left Side');
+                                    $('#left_side').find('p').text('No song selected');
+                                    $('#left_side').find('button').attr('disabled', true);
+                                    $('#left_side').find('button').removeClass('voted');
+                                    $('#left_side').find('button').removeClass('unlike');
+                                    $('#left_side').find('button').find('span').text('0');
+
+                                    $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                                    $('#right_side').find('h5').text('Right Side');
+                                    $('#right_side > span').remove();
+                                    $('#right_side').find('p').text('No song selected');
+                                    $('#right_side').find('button').attr('disabled', true);
+                                    $('#right_side').find('button').removeClass('voted');
+                                    $('#right_side').find('button').removeClass('unlike');
+                                    $('#right_side').find('button').find('span').text('0');
+
+                                    $.ajax({
+                                        type: "DELETE",
+                                        url: `/party/${party_code}/tracks/${track_real_id}`,
+                                        headers: {
+                                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                        },
+                                        dataType: "json",
+                                        success: function (response) {
+                                            refresh_all(data, track_uri);
+                                        },
+                                        error: function(error){
+                                            console.log(error);
+                                        }
+                                    });
+
+                                    
+                                    // DEBUGGING
+                                    //console.log(data);
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    /**
+                                     * Error Handling
+                                     */
+                                    if (xhr.status == 404) {
+                                        console.log("404 NOT FOUND");
+                                    } else if (xhr.status == 500) {
+                                        console.log("500 INTERNAL SERVER ERROR");
+                                    } else {
+                                        console.log("errore " + xhr.status);
+                                    }
+                                }
+                            });
+                            
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            /**
+                             * Error Handling
+                             */
+                            if (xhr.status == 404) {
+                                console.log("404 NOT FOUND");
+                            } else if (xhr.status == 500) {
+                                console.log("500 INTERNAL SERVER ERROR");
+                            } else {
+                                console.log("errore " + xhr.status);
+                            }
+                        }
+                    });
+                });   
+
+                
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                /**
+                 * Error Handling
+                 */
+                
+                if (xhr.status == 404) {
+                    console.log("Next Track 404 NOT FOUND");
+                } else if (xhr.status == 500) {
+                    console.log("Next Track 500 INTERNAL SERVER ERROR");
+                } else {
+                    console.log("Next Track errore " + xhr.status);
+                }
+            }
+        });
+        
+        
+}
 
     function refresh_all(tracks, actual_playing_uri) {
         $('#party_playlist').empty();
 
         $.each(tracks, function(index, track) {
             if(actual_playing_uri != track.track_uri) {
+                var instance = axios.create();
+                delete instance.defaults.headers.common['X-CSRF-TOKEN'];
                 var elem = $('#playlist_song_prototype').clone();
                 var track_id = track.track_uri.replace('spotify:track:', '');
                 elem.attr('id', '');
@@ -355,7 +544,7 @@
                     dataType: 'json',
                 }).then(function (data) {
                     //console.log(data, 'track_info');
-                    populate_song_link(elem, data.data, false);
+                    populate_song_link(elem, data.data);
                 });
                 $('#party_playlist').append(elem);
             }
@@ -363,6 +552,7 @@
 
     }
 
+<<<<<<< HEAD
     function play_next_song_battle(deviceId, token, code)  {
 
             console.log(deviceId + " " + token)
@@ -536,6 +726,8 @@
             
             
     }
+=======
+>>>>>>> 4dcc107bd15a715db4f220a5ac0cd0ad9d0076b9
 
     function delete_from_playlist(track_uri) {
         $('#party_playlist a').each( function(index, item) {
@@ -546,7 +738,7 @@
         });
     }
 
-
+   
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
 
@@ -570,7 +762,7 @@
                 dataType: 'json',
             }).then(function (data) {
                 //console.log(data, 'track_info');
-                populate_song_link(song_link, data.data, false);
+                populate_song_link(song_link, data.data);
                 
 
                 if($('#track_uri_side_1').length) {
@@ -778,7 +970,7 @@
                 if (!state) {
                     console.error('User is not playing music through the Web Playback SDK');
                     //$('.song_link').first().click();
-                    play_next_song_battle(devId, token, party_code);
+                    play_next_song_battle(devId, token, party_code, player, play);
     
                     return;
                 }
@@ -923,20 +1115,17 @@
         }
     })
 
+    $('#searchSong').on('change', (e) => {
+        $('#result').fadeOut("normal");
+    });
+
     /* AGGIUNGERE LA CANZONE ALLE TRACKS DI UN PARTY */
 
-    $(document).on('click','.item',function(event){
+    $(document).on('click', '.item', function (event) {
         event.preventDefault();
         let track_uri = $(this).data('uri');
         let track_id = $(this).data('id');
-        // let track_img_src = $(this).children('div').children('div').first().find('img').attr('src');
-        // let track_duration = $(this).data('duration');
-        // let track_artists = $(this).children('div').children('div').last().children('div').last().children().first().text();
-        // let track_album = $(this).children('div').children('div').last().children('div').last().children().last().text();
-        // let track_name = $(this).children('div').first().find('h6').text();
-
-
-
+        let song_id;
         var instance = axios.create();
         delete instance.defaults.headers.common['X-CSRF-TOKEN'];
         
@@ -958,8 +1147,8 @@
             console.log(object);
         }
         })
-        
-        
+
+
     })
 
     $(document).on('click', '.genre', function (event) {
@@ -1110,7 +1299,7 @@
     })
 
     channel.listen('.song.auto-skip', function () {
-        play_next_song_battle(devId, token, party_code)
+        play_next_song_battle(devId, token, party_code, player, play)
     })
 
     channel.listen('.song.added', function(data){

@@ -37,7 +37,7 @@
 
 .song-details-container > div{
   
-  width: 30vw;
+  max-width: 30vw;
   overflow: hidden;
 }
 .song-details-container h3, .song-details-container p{
