@@ -967,12 +967,12 @@
     });
     /* ---------------- RIMUOVERE UNA CANZONE --------------*/
 
-    var song_uri;
+    var song_id;
     var parent;
 
     $(document).on('click', '._delete', function(){
-        song_uri = $(this).attr('data-uri');
         parent = $(this).parents('a')
+        song_id =  parent.data('song-id');
         $('#deleteSongModal').modal('show');
         
     });
@@ -986,7 +986,7 @@
 
         $.ajax({
             type: "DELETE",
-            url: `/party/${party_code}/tracks/${song_uri}`,
+            url: `/party/${party_code}/tracks/${song_id}`,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
