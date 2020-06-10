@@ -430,15 +430,17 @@
                                         console.log(data, 'party battle resetted');
 
                                         $('#left_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                                        $('#left_side > span').remove();
                                         $('#left_side').find('h5').text('Left Side');
                                         $('#left_side').find('p').text('No song selected');
                                         $('#left_side').find('button').attr('disabled', true);
                                         $('#left_side').find('button').removeClass('voted');
-                                        $('#right_side').find('button').removeClass('unlike');
+                                        $('#left_side').find('button').removeClass('unlike');
                                         $('#left_side').find('button').find('span').text('0');
 
                                         $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
                                         $('#right_side').find('h5').text('Right Side');
+                                        $('#right_side > span').remove();
                                         $('#right_side').find('p').text('No song selected');
                                         $('#right_side').find('button').attr('disabled', true);
                                         $('#right_side').find('button').removeClass('voted');
