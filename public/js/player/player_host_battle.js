@@ -133,39 +133,7 @@
             getOAuthToken: cb => { cb(token); }
         });
 
-        const play = ({
-            spotify_uri,
-            playerInstance: {
-              _options: {
-                getOAuthToken,
-                id
-              }
-            }
-          }, track_uri) => {
-              return new Promise((resolve, reject) => {
-                getOAuthToken(access_token => {
-                    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
-                      method: 'PUT',
-                      body: JSON.stringify({ uris: [spotify_uri] }),
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                      },
-                    }).then((data) => {
-                        console.log(data)
-                        if(data.status == '403' && data.statusText == "") {
-                          play({
-                              playerInstance: player,
-                              spotify_uri: track_uri,
-                          });   
-                        } else {
-                            resolve();
-                        }
-                      });;
-                  });
-              });
-          };
-    
+       
         var devId;
     
         // Error handling
@@ -293,7 +261,7 @@
 
                     // LA CANZONE è FINITAAAAAAAAAAAAAAAAAAAAAAAAA
                     if(!paused && prec_play) {
-                        play_next_song_battle(devId, token, party_code, player, play);
+                        play_next_song_battle(devId, token, party_code);
                         prec_play = false;
                     }
                     
@@ -378,7 +346,7 @@
     }
 
     
-    function play_next_song_battle(deviceId, token, code, player, play)  {
+    function play_next_song_battle(deviceId, token, code)  {
 
         console.log(deviceId + " " + token)
 
@@ -397,15 +365,25 @@
                 var instance = axios.create();
                 delete instance.defaults.headers.common['X-CSRF-TOKEN'];
                 console.log(instance.defaults.headers)
-                selected_song_id = data.id;
+                selected_song_id = data.id
 
+                // Riproduco la canzone sul player
+                instance({
+                    url: "https://api.spotify.com/v1/me/player/play?device_id=" + deviceId,
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    data: {
+                            "uris": [track_uri],
+                            "offset": {
+                                "uri": track_uri,
+                            },
+                            "position_ms": 0
+                        },
+                    dataType: 'json'
+                }).then(function (data) {
 
-                console.log(track_uri, 'track uri before play');
-                
-                play({
-                    playerInstance: player,
-                    spotify_uri: track_uri,
-                }, track_uri).then(() => {
                     console.log(data, 'spo_play');
 
                     player.setVolume(slider.val() / 100);
@@ -423,7 +401,7 @@
                         dataType: 'json',
                         success: function (data) {
                             console.log(data);
-                            
+
                             $.ajax({
                                 url: "/party/" + party_code + "/resetbattle",
                                 method: 'GET',
@@ -467,7 +445,7 @@
                                         }
                                     });
 
-                                    
+
                                     // DEBUGGING
                                     //console.log(data);
                                 },
@@ -484,7 +462,7 @@
                                     }
                                 }
                             });
-                            
+
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             /**
@@ -499,16 +477,39 @@
                             }
                         }
                     });
-                });   
 
-                
+
+                }).catch((error)=> {
+                    var message = '';
+                    if (error.response) {
+                        // The request was made and the server responded with a status code
+                        // that falls out of the range of 2xx
+                        console.log(error.response.data);
+                        console.log(error.response.status);
+                        console.log(error.response.headers);
+                        message += error.response.status + ': ' + error.response.data;
+                    } else if (error.request) {
+                        // The request was made but no response was received
+                        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                        // http.ClientRequest in node.js
+                        console.log(error.request);
+                        message += error.request;
+                    } else {
+                        // Something happened in setting up the request that triggered an Error
+                        console.log('Error', error.message);
+                        message += error.message;
+                    }
+                    Toast.fire({
+                        type: 'error',
+                        title: 'Spotify play error: ' + message
+                        });
+                });
 
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 /**
                  * Error Handling
                  */
-                
                 if (xhr.status == 404) {
                     console.log("Next Track 404 NOT FOUND");
                 } else if (xhr.status == 500) {
@@ -518,8 +519,8 @@
                 }
             }
         });
-        
-        
+
+
 }
 
     function refresh_all(tracks, actual_playing_uri) {
@@ -794,7 +795,7 @@
                 if (!state) {
                     console.error('User is not playing music through the Web Playback SDK');
                     //$('.song_link').first().click();
-                    play_next_song_battle(devId, token, party_code, player, play);
+                    play_next_song_battle(devId, token, party_code);
     
                     return;
                 }
@@ -1123,7 +1124,7 @@
     })
 
     channel.listen('.song.auto-skip', function () {
-        play_next_song_battle(devId, token, party_code, player, play)
+        play_next_song_battle(devId, token, party_code)
     })
 
     channel.listen('.song.added', function(data){
