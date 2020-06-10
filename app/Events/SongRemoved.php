@@ -11,24 +11,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
-use App\Party;
 
-class PlayerPlayed implements ShouldBroadcastNow
+class SongRemoved implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party, $track, $position_ms;
+    public $track, $party;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(Party $party, $track, $position_ms)
+    public function __construct($party, $track)
     {
         $this->party = $party;
         $this->track = $track;
-        $this->position_ms = $position_ms;
     }
 
     /**
@@ -48,7 +46,13 @@ class PlayerPlayed implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'player.played';
+        return 'song.removed';
+    }
+
+    public function broadcastWith(){
+        return [
+            'track' => $this->track,
+        ];
     }
 
     public function broadcastWhen(){

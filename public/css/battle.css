@@ -40,6 +40,14 @@
     max-height: auto;
 }
 
+#party_playlist a:hover .title_song h5::before{
+  content: 'Title: ';
+}
+
+#party_playlist a:hover .title_song h5{
+  font-size: 1em;
+}
+
 #party_playlist a:hover .title_song + p::before{
     content: 'Artists: ';
 }

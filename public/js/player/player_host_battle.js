@@ -1,5 +1,10 @@
  'use strict';
 
+ if($('#party_code').attr('data-code').length) {
+    // Sono in una delle pagine del party
+    $('footer').hide();
+}
+
 
     var party_code = $('#party_code').attr('data-code');
     var user_code = $('#user_code').attr('data-code');
@@ -14,6 +19,8 @@
     var actual_track;
     var playlist_uri;
     var selected_track;
+    var scrolling;
+    var selected_song_id;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -101,6 +108,39 @@
                 }
                 if (!($('#artist-player').text() === artists)) {
                     $('#artist-player').text(artists);
+
+                    /** AUTOSCROLLING CODE */
+                    var text = $('.song-details-container > div');
+                    var text_len = parseInt(text.width());
+                    var inner_len;
+                    if(parseInt($(document).width()) <= 768) {
+                        inner_len = ( parseInt($('.song-details-container > div > h3').width()) + parseInt($('.song-details-container > div > span').width()) + 3);
+                        //console.log(inner_len + '    ' + text_len, 'autoscroll debug');
+                        var pos = 0;
+                        text.css('left', '0px');
+                        if( text_len < inner_len) {
+                            text.css('justify-content', 'unset');
+                            var diff = inner_len - text_len;
+                            if (!scrolling) {
+                                scrolling = setInterval(function() {
+                                    pos = (pos+1) % (diff + 50);
+                                    if(pos <= diff) text.css('left', parseInt(0 - pos) + 'px');
+                                }, 1000 / 20);
+                            }
+                            
+                        }
+                        else {
+                            text.css('justify-content', 'center');
+                            clearInterval(scrolling);
+                            scrolling = null;
+                        }
+                    } else if(scrolling) {
+                        text.css('justify-content', 'center');
+                        clearInterval(scrolling);
+                        scrolling = null;
+                    }
+                    
+                    /*** END */
                 }
 
                 var position = state.position;
@@ -125,7 +165,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     data: {
-                        "track_uri": track_uri,
+                        "track_id": selected_song_id,
                         "position_ms": position
                     },
                     dataType: 'json',
@@ -342,7 +382,7 @@
                     var instance = axios.create();
                     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
                     console.log(instance.defaults.headers)
-                    
+                    selected_song_id = data.id
 
                     // Riproduco la canzone sul player
                     instance({
@@ -372,7 +412,7 @@
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             data: {
-                                "track_uri": track_uri,
+                                "track_id": selected_song_id,
                                 "position_ms": 0
                             },
                             dataType: 'json',
@@ -1103,6 +1143,10 @@
             console.log($('#right_side').find('button').children('span'));
         }
 
+    })
+
+    channel.listen('.song.auto-skip', function () {
+        play_next_song_battle(devId, token, party_code)
     })
 
 

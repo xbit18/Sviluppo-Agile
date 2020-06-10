@@ -35,6 +35,8 @@
   </span>
   @endif
 
+  
+
   @include('user.includes.scripts')
 
 

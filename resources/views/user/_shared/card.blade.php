@@ -2,14 +2,14 @@
     <div class="col-12 h-100">
         <div  id="party-card" class="card h-100">
             <div class="row">
-                <div class="col-4 align-self-center">
+                <div id="img_container" class="col-md-4 align-self-center">
 
                     <img id="party_img_genre "
                         src="{{ asset('img/bg-img/genres/' . $party->genre_id . '.jpg') }}"
                         class="card-img-left ">
                 </div>
 
-                <div class="col-8">
+                <div class="col-md-8 col-sm-12">
 
 
                     <div class="card-header row text-center align-items-center bg-white pb-0">

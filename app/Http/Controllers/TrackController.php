@@ -8,7 +8,10 @@ use App\Party;
 use App\Track;
 use App\Events\VoteEvent;
 use App\Events\BattleSelectedEvent;
-
+use App\Events\SongAdded;
+use App\Events\SongRemoved;
+use App\Events\SkipEvent;
+use App\Events\AutoSkip;
 
 class TrackController extends Controller
 {
@@ -53,12 +56,20 @@ class TrackController extends Controller
         
         if(Auth::user()->id == $party->user->id ) {
 
-            Track::find($id)->delete();
+            $track = Track::find($id);
+            $track->delete();
             
             $votes = $party->users()->where('vote',$id)->get();
             foreach($votes as $vote){
                 $vote->participates()->updateExistingPivot($party->id,['vote' => null]);
             }
+
+            foreach($party->users as $user) {
+                $user->participates()->updateExistingPivot($party->id,['skip' => 0]);
+            }
+
+            broadcast(new SongRemoved($party,$track));
+
             return response()->json('completed');
 
         }
@@ -74,6 +85,8 @@ class TrackController extends Controller
            $track = $party->tracks()->create([
                 'track_uri' => $request->track_uri
             ]);
+
+            broadcast(new SongAdded($party, $track));
 
             return response()->json(['id' => $track->id]);
 
@@ -186,7 +199,7 @@ class TrackController extends Controller
             ]);
         }
 
-}
+    }
 
     /**
      * @param Request $request
@@ -232,5 +245,49 @@ class TrackController extends Controller
                 'error' => 'You have already voted, please remove your vote before voting again',
             ]);
         }
-}
+    }   
+
+    /*
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * campi di request : track_id // traccia che si vuole votare
+     */
+   public function vote_to_skip($code, $id){
+
+        $user=Auth::user();
+
+        $party = Party::where('code',$code)->first();
+
+        $user_participates = $party->users()->where('user_id','=',$user->id)
+        ->first()->pivot;
+
+        if(!$user_participates){
+            return response()->json([
+                'error' => 'You do not participate in this party!'
+            ]);
+        }
+
+
+        if($user_participates->skip === 0) {
+
+        
+            broadcast(new SkipEvent($party));
+            $user->participates()->updateExistingPivot($party->id,['skip' => 1]);
+
+            if($party->users()->where('skip',1)->count() >= ($party->users()->count() * 0.5)){
+                broadcast(new AutoSkip($party));
+            }
+            return response()->json([
+                'message' => 'track voted to skip successfully'
+            ]);
+
+
+        }
+        else{
+            return response()->json([
+                'error' => 'You have already voted to skip',
+            ]);
+        }
+
+    }
 }

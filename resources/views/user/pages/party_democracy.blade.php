@@ -62,7 +62,7 @@
 
     <div class="row h-100">
 
-        <div class="col-8 h-100">
+        <div class="col-lg-8 col-md-12  h-100">
             <div class="row h-100">
 
                
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <div class="col-4 h-100">
+        <div class="col-lg-4 col-md-12  h-100">
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti')
             @include('.user._shared.player', ['party' => $party])

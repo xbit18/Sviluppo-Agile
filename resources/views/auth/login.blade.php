@@ -75,21 +75,25 @@
                                     <label class="form-check-label" for="remember">
                                         {{ __('Remember Me') }}
                                     </label>
+                                    
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn poca-btn">
-                                    {{ __('Login') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="custom-link ml-30" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
+                            <div class="col-xl-8 offset-xl-4 col-lg-10 offset-lg-2 row">
+                                <div class="col-sm-6 col-12 text-center mb-2">
+                                    <button type="submit" class="btn poca-btn">
+                                        {{ __('Login') }}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-12 align-self-center text-center">
+                                    @if (Route::has('password.request'))
+                                        <a class="custom-link" href="{{ route('password.request') }}">
+                                            {{ __('Forgot Your Password?') }}
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </form>

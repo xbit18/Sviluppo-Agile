@@ -5,16 +5,25 @@
         
         <div class="player-box d-flex justify-content-between">
 
-            <div class="song-details-container align-self-lg-center flex-even">
-                <span id="artist-player" class="music-published-date">Artist</span>
-                <h3 id="title-player" class="title_track"><i class="fa fa-caret-right mr-1" aria-hidden="true"></i> Play your music</h3>
-                <div class="music-meta-data">
-                    
+            <div class="song-details-container d-flex justify-row align-self-center w-60">
+                <div class="align-self-lg-center">
+                    <span id="artist-player" class="music-published-date">Artist</span>
+                    <h3 id="title-player" class="title_track"><i class="fa fa-caret-right mr-1" aria-hidden="true"></i> Play your music</h3>
+                    <div class="music-meta-data">
+                    </div>
+                    @if(Auth::user()->id != $party->user->id)
+                    <div class="align-self-lg-center ml-2">
+                        <form class="d-inline align-self-center" id="spotify_next_form" action="#">
+                            <button title="Vote To Skip" class="btn button-skip" type="submit"><i class="fa fa-step-forward" aria-hidden="true"></i></button>
+                        </form> 
+                    </div>
+                    @endif
                 </div>
+                
             </div>
             
             @if(Auth::user()->id == $party->user->id)   
-            <div id="player-controls-container" class="align-self-lg-center flex-even">
+            <div id="player-controls-container" class="align-self-center flex-even">
                 
                 <div class="player-buttons-container d-flex justify-content-center">
                     @if($party->type == "Battle")
@@ -47,14 +56,123 @@
                 </div>
 
             </div>
-            @endif
-
-            <div class="slidecontainer align-self-center">
-                <div class="d-flex justify-content-between">
-                        <label class="mobile-vol-lab mr-2"><i class="fa fa-volume-up" aria-hidden="true"></i></label>
-                        <input type="range" min="0" max="100" value="50" class="slider" id="volume_range">  
+            @else
+            <div id="animation-container" class="align-self-center flex-even text-center">
+                <div class="music_participant_animation">
+                    <div class="wrapper wrapper_hidden">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
                     </div>
                 </div>
+            </div>
+            @endif
+
+            <div class="slidecontainer d-flex flex-row-reverse align-self-center w-60">
+                
+                <div class="d-flex justify-content-between">
+                    <label class="mobile-vol-lab mr-2 align-self-center"><i class="fa fa-volume-up" aria-hidden="true"></i></label>
+                    <input type="range" min="0" max="100" value="50" class="slider align-self-center" id="volume_range">  
+                </div>
+            </div>
+                
                 
             
             </div>

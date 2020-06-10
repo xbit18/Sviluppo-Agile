@@ -7,6 +7,7 @@ use App\Events\PlayerPaused;
 use App\Events\PlayerPlayed;
 use App\Events\PlayerSync;
 use App\Party;
+use App\Track;
 
 class PlayerController extends Controller
 {
@@ -27,10 +28,10 @@ class PlayerController extends Controller
             Prendo il model Party e lo mando all'evento
         */
 
-        $track_uri = $request->track_uri;
+        $track = Track::find($request->track_id);
         $position_ms = $request->position_ms;
         $party = Party::where('code',$code)->first();
-        broadcast(new PlayerPlayed($party, $track_uri, $position_ms))->toOthers();
+        broadcast(new PlayerPlayed($party, $track, $position_ms))->toOthers();
 
         return response()->json(['message' => 'song played']);
 

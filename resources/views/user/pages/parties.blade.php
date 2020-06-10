@@ -43,17 +43,22 @@
                 </div>
                 <div class="poca-music-content text-center">
                   
-                <span class="music-published-date mb-2">{{ $party->created_at }}</span>
+                <span class="music-published-date mb-2">{{ $party->created_at->format('d/m/Y H:m') }}</span>
                 <h2><a class="party_name_list" href="{{ route('party.show', [ 'code' => $party->code]) }}">@if(Auth::user()->id == $party->user->id) (Hosting) @endif {{ $party->name }}</a></h2>
                 <div class="music-meta-data">
                     <p>By <a href="#" class="music-author">{{ $party->user->name }}</a></p>
                 </div>
                 <!-- Likes, Share & Download -->
                 <div class="likes-share-download d-flex align-items-center justify-content-between">
-                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants (0)</a>
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{ $party->partecipants }})</a>
                     <div>
-                    <a href="#" class="mr-4"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
+                    <a href="#" class="mr-4">{{ $party->type }}</a>
                     </div>
+                    @if($party->user->id == Auth::id())
+                    <div>
+                    <a href="#"><i class="fa fa-times delete_party" aria-hidden="true" data-id="{{$party->id}}"></i></a>
+                    </div>
+                    @endif
                 </div>
                 </div>
             </div>
@@ -86,6 +91,9 @@
 
       </div>
     </div>
+
+    @include('user._shared.modals.party_delete')
+
     @if(session('kicked'))
     <span class="d-none" id="kicked">
 

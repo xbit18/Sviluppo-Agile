@@ -1,5 +1,12 @@
-$( document ).ready( function() {
+
     'use strict';
+
+
+    if($('#party_code').attr('data-code').length) {
+        // Sono in una delle pagine del party
+        $('footer').hide();
+    }
+
 
     var party_code = $('#party_code').attr('data-code');
     var channel = Echo.join(`party.${party_code}`);
@@ -14,7 +21,10 @@ $( document ).ready( function() {
     var actual_dur = 0;
     var actual_track;
     var playlist_uri;
+    var selected_song_id;
+
     var selected_track;
+    var scrolling;
 
     var party_type = $('#p_type').attr('data-type');
 
@@ -35,10 +45,10 @@ $( document ).ready( function() {
      * Comunica a tutti i partecipanti del canale quando un utente si unisce
      */
     channel.here((users) => {
-        console.log(users);
+        //console.log(users);
         $('#joining-list').empty();
         $.each(users, function (index, user) {
-            console.log(user);
+            //console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             var new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.find('.name').text(user.name);
@@ -69,7 +79,7 @@ $( document ).ready( function() {
      */
     channel.leaving((leaving_user) => {
         //console.log('leaving')
-        console.log(leaving_user)
+        //console.log(leaving_user)
         $('#joining-list li').each(function (index, user) {
             console.log(user);
             var partecipant_link = $(this).find('a');
@@ -117,7 +127,36 @@ $( document ).ready( function() {
 
 
     
+    function vote_to_skip(code, track_id) {
+        $.ajax({
+            type: "GET",
+            url: `/party/${code}/tracks/${track_id}/skip`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
 
+                // console.log(response);
+                if(!response.error){
+                    Toast.fire({
+                        type: 'success',
+                        title: 'Voted Successfully'
+                    });
+                    console.log(response);
+                }
+                else {
+                    Toast.fire({
+                        type: 'error',
+                        title: response.error
+                    });
+                }
+            },
+            error: function(error){
+                console.log(error);
+            }
+        });
+    }
     
 
     function millisToMinutesAndSeconds(millis) {
@@ -152,6 +191,16 @@ $( document ).ready( function() {
                 var position = state.position;
                 var track_uri = state.track_window.current_track.uri;
                 actual_dur = parseInt(state.track_window.current_track.duration_ms);
+
+                if($('#animation-container .wrapper').length) {
+                    if(state.paused) {
+                        $('#animation-container .wrapper').addClass('wrapper_hidden');
+                    }
+                    else {
+                        $('#animation-container .wrapper').removeClass('wrapper_hidden');
+                    }
+                }
+                
             }
 
             console.log(state);
@@ -163,8 +212,42 @@ $( document ).ready( function() {
                 artists += artist.name;
             });
 
-            if (!($('#artist-player').text() === artists))
+            if (!($('#artist-player').text() === artists)) {
                 $('#artist-player').text(artists);
+
+                /** AUTOSCROLLING CODE */
+                var text = $('.song-details-container > div');
+                var text_len = parseInt(text.width());
+                var inner_len;
+                if(parseInt($(document).width()) <= 768) {
+                    inner_len = ( parseInt($('.song-details-container > div > h3').width()) + parseInt($('.song-details-container > div > span').width()) + 3);
+                    //console.log(inner_len + '    ' + text_len, 'autoscroll debug');
+                    var pos = 0;
+                    text.css('left', '0px');
+                    if( text_len < inner_len) {
+                        text.css('justify-content', 'unset');
+                        var diff = inner_len - text_len;
+                        if (!scrolling) {
+                            scrolling = setInterval(function() {
+                                pos = (pos+1) % (diff + 50);
+                                if(pos <= diff) text.css('left', parseInt(0 - pos) + 'px');
+                            }, 1000 / 20);
+                        }
+                        
+                    }
+                    else {
+                        text.css('justify-content', 'center');
+                        clearInterval(scrolling);
+                        scrolling = null;
+                    }
+                } else if(scrolling) {
+                    text.css('justify-content', 'center');
+                    clearInterval(scrolling);
+                    scrolling = null;
+                }
+                
+                /*** END */
+            }  
 
         });
 
@@ -217,8 +300,10 @@ $( document ).ready( function() {
          * Per i partecipanti : ascolta l'evento play
          */
         channel.listen('.player.played', (data) => {
+            console.log(data,' dataaaaaaaaaaaaaaaaaaaaaa');
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+             selected_song_id = data.track.id;
             console.log(devId);
             console.log(data.position_ms);
             instance({
@@ -228,13 +313,19 @@ $( document ).ready( function() {
                     'Authorization': 'Bearer ' + token,
                 },
                 data: {
-                    "uris": [data.track_uri],
+                    "uris": [data.track.track_uri],
                     "position_ms": data.position_ms
                 },
                 dataType: 'json',
             }).then(function (data) {
 
             });
+        });
+
+        $(document).on('click','.button-skip',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+            vote_to_skip(party_code, selected_song_id);
         });
 
         /**
@@ -522,6 +613,3 @@ $( document ).ready( function() {
     // FINE onSpotifyWebPlaybackSDKReady
 
     
-
-
-});

@@ -316,6 +316,7 @@ class PartyController extends Controller
 
     }
 
+
     /**
      * Invia una mail a tutti gli utenti selezionati con il link per accedere al party
      * @param Request $request
@@ -428,7 +429,7 @@ class PartyController extends Controller
             $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
 
             $tracks = array();
-            if(!$response['tracks']) return redirect()->route('spotify.login');
+            if( !isset($response['tracks'])) return redirect()->route('spotify.login');
             $tracks = $response['tracks'];
 
             $tracks_uris = array();
@@ -447,14 +448,19 @@ class PartyController extends Controller
      * @param $party_code
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete($party_code){
-        $party = Party::where('code','=',$party_code)->first();
+    public function delete($id){
+        $party = Party::find($id);
         if(Auth::user()->id == $party->user_id){
             $party->delete();
-            return redirect()->route('me.parties.show');
+            return response()->json([
+                'message' => 'Party deleted'
+            ]);
         }
-        $error = 'Couldn\'t delete party';
-        return redirect()->back()->with($error);
+        
+        return response()->json([
+            'error' => 'This party is not yours'
+        ]);
+
     }
 
     public function getLatestParties(){

@@ -15,7 +15,8 @@ class Party extends Model
                   ->withPivot([
                      'vote',
                      'timestamp_kick',
-                     'kick_duration'
+                     'kick_duration',
+                     'skip',
                   ])
                   ->withTimestamps();
    }

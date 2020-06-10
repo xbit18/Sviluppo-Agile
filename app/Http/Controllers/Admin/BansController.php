@@ -129,8 +129,15 @@ class BansController extends Controller
     public function indextotalban(){
         $a = new MainController;
         $a->verify();
-        $users=User::where('ban',1)->get();
-        return view('admin.forms.ban.definitive',compact('users'));
+        if (request('email') != null) {
+            $key = request('email');
+
+            $users = User::where('email', $key)->where('ban',1)->get();
+            return view('admin.forms.ban.definitive', compact('users'));
+        } else {
+            $users = User::where('ban', 1)->get();
+            return view('admin.forms.ban.definitive', compact('users'));
+        }
     }
     public function totalunban(Request $request){
         $a = new MainController;

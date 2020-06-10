@@ -48,10 +48,13 @@
                     <p>By <a href="#" class="music-author">{{ $party->user->name }}</a></p>
                 </div>
                 <!-- Likes, Share & Download -->
-                <div class="likes-share-download d-flex align-items-center justify-content-between">
-                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{ $party->partecipants }})</a>
+                <div class="likes-share-download d-flex align-items-center justify-content-around">
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Participants ({{ $party->users()->count() }})</a>
                     <div>
-                    <a href="#" class="mr-4"><i class="fa fa-share-alt" aria-hidden="true"></i> Share</a>
+                      <a href="#" class="mr-4">{{ $party->type }}</a>
+                    </div>
+                    <div>
+                      <a href="#"><i class="fa fa-times delete_party" aria-hidden="true" data-id="{{$party->id}}"></i></a>
                     </div>
                 </div>
                 </div>
@@ -85,6 +88,7 @@
         
 
       </div>
+      @include('user._shared.modals.party_delete')
     </div>
 @endisset
     

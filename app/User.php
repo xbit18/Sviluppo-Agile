@@ -48,6 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail
                                         'vote',
                                         'timestamp_kick',
                                         'kick_duration',
+                                        'skip',
                                     ])
                                     ->withTimestamps();
     }
