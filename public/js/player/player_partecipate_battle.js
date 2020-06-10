@@ -303,7 +303,7 @@
             console.log(data,' dataaaaaaaaaaaaaaaaaaaaaa');
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-             selected_song_id = data.track.id;
+            selected_song_id = data.track.id;
             console.log(devId);
             console.log(data.position_ms);
             instance({
@@ -414,7 +414,7 @@
                 $('#left_side').find('p').text('No song selected');
                 $('#left_side').find('button').attr('disabled', true);
                 $('#left_side').find('button').removeClass('voted');
-                $('#right_side').find('button').removeClass('unlike');
+                $('#left_side').find('button').removeClass('unlike');
                 $('#left_side').find('button').find('span').text('0');
 
                 $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
