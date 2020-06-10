@@ -422,7 +422,7 @@ class PartyController extends Controller
     public function getSongsByGenre($party_code, $genre_id)
     {
 
-        $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
+        $URI = 'https://api.spotify.com/v1/recommendations?market=IT&seed_genres=';
 
         if($genre_id == null && $party_code == null){ return ;}
         if($genre_id != null){

@@ -210,6 +210,7 @@ function vote_to_skip(code, track_id) {
             getOAuthToken: cb => { cb(token); }
         });
 
+ 
         const play = ({
             spotify_uri,
             playerInstance: {
@@ -218,12 +219,17 @@ function vote_to_skip(code, track_id) {
                 id
               }
             }
-          }, track_uri) => {
+          }, position) => {
               return new Promise((resolve, reject) => {
                 getOAuthToken(access_token => {
                     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
                       method: 'PUT',
-                      body: JSON.stringify({ uris: [spotify_uri] }),
+                      body: JSON.stringify(
+                          { 
+                              uris: [spotify_uri],
+                              position_ms: position, 
+                            }
+                          ),
                       headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -233,7 +239,7 @@ function vote_to_skip(code, track_id) {
                         if(data.status == '403' && data.statusText == "") {
                           play({
                               playerInstance: player,
-                              spotify_uri: track_uri,
+                              spotify_uri: spotify_uri,
                           });   
                         } else {
                             resolve();
@@ -242,7 +248,7 @@ function vote_to_skip(code, track_id) {
                   });
               });
           };
-    
+
         var devId;
     
         // Error handling
@@ -355,24 +361,52 @@ function vote_to_skip(code, track_id) {
         var privateChannel = Echo.private(`party-sync.${my_id}`);
 
         privateChannel.listen('.player.syncronize', function (data) {
-
+    
             /* Esco dal channel poiché non serve più essere connesso a esso*/
             Echo.leave(`party-sync.${my_id}`);
-
+            
             /* Sincronizzo */
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-            selected_song_id = data.track.id;
-            console.log(devId);
-            console.log(data.position_ms);
-            play({
-                playerInstance: player,
-                spotify_uri: track_uri,
-            }, data.track.track_uri).then(function (data) {
-
+            console.log(data.position_ms, 'SYNCRONIZING');
+            instance({
+                url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                data: {
+                    "uris": [data.track_uri],
+                    "position_ms": data.position_ms
+                },
+                dataType: 'json',
+            }).then(function (data) {
+                
             });
-
+            actual_track = data.track_uri;
+            console.log(data.track_uri)
+         
         });
+
+        // privateChannel.listen('.player.syncronize', function (data) {
+
+        //     /* Esco dal channel poiché non serve più essere connesso a esso*/
+        //     Echo.leave(`party-sync.${my_id}`);
+
+        //     /* Sincronizzo */
+        //     var instance = axios.create();
+        //     delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+        //     selected_song_id = data.track.id;
+        //     console.log(devId);
+        //     console.log(data.position_ms);
+        //     play({
+        //         playerInstance: player,
+        //         spotify_uri: track_uri,
+        //     }, data.track.track_uri).then(function (data) {
+
+        //     });
+
+        // });
     });
 
     // Not Ready
@@ -386,32 +420,22 @@ function vote_to_skip(code, track_id) {
     /**
     * Per i partecipanti : ascolta l'evento play
     */
-    channel.listen('.player.played', (data) => {
-        console.log(data, 'data pay');
-        var instance = axios.create();
-        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-        
-        if(data.track != null){
-            actual_track = data.track.track_uri;
-            selected_song_id = data.track.id;
-        }
-        console.log(devId);
-        console.log(data.position_ms);
-        instance({
-            url: "https://api.spotify.com/v1/me/player/play?device_id=" + devId,
-            method: 'PUT',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-            },
-            data: {
-                "uris": [actual_track],
-                "position_ms": data.position_ms
-            },
-            dataType: 'json',
-        }).then(function (data) {
+   channel.listen('.player.played', (data) => {
+    var instance = axios.create();
+    delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+    console.log(data)
+    console.log(actual_track)
+    if(data.track != null){
+        actual_track = data.track.track_uri;
+        selected_song_id = data.track.id;
+    }
+    play({
+        playerInstance: player,
+        spotify_uri: actual_track,
+    }, data.position_ms).then(function (data) {
 
-        });
     });
+});
 
     /**
      * Per i partecipanti : ascolta l'evento paused
@@ -442,7 +466,7 @@ function vote_to_skip(code, track_id) {
             let song_link = $('#playlist_song_prototype').clone();
             song_link.removeAttr('id');
             song_link.attr('data-track', data.data.uri);
-            song_link.attr('data-song-id', track_id);
+            song_link.attr('data-song-id', song_id);
             let item = populate_song_link(song_link, data.data, song_id, true);
             playlist_dom.append(item).hide().fadeIn();
 
@@ -480,7 +504,7 @@ function vote_to_skip(code, track_id) {
             let song_link = $('#playlist_song_prototype').clone();
             song_link.removeAttr('id');
             song_link.attr('data-track', data.data.uri);
-            song_link.attr('data-song-id', track_id);
+            song_link.attr('data-song-id', song_id);
             let item = populate_song_link(song_link, data.data, song_id, true);
             playlist_dom.append(item).hide().fadeIn();
 

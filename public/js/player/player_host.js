@@ -1164,7 +1164,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         event.preventDefault();
 
         let genre = $('#genre').val();
-        $('#addSongsModal').modal('hide');
+        
 
         $.ajax({
             type: "POST",
@@ -1223,7 +1223,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 let song_link = $('#playlist_song_prototype').clone();
                 song_link.removeAttr('id');
                 song_link.attr('data-track', data.data.uri);
-                song_link.attr('data-song-id', track_id);
+                song_link.attr('data-song-id', song_id);
                 let item = populate_song_link(song_link, data.data, song_id, true);
                 playlist_dom.append(item).hide().fadeIn();
 
@@ -1261,7 +1261,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 let song_link = $('#playlist_song_prototype').clone();
                 song_link.removeAttr('id');
                 song_link.attr('data-track', data.data.uri);
-                song_link.attr('data-song-id', track_id);
+                song_link.attr('data-song-id', song_id);
                 let item = populate_song_link(song_link, data.data, song_id, true);
                 playlist_dom.append(item).hide().fadeIn();
 
