@@ -288,25 +288,57 @@ class PartyTest extends TestCase
         $response->assertStatus(500);
     }
 
-    /** @test */
-    public function add_song() {
+
+       /** @test */
+       public function participant_cannot_add_song() {
         
         $song_data = [
             'track_uri' => 'spotify:track:132qd23f4f'
         ];
-        $response = $this->actingAs($this->user)->post('/party/'.$this->code.'/tracks/', $song_data);
+        $response = $this->actingAs($this->participant)->post('/party/'.$this->code.'/tracks/', $song_data);
+
+        $response->assertExactJson([
+            'error' => 'You are not the host of this party'
+        ]);
+
+    }
+
+
+    /** @test */
+    public function host_can_add_song() {
+        
+        $song_data = [
+            'track_uri' => 'spotify:track:132qd23f4f'
+        ];
+        $response = $this->actingAs($this->host)->post('/party/'.$this->code.'/tracks/', $song_data);
 
         $this->assertTrue($this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->count() == 1);
 
     }
 
-    /** @test */
-    public function remove_song() {
-        
-        $this->actingAs($this->user)->post('/party/'.$this->code.'/tracks/',  ['track_uri' => 'spotify:track:132qd23f4f']);
+    
+    /** @test **/
+
+    public function participants_cannot_remove_song(){
+
+        $this->actingAs($this->host)->post('/party/'.$this->code.'/tracks/',  ['track_uri' => 'spotify:track:132qd23f4f']);
+
         $song_id = $this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->pluck('id')->first();
 
-        $this->actingAs($this->user)->delete('/party/'.$this->code.'/tracks/'.$song_id);
+        $response = $this->actingAs($this->participant)->delete('/party/'.$this->code.'/tracks/'.$song_id);
+        $response->assertExactJson([
+            'error' => 'You are not the host of this party'
+            ]);
+
+    }
+
+    /** @test */
+    public function host_can_remove_song() {
+        
+        $this->actingAs($this->host)->post('/party/'.$this->code.'/tracks/',  ['track_uri' => 'spotify:track:132qd23f4f']);
+        $song_id = $this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->pluck('id')->first();
+
+        $this->actingAs($this->host)->delete('/party/'.$this->code.'/tracks/'.$song_id);
         $this->assertTrue($this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->count() == 0);
 
     }
@@ -315,7 +347,7 @@ class PartyTest extends TestCase
 
     /** @test **/
 
-    public function participants_cant_delete_party(){
+    public function participants_cannot_delete_party(){
 
         $response = $this->actingAs($this->participant)->delete('/party/'.$this->party->id.'/delete');
         $response->assertExactJson([

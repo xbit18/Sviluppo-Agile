@@ -113,7 +113,7 @@ class UserTest extends TestCase
 
     /** @test **/
 
-    public function user_gets_banned(){
+    public function host_can_ban_a_user(){
 
         $this->actingAs($this->host)->get('/party/'.$this->party->code.'/user/'.$this->participant->id.'/ban');
         $response = UserBanUser::where('user_id','=',$this->host->id)->where('ban_user_id','=',$this->participant->id)->get();

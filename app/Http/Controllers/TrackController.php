@@ -72,8 +72,12 @@ class TrackController extends Controller
 
             return response()->json('completed');
 
+        } else {
+            return response()->json([
+                'error' => 'You are not the host of this party'
+            ]);
         }
-        abort(401);
+        
     }
 
     public function addTrackToPlaylist(Request $request, $code){
@@ -92,9 +96,13 @@ class TrackController extends Controller
 
             return response()->json(['id' => $track->id]);
 
+        } else {
+            return response()->json([
+                'error' => 'You are not the host of this party'
+            ]);
         }
 
-        abort(401);
+        
     }
 
     /**
