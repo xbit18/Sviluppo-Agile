@@ -24,7 +24,7 @@ class Kicked
 
         if(!$party){
             return redirect()->route('parties.index')->withErrors([
-                'error' => 'This party does not exist'
+                'message' => 'This party does not exist'
             ]);
         }
         $user = Auth::user();
@@ -33,7 +33,9 @@ class Kicked
         
         if($kick_duration){
             if( $kick_duration->pivot->kick_duration > Carbon::now()){
-            return redirect('/party/show')->with(['kicked',true]);
+                return redirect()->route('parties.index')->withErrors([
+                    'error' => 'This host has kicked you'
+                ]);
         }
         }
 
