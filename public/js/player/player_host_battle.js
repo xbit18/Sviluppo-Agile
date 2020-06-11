@@ -235,9 +235,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 if (!paused && prec_play) {
                     play_next_song_battle(devId, token, party_code);
                     prec_play = false;
-                }
-
-                if (!paused && prec_play) {
+                } else if (paused && prec_play) {
                     increment_timeline(false);
                     $.ajax({
                         url: "/party/" + party_code + "/pause",
