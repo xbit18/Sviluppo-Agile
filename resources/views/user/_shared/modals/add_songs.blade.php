@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="contact-form">
 
-                                <form method="POST" action="{{ route('playlist.populate') }}" id="playlistPopolate"
+                                <form id="playlistPopolate"
                                     class="form-row">
                                     @csrf
 

@@ -63,13 +63,9 @@ class PartyTest extends TestCase
     {
 
         $this->withoutExceptionHandling();
-        $response = $this->actingAs($this->user)->post('/party',$this->data());
+        $this->assertCount(1, Party::all());
 
-        /**
-         * La frase Party created succesfully è stata tolta
-         * Controllo che stia redirezionando verso il link giusto
-         */
-        $response->assertSee('Redirecting to');
+    
     }
 
     /** @test **/

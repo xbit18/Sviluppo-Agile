@@ -7,17 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
 use App\User;
 use App\Track;
+use App\Events\SongAdded;
+use App\Events\RefreshParty;
 use Carbon\Carbon;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Validator;
+
 use function MongoDB\BSON\toJSON;
 
 class PartyController extends Controller
@@ -203,9 +207,12 @@ class PartyController extends Controller
         /**
          * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
          */
-        return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+        broadcast(new RefreshParty($party));
+        return response()->json(['success' => 'Party Updated Successfully']);
 
-        //return response()->json(['success' => 'Party Updated Successfully']);
+      //  return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+
+       
     }
 
     /**
@@ -390,6 +397,7 @@ class PartyController extends Controller
 
         $party = Party::where('code', $request->party_code)->first();
         if(Auth::user()->id != $party->user->id) abort(401);
+        $tracks_array =  collect();
 
         foreach($uris as $song) {
             $track = Track::create([
@@ -397,8 +405,15 @@ class PartyController extends Controller
                 'track_uri' => $song
             ]);
             $party->tracks()->save($track);
+            $tracks_array->push($track);
         }
-        return redirect()->back();
+
+
+        broadcast(new SongAdded($party, $tracks_array));
+
+        return response()->json([
+            'message' => 'Tracks added'
+        ]);
     }
 
     /**
@@ -409,7 +424,7 @@ class PartyController extends Controller
     public function getSongsByGenre($party_code, $genre_id)
     {
 
-        $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
+        $URI = 'https://api.spotify.com/v1/recommendations?market=IT&seed_genres=';
 
         if($genre_id == null && $party_code == null){ return ;}
         if($genre_id != null){
