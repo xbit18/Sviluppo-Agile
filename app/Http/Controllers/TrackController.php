@@ -42,6 +42,7 @@ class TrackController extends Controller
         foreach($party->tracks as $track) {
             if($track->active != 0) broadcast(new BattleSelectedEvent(null ,$track->active,$party));
             $track->active = 0;
+            $track->votes = 0;
             $track->save();
             
         }
