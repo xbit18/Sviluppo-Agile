@@ -1036,6 +1036,33 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     })
 
+    $(document).on('submit', '#playlistPopolate', function (event) {
+        event.preventDefault();
+
+        let genre = $('#genre').val();
+
+
+        $.ajax({
+            type: "POST",
+            url: "/party/playlist/populate",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            data: {
+                "genre_id": genre,
+                "party_code": party_code
+            },
+            success: function (response) {
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    })
+
     channel.listen('.song.auto-skip', function () {
         play_next_song_battle(devId, token, party_code)
     })

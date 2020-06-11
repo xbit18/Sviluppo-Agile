@@ -964,9 +964,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     channel.listen('.song.voted', function (data) {
         let current = playlist_dom.find("[data-song-id='" + data.song_id + "']");
-        console.log(current);
         let current_likes = current.find('button').eq(1).find('span').text(data.likes);
-        console.log(current_likes);
         order_playlist();
     })
 
@@ -988,12 +986,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 "party_code": party_code
             },
             success: function (response) {
-                if (!response.error) {
-                    vote.removeClass('like');
-                    vote.addClass('unlike');
-                }
-
-
 
             },
             error: function (error) {
