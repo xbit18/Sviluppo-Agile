@@ -1067,6 +1067,10 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         play_next_song_battle(devId, token, party_code)
     })
 
+    channel.listen('.refresh.party',function(){
+        location.reload();
+    })
+
     channel.listen('.song.added', function (data) {
         if (data.tracks.length > 1) {
             $.each(data.tracks, function (index, element) {

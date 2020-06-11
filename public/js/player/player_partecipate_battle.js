@@ -307,6 +307,10 @@
             })
         });
 
+        channel.listen('.refresh.party',function(){
+            location.reload();
+        })
+
         $(document).on('click','.button-skip',function(event){
             event.preventDefault();
             event.stopPropagation();
