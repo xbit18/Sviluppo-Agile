@@ -12,3 +12,4 @@ npm-debug.log
 yarn-error.log
 .env.testing
 laravel-echo-server.json
+laravel-echo-server.lock
