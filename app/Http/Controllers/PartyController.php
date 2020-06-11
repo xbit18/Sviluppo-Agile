@@ -15,7 +15,7 @@ use App\Party;
 use App\User;
 use App\Track;
 use App\Events\SongAdded;
-use App\Events\RefreshEvent;
+use App\Events\RefreshParty;
 use Carbon\Carbon;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
