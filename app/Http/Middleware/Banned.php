@@ -21,12 +21,16 @@ class Banned
         $party = Party::where('code','=',$code)->first();
         $user = Auth::user();
         if(!$party){
-            return redirect('/party/show');
+            return redirect()->route('parties.index')->withErrors([
+                'message' => 'This party does not exist'
+            ]);
         }
         $party_owner = $party->user;
 
         if($party_owner->bans()->where('ban_user_id',$user->id)->first() != null){
-            return redirect('/party/show')->with(['banned',true]);
+            return redirect()->route('parties.index')->withErrors([
+                'error' => 'This host has banned you'
+            ]);
         }
 
 

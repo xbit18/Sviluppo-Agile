@@ -65,13 +65,13 @@ class PartyController extends Controller
      */
     public function show($code){
 
-
         $party = Party::where('code','=',$code)->first();
 
         $user = Auth::user();
-
         if(!$party){
-            return response(['error' => 'This party does not exist'], 404);
+            return redirect()->route('parties.index')->withErrors([
+                'error' => 'This party does not exist'
+            ]);
         }
         $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
@@ -187,6 +187,11 @@ class PartyController extends Controller
 
 
         $party = Party::where('code','=',$code)->first();
+        if($party->user->id != Auth::id()){
+            return back()->withErrors([
+                'error' => 'This party is not yours'
+            ]);
+        }
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
@@ -464,8 +469,9 @@ class PartyController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($id){
+
         $party = Party::find($id);
-        if(Auth::user()->id == $party->user_id){
+        if(Auth::id() == $party->user->id){
             $party->delete();
             return response()->json([
                 'message' => 'Party deleted'

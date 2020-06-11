@@ -14,20 +14,24 @@ class PartyTest extends TestCase
 {
     use RefreshDatabase;
     protected $party;
-    protected $user;
+    protected $host;
+    protected $participant;
     protected $code;
 
     public function setUp() :void{
 
         parent::setUp();
 
-        $this->user = factory(User::class)->create();
-        $this->user->markEmailAsVerified();
+        $this->host = factory(User::class)->create();
+        $this->host->markEmailAsVerified();
+
+        $this->participant = factory(User::class)->create();
+        $this->participant->markEmailAsVerified();
 
         $this->code = Str::random(16);
 
         $this->party = Party::create([
-            'user_id' => $this->user->id,
+            'user_id' => $this->host->id,
             'name' => 'Prova Nome',
             'mood' => 'Prova Mood',
             'type' => 'Democracy',
@@ -68,16 +72,33 @@ class PartyTest extends TestCase
     
     }
 
+     /** @test **/
+
+     public function party_participant_cannot_update_party(){
+          
+        $response = $this->actingAs($this->host)->post('/party/update/'.$this->party->code,[
+            'mood' => 'Mood aggiornato',
+            'type' => 'Democracy',
+            'desc' => "Descrizione aggiornata",
+            'genre' => array(67), //id associato al genere Jazz
+        ]);
+
+         $response->assertSessionHasErrors(['error']);
+    }
+
+
     /** @test **/
-    public function party_is_updated()
+    public function party_host_can_update_party()
     {
+
+        $this->withoutExceptionHandling();
         /**
          * Creo un party
          */
         $code = Str::random(16);
 
         $party = Party::create([
-            'user_id' => $this->user->id,
+            'user_id' => $this->host->id,
             'name' => 'Prova Nome',
             'mood' => 'Prova Mood',
             'type' => 'Democracy',
@@ -90,31 +111,34 @@ class PartyTest extends TestCase
         /**
          * Modifico il party con dei parametri specifici
          */
-        $this->withoutExceptionHandling();
-        $response = $this->actingAs($this->user)->post('/party/update/'.$code,[
+        
+        $response = $this->actingAs($this->host)->post('/party/update/'.$code,[
             'mood' => 'Mood aggiornato',
             'type' => 'Democracy',
             'desc' => "Descrizione aggiornata",
             'genre' => array(67), //id associato al genere Jazz
         ]);
 
-        $response = $this->actingAs($this->user)->get('/party/show/'.$code);
+        $response->assertRedirect('/party/show/'.$code);
 
         /**
          * Controllo che i campi del party siano stati aggiornati e restituiti alla view con successo
          */
 
+         $response = $this->ActingAs($this->host)->get('/party/show/'.$code);
+
         $response->assertSee('Mood aggiornato')
                  ->assertSee('Democracy')
                  ->assertSee('Descrizione aggiornata')
-                 ->assertSee('<li><a href="#">Jazz</a></li>',false);
+                 ->assertSee('Jazz');
     }
 
+   
     /** @test **/
 
     public function party_link_with_code_works(){
 
-        $response = $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+        $response = $this->actingAs($this->host)->get('/party/show/'.$this->party->code);
 
         $response->assertStatus(200);
     }
@@ -127,9 +151,9 @@ class PartyTest extends TestCase
         }
         while(Party::where('code', '=', $this->code)->exists());
 
-        $response = $this->actingAs($this->user)->get('/party/show/'.$this->code);
+        $response = $this->actingAs($this->host)->get('/party/show/'.$this->code);
 
-        $response->assertStatus(404);
+        $response->assertSessionHasErrors(['error']);
     }
 
     /** @test */
@@ -161,12 +185,12 @@ class PartyTest extends TestCase
         $user_part->markEmailAsVerified();
 
         // ENTRA L'HOST
-        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+        $this->actingAs($this->host)->get('/party/show/'.$this->party->code);
 
         // ENTRA IL PARTECIPANTE
         $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
         
-        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+        $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
 
         $response->assertSee($this->party->code);
 
@@ -181,13 +205,13 @@ class PartyTest extends TestCase
         $user_part->markEmailAsVerified();
 
         // ENTRA L'HOST
-        $this->actingAs($this->user)->get('/party/show/'.$this->party->code);
+        $this->actingAs($this->host)->get('/party/show/'.$this->party->code);
 
         // ENTRA IL PARTECIPANTE
         $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
         
-        $this->actingAs($this->user)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
-        $response = $this->actingAs($this->user)->get('/party/' . $this->party->code . '/leave/' . $user_part->id);
+        $this->actingAs($this->host)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
+        $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/leave/' . $user_part->id);
 
         $response->assertDontSee($this->party->code);
 
@@ -286,6 +310,32 @@ class PartyTest extends TestCase
         $this->assertTrue($this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->count() == 0);
 
     }
+
+    
+
+    /** @test **/
+
+    public function participants_cant_delete_party(){
+
+        $response = $this->actingAs($this->participant)->delete('/party/'.$this->party->id.'/delete');
+        $response->assertExactJson([
+            'error' => 'This party is not yours'
+        ]);
+        
+    }
+
+    /** @test **/
+    
+    public function party_owner_can_delete_party(){
+
+        $response = $this->actingAs($this->host)->delete('/party/'.$this->party->id.'/delete');
+
+        $response->assertExactJson([
+            'message' => 'Party deleted'
+            ]);
+        $response->assertSessionHasNoErrors();
+    }
+
 
     /**
      * Aggiungendo la validazione i campi devono essere così
