@@ -208,9 +208,9 @@ class PartyController extends Controller
          * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
          */
         broadcast(new RefreshParty($party));
-        return response()->json(['success' => 'Party Updated Successfully']);
+        // return response()->json(['success' => 'Party Updated Successfully']);
 
-      //  return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+       return redirect()->route( 'party.show', [ 'code' => $party->code ] );
 
        
     }

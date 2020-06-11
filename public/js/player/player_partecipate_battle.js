@@ -307,9 +307,7 @@
             })
         });
 
-        channel.listen('.refresh.party',function(){
-            location.reload();
-        })
+ 
 
         $(document).on('click','.button-skip',function(event){
             event.preventDefault();
@@ -394,6 +392,10 @@
         $(document).on('click', '.search', function (event) {
             event.preventDefault();
         });
+
+        $(document).on('submit','#editPartyForm', function(event){
+            event.preventDefault();
+        })
         
         
         channel.listen('.battle.selected',function(data){

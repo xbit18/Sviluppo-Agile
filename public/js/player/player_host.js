@@ -507,7 +507,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
 
 
-
+   
 
 
     });
@@ -999,9 +999,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         get_next_song(party_code)
     })
 
-    channel.listen('.refresh.party',function(){
-        location.reload();
-    })
+
 
     channel.listen('.song.added', function (data) {
         if (data.tracks.length > 1) {
@@ -1018,6 +1016,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     dataType: 'json',
                 }).then(function (data) {
                     let song_link = $('#playlist_song_prototype').clone();
+                    song_link.find('button').eq(0).find('span').addClass('like');
                     song_link.removeAttr('id');
                     song_link.attr('data-track', data.data.uri);
                     song_link.attr('data-song-id', song_id);
