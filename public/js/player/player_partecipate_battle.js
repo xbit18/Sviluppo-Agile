@@ -438,6 +438,7 @@
                         $('#left_side').find('h5').text(track.name);
                         $('#left_side').find('p').text(artists);
                         $('#left_side').prepend('<span id="track_uri_side_1" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
+                        $('#left_side').find('button').addClass('like_bat');
                         $('#left_side').find('button').attr('disabled', false);
                     }
                     else if(data.side == "2") {
@@ -445,6 +446,7 @@
                         $('#right_side').find('h5').text(track.name);
                         $('#right_side').find('p').text(artists);
                         $('#right_side').prepend('<span id="track_uri_side_2" data-id="' + data.track.id + '" data-track="' + data.track.track_uri + '"></span>');
+                        $('#right_side').find('button').addClass('like_bat');
                         $('#right_side').find('button').attr('disabled', false);
                     }
                     
