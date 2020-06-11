@@ -553,16 +553,16 @@ function vote_to_skip(code, track_id) {
     /** -------------- Volume Listener ----------------------- */
 
     // HammerJs for mobile
-    var slide2 = document.getElementById('volume_range');
+    // var slide2 = document.getElementById('volume_range');
 
-    var mc_volume = new Hammer.Manager(slide2);
-    mc_volume.add( new Hammer.Tap({ event: 'singletap' }) );
-    mc_volume.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
-    mc_volume.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+    // var mc_volume = new Hammer.Manager(slide2);
+    // mc_volume.add( new Hammer.Tap({ event: 'singletap' }) );
+    // mc_volume.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
+    // mc_volume.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
 
-    mc_volume.on("singletap pan swipe", function(ev) {
-        player.setVolume(slider.val() / 100)
-    });
+    // mc_volume.on("singletap pan swipe", function(ev) {
+    //     player.setVolume(slider.val() / 100)
+    // });
 
     // For Desktop Browsers
     var isDragging = false;
@@ -582,22 +582,22 @@ function vote_to_skip(code, track_id) {
     // /** ---------------- TIMELINE Listener ----------------- */
 
      //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
-    var timeline_mob = document.getElementById('timeline');
+    // var timeline_mob = document.getElementById('timeline');
 
-    var mc_timeline = new Hammer.Manager(timeline_mob);
-    mc_timeline.add( new Hammer.Tap({ event: 'singletap' }) );
-    mc_timeline.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
-    mc_timeline.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
+    // var mc_timeline = new Hammer.Manager(timeline_mob);
+    // mc_timeline.add( new Hammer.Tap({ event: 'singletap' }) );
+    // mc_timeline.add(new Hammer.Swipe({ direction: Hammer.DIRECTION_HORIZONTAL }));
+    // mc_timeline.add(new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL }));
 
-    mc_timeline.on("singletap pan swipe", function(ev) {
-        // SKIP LOGIC
-        if(timeline.val() != 0) {
-            player.seek(timeline.val()).then(() => {
-                //console.log('Changed position mob!');
-              });
-        }
+    // mc_timeline.on("singletap pan swipe", function(ev) {
+    //     // SKIP LOGIC
+    //     if(timeline.val() != 0) {
+    //         player.seek(timeline.val()).then(() => {
+    //             //console.log('Changed position mob!');
+    //           });
+    //     }
 
-    }); 
+    // }); 
 
     // Compatibilità Desktop
     var isDragTime = false;
