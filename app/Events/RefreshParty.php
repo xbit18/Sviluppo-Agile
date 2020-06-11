@@ -55,8 +55,8 @@ class RefreshParty implements ShouldBroadcastNow
         ];
     }
 
-    public function broadcastWhen(){
+    /*public function broadcastWhen(){
         $this->party->user->id === Auth::id();
-    }
+    }*/
 
 }

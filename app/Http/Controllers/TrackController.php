@@ -57,7 +57,7 @@ class TrackController extends Controller
         if(Auth::user()->id == $party->user->id ) {
 
             $track = Track::find($id);
-            $track->delete();
+            if($track) $track->delete();
             
             $votes = $party->users()->where('vote',$id)->get();
             foreach($votes as $vote){
