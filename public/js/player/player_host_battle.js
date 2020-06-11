@@ -1061,8 +1061,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     })
 
-    channel.listen('.song.auto-skip', function () {
+    channel.listen('.song.auto-skip', function (data) {
         play_next_song_battle(devId, token, party_code)
+        console.log('skips: ' + data.skip_count);
     })
 
 
