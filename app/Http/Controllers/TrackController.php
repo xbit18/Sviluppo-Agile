@@ -44,7 +44,6 @@ class TrackController extends Controller
             $track->active = 0;
             $track->votes = 0;
             $track->save();
-            
         }
 
         return $party->tracks;
