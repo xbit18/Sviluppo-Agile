@@ -124,8 +124,9 @@ class UserTest extends TestCase
     /** @test **/
 
     public function banned_user_cannot_access_party(){
-        $response = $this->actingAs($this->participant)->get('/party/show'.$this->party->code);
-        $response->assertSessionHasErrors(['error']);
+        $this->actingAs($this->host)->get('/party/'.$this->party->code.'/user/'.$this->participant->id.'/ban');
+        $response = $this->actingAs($this->participant)->get('/party/show/'.$this->party->code);
+        $response->assertRedirect('/party/show');
     }
 
 
