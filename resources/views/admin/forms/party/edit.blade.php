@@ -32,11 +32,11 @@
                                 <label class="description" for="partytype">Party Type</label>
                                 <select class="form-control form-control-sm" id="partytype" name="type">
                                     @if($party->type === 'Battle')
-                                        <option value="Battle" selected>BATTLE <small>(pick two songs and let users vote for one of them)</small></option>
-                                        <option value="Democracy">DEMOCRACY <small>(play the playlist’s most voted song)</small></option>
+                                        <option value="Battle" selected>BATTLE (pick two songs and let users vote for one of them)</option>
+                                        <option value="Democracy">DEMOCRACY (play the playlist’s most voted song)</option>
                                     @else
-                                        <option value="Battle">BATTLE <small>(pick two songs and let users vote for one of them)</small></option>
-                                        <option value="Democracy" selected>DEMOCRACY <small>(play the playlist’s most voted song)</small></option>
+                                        <option value="Battle">BATTLE (pick two songs and let users vote for one of them)</option>
+                                        <option value="Democracy" selected>DEMOCRACY (play the playlist’s most voted song)</option>
                                     @endif
                                 </select>
                             </div>
@@ -67,6 +67,10 @@
                             <div class="form-group">
                                 <label for="desc">Party Description</label>
                                 <textarea class="form-control" rows="5" id="desc" name="desc">{{ $party->description }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="playlist_id">Playlist id</label>
+                                <input class="form-control small" rows="5" id="playlist_id" name="playlist_id" placeholder='fill to assign a playlist id' value="{{ $party->playlist_id }}">
                             </div>
 
                             @if ($errors->any())

@@ -7,15 +7,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Genre;
 use App\Party;
 use App\User;
+use App\Track;
+use App\Events\SongAdded;
+use App\Events\RefreshParty;
+use Carbon\Carbon;
 use SpotifyWebApi\SpotifyWebApiException;
 use SpotifyWebAPI\SpotifyWebAPI as SpotifyWebAPI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Validator;
+
 use function MongoDB\BSON\toJSON;
 
 class PartyController extends Controller
@@ -42,7 +48,8 @@ class PartyController extends Controller
             $my_parties = $me->parties()->orderBy('created_at','DESC')->get();
 
             $my_parties->map(function ($party) {
-                $party->genre_id = $party->genre->first()->id;
+                $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+                $party->partecipants = $party->users()->count();
             });
 
             return view('user.pages.my_parties', ['parties' => $my_parties]);
@@ -58,20 +65,29 @@ class PartyController extends Controller
      */
     public function show($code){
 
-
         $party = Party::where('code','=',$code)->first();
 
         $user = Auth::user();
-
         if(!$party){
-            return response(['error' => 'This party does not exist'], 404);
+            return back()->withErrors([
+                'message' => 'This party does not exist'
+            ]);
         }
-
+        $user->participates()->syncWithOutDetaching($party->id);
         $genre_list = Genre::orderBy('genre', 'ASC')->get();
         $genres = Genre::paginate(10);
-        $party->genre_id = $party->genre->first()->id;
+        $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
 
-        return view('user.pages.party', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list]);
+        $liked = $party->users()->where('user_id','=',$user->id)->first()->pivot->vote;
+
+        if($party->type == 'Battle') {
+            $side1 = $party->tracks()->where('active', 1)->first();
+            $side2 = $party->tracks()->where('active', 2)->first();
+
+            return view('user.pages.party_battle', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'side_1' => $side1, 'side_2' => $side2, 'liked' => $liked]);
+        }
+
+        return view('user.pages.party_democracy', ['party' => $party, 'genres' => $genres, 'genre_list' => $genre_list, 'liked' => $liked]);
 
     }
 
@@ -79,6 +95,20 @@ class PartyController extends Controller
      * Mostra i party attualmente sul sistema dal più recente
      */
     public function index() {
+        if(request('name')!=null) {
+            $key = request('name');
+            $parties = Party::where('name', $key)->get();
+            if(!$parties){
+                return response(['error' => 'This party does not exist'], 404);
+            }
+            $parties->map(function ($party) {
+                $party->genre_id = $party->genre->first()->id;
+            });
+            $parties->sortBy('id');
+
+            return view('user.pages.parties',compact('parties'));
+        }
+
         $parties = Party::all();
 
         if(!$parties){
@@ -86,7 +116,8 @@ class PartyController extends Controller
         }
 
         $parties->map(function ($party) {
-            $party->genre_id = $party->genre->first()->id;
+            $party->genre_id = ( $party->genre->first()->id % 20 ) + 1;
+            $party->partecipants = $party->users()->count();
         });
         $parties->sortBy('id');
         $parties_sorted =  $parties->reverse();
@@ -109,9 +140,25 @@ class PartyController extends Controller
      */
     public function update(Request $request, $code){
 
+        
+        $party = Party::where('code','=',$code)->first();
+
+        if(!$party){
+            return redirect()->back()->withErrors([
+                'message' => 'This party does not exist'
+            ]);
+        }
+
+        if($party->user->id != Auth::id()){
+            return redirect()->back()->withErrors([
+                'error' => 'This party is not yours'
+            ]);
+        }
+
         /**
          * Valida i campi della richiesta
          */
+
         $rules = array(
             'mood' => 'required|string',
             'type' => 'required|in:Battle,Democracy',
@@ -138,10 +185,10 @@ class PartyController extends Controller
         foreach($genres as $genre_in) {
             /**
              * Ottimizzo memorizzando gli id dei generi durante la validazione
-             * 
+             *
              * Ottimizzazione usando direttamente gli id e ed evitando tutte le iterazioni
              */
-            
+
             if(!Genre::find($genre_in)) return redirect()->back()->withErrors(['genre' => 'Invalid Genre ' . $genre_in]);
             //$genre = Genre::where('genre',$genre_in)->first();
             //if(!$genre) $validation = false;
@@ -154,7 +201,7 @@ class PartyController extends Controller
 
 
 
-        $party = Party::where('code','=',$code)->first();
+      
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
@@ -175,9 +222,12 @@ class PartyController extends Controller
         /**
          * Faccio il redirect alla pagina del party aggiornata con le nuove informazioni
          */
-        //return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+        broadcast(new RefreshParty($party));
+        // return response()->json(['success' => 'Party Updated Successfully']);
 
-        return response()->json(['success' => 'Party Updated Successfully']);
+       return redirect()->route( 'party.show', [ 'code' => $party->code ] );
+
+       
     }
 
     /**
@@ -209,13 +259,16 @@ class PartyController extends Controller
         $api = new SpotifyWebAPI();
 
         try {
+
             $api->setAccessToken($user->access_token);
+            /*
             $playlist = $api->createPlaylist([
             'name' => $request->name,
             'public' => false
-        ]);
+            ]);
+                */
 
-        $genres = $request->genre;
+            $genres = $request->genre;
             $genre_ids = array();
 
             /**
@@ -249,6 +302,7 @@ class PartyController extends Controller
                 'source' => $request->source,
                 'description' => $request->desc,
                 'code' => $code,
+                //'playlist_id' => $playlist->id
             ]);
 
             foreach($genre_ids as $id) {
@@ -259,21 +313,31 @@ class PartyController extends Controller
              * Aggiunta della playlist
              */
 
-        /**
-         * Popolazione delle tracce
-         */
-        $songsByGenre = $this->getSongsByGenre($party->code);
+            /**
+             * Popolazione delle tracce
+             */
+            $songsByGenre = $this->getSongsByGenre($party->code, null);
 
-        $bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
-        if($bool){
-                return redirect()->route('me.parties.show');
-        }
+            foreach($songsByGenre as $song) {
+                $track = Track::create([
+                    'party_id' => $party->id,
+                    'track_uri' => $song
+                ]);
+                $party->tracks()->save($track);
+            }
+
+            //$bool = $api->addPlaylistTracks($playlist->id,$songsByGenre);
+            //if($bool){
+            return redirect()->route('me.parties.show');
+
+        //}
         } catch (SpotifyWebApiException $e){
             return redirect()->route('spotify.login');
         }
 
 
     }
+
 
     /**
      * Invia una mail a tutti gli utenti selezionati con il link per accedere al party
@@ -334,33 +398,105 @@ class PartyController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function populateParty(Request $request){
+
+
+        $uris = $this->getSongsByGenre(null, $request->genre_id);
+        /*$playlist_id = Party::where('code','=',$request->party_code)->first()->playlist_id;
+        $api = new SpotifyWebAPI();
+        $api->setAccessToken(Auth::user()->access_token);
+        $bool = $api->addPlaylistTracks($playlist_id,$uris);*/
+
+        $party = Party::where('code', $request->party_code)->first();
+        if(Auth::user()->id != $party->user->id) abort(401);
+        $tracks_array =  collect();
+
+        foreach($uris as $song) {
+            $track = Track::create([
+                'party_id' => $party->id,
+                'track_uri' => $song
+            ]);
+            $party->tracks()->save($track);
+            $tracks_array->push($track);
+        }
+
+
+        broadcast(new SongAdded($party, $tracks_array));
+
+        return response()->json([
+            'message' => 'Tracks added'
+        ]);
+    }
+
+    /**
      * Ritorna un array di Spotify track URIs in base ai generi del party
      * @param $party_code
      * @return array
      */
-    public function getSongsByGenre($party_code)
+    public function getSongsByGenre($party_code, $genre_id)
     {
-        $genres = Party::where('code','=',$party_code)->first()->genre;
-        $URI = 'https://api.spotify.com/v1/recommendations?seed_genres=';
 
-        foreach($genres as $genre){
-            $URI .= strtolower($genre->genre).',';
+        $URI = 'https://api.spotify.com/v1/recommendations?market=IT&seed_genres=';
+
+        if($genre_id == null && $party_code == null){ return ;}
+        if($genre_id != null){
+            $genre = strtolower(Genre::findOrFail($genre_id)->genre);
+            $URI .= $genre;
+        } else {
+            $genres = Party::where('code','=',$party_code)->first()->genre;
+            foreach($genres as $genre){
+                $URI .= strtolower($genre->genre).',';
+            }
         }
 
-        $user_token = Auth::user()->access_token;
 
-        $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
+        try {
+            $user_token = Auth::user()->access_token;
 
-        $tracks = array();
-        $tracks = $response['tracks'];
+            $response = Http::withHeaders(['Authorization' => 'Bearer ' . $user_token])->get($URI);
 
-        $tracks_uris = array();
-        foreach ($tracks as $track) {
-            $tracks_uris[] = $track['uri'];
+            $tracks = array();
+            if( !isset($response['tracks'])) return redirect()->route('spotify.login');
+            $tracks = $response['tracks'];
+
+            $tracks_uris = array();
+            foreach ($tracks as $track) {
+                $tracks_uris[] = $track['uri'];
+            }
+            return $tracks_uris;
+        } catch (SpotifyWebApiException $e){
+            return redirect()->route('spotify.login');
         }
-        return $tracks_uris;
+
     }
 
+    /**
+     * Cancella il party specificato
+     * @param $party_code
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete($id){
 
+        $party = Party::find($id);
+        if(Auth::id() == $party->user->id){
+            $party->delete();
+            return response()->json([
+                'message' => 'Party deleted'
+            ]);
+        }
+        
+        return response()->json([
+            'error' => 'This party is not yours'
+        ]);
+
+    }
+
+    public function getLatestParties(){
+        $parties = Party::orderBy('created_at', 'desc')->take(10)->get();
+        return $parties;
+    }
 
 }

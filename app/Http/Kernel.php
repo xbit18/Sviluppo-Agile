@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\Totalban;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -42,6 +43,11 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+
+        'access' => [
+            'kicked',
+            'banned'
+        ]
     ];
 
     /**
@@ -62,5 +68,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'kicked' => \App\Http\Middleware\Kicked::class,
+        'banned' => \App\Http\Middleware\Banned::class,
+        'totalban' => \App\Http\Middleware\Totalban::class,
     ];
 }

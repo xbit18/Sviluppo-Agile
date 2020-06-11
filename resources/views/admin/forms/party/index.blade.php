@@ -25,7 +25,7 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
-                    User email
+                    Creator email
                 </div>
             </div>
             <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
@@ -77,9 +77,7 @@
     <div class="panel panel-container">
         <div class="row">
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
-                <div class="panel panel-teal panel-widget border-right" style="word-wrap: break-word; overflow-wrap: break-word;">
-                    {{$party->code}}
-                </div>
+                <div class="panel panel-teal panel-widget border-right" style="word-wrap: break-word; overflow-wrap: break-word;">{{$party->code}}</div>
             </div>
             <div class="col-xs-6 col-md-3 col-lg-2 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
@@ -88,7 +86,9 @@
             </div>
             <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
                 <div class="panel panel-teal panel-widget border-right">
+                    <a href="/party/show/{{$party->code}}" target="_blank">
                     {{$party->name}}
+                    </a>
                 </div>
             </div>
             <div class="col-xs-6 col-md-3 col-lg-1 no-padding">
@@ -134,7 +134,7 @@
                 <div class="panel panel-teal panel-widget border-right">
                     <form id="delete-form-{{$id}}"method="POST" action="/admin/party/delete">
                         @csrf
-                            <em class="fa fa-xl fa-user-times color-red" style="cursor: pointer;" onclick="deleteFunc{{$id}}()" ></em>
+                            <em class="fa fa-xl fa-times color-red" style="cursor: pointer;" onclick="deleteFunc{{$id}}()" ></em>
                         <script>
                             function deleteFunc{{$id}}() {
                                 var x = confirm('Do you really want to delete {{$party->code}} party ?')

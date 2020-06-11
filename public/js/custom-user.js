@@ -1,6 +1,6 @@
 $( document ).ready( function() {
 
-    
+   
 
     const Toast = Swal.mixin({
         toast: true,
@@ -20,6 +20,20 @@ $( document ).ready( function() {
         Toast.fire({
             type: 'success',
             title: 'The Spotify Token has been deleted'
+        });
+    }
+
+    if($('#kicked').length){
+        Toast.fire({
+            type: 'warning',
+            title: 'You have been kicked from this party'
+        });
+    }
+
+    if($('#banned').length){
+        Toast.fire({
+            type: 'warning',
+            title: 'This user has banned you permanently'
         });
     }
 
@@ -92,6 +106,51 @@ $( document ).ready( function() {
     if( $('.autofade').length ) {
         $('.autofade').modal('show');
     }
+
+    $(document).on('click','.delete_party',function(event){
+        
+        let id = $(this).data('id');
+        let parent = $(this).parents('.single_gallery_item');
+        $('#party_deleteModal').modal();
+
+        $('#party_delete_form').on('submit',function(event){
+            event.preventDefault()
+            
+            $.ajax({
+                type: "DELETE",
+                url: `/party/${id}/delete`,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                dataType: "json",
+                success: function (response) {
+
+                    $('#party_deleteModal').modal('hide');
+                    if (response.error) {
+                        Toast.fire({
+                            type: 'warning',
+                            title: response.error
+                        })
+
+                    } else {
+
+                        parent.fadeOut(300,function(){
+                            parent.remove()
+                        })
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Party deleted'
+                        })
+
+                    }
+                },
+                error: function (error) {
+
+                    console.log(error);
+                }
+            });
+        })
+    })
 
 });
 

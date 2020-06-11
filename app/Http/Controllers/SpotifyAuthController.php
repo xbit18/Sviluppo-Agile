@@ -42,7 +42,7 @@ class SpotifyAuthController extends Controller
 
 
     public function getAuthCode(Request $request){
-        
+
         /**
          * Spotify Session Parameters
          */

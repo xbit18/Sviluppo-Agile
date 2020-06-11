@@ -3,8 +3,11 @@
 
 <head>
 
+  @if(isset($battle))
+  @include('user.includes.head',['battle' => $battle])
+  @else
   @include('user.includes.head')
-
+  @endif
 </head>
 
 <body>
@@ -14,7 +17,11 @@
 
   @yield('content')
 
+ 
+
+
   @include('user.includes.footer')
+ 
 
   @if(session('spotifyLogIn'))
   <span class="d-none" id="spotifyLogIn">
@@ -27,6 +34,8 @@
 
   </span>
   @endif
+
+  
 
   @include('user.includes.scripts')
 

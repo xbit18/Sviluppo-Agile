@@ -43,7 +43,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function participates(){
-        return $this->belongsToMany('App\Party','user_participates_party');
+        return $this->belongsToMany('App\Party','user_participates_parties')
+                                    ->withPivot([
+                                        'vote',
+                                        'timestamp_kick',
+                                        'kick_duration',
+                                        'skip',
+                                    ])
+                                    ->withTimestamps();
+    }
+
+    public function bans(){
+        return $this->belongsToMany('App\User','user_ban_users','user_id','ban_user_id')->withTimestamps();
     }
 
 
