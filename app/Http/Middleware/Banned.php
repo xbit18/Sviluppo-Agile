@@ -21,7 +21,9 @@ class Banned
         $party = Party::where('code','=',$code)->first();
         $user = Auth::user();
         if(!$party){
-            return redirect('/party/show');
+            return redirect()->route('parties.index')->withErrors([
+                'error' => 'This party does not exist'
+            ]);
         }
         $party_owner = $party->user;
 
