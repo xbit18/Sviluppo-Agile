@@ -69,8 +69,8 @@ class PartyController extends Controller
 
         $user = Auth::user();
         if(!$party){
-            return redirect()->route('parties.index')->withErrors([
-                'error' => 'This party does not exist'
+            return back()->withErrors([
+                'message' => 'This party does not exist'
             ]);
         }
         $user->participates()->syncWithOutDetaching($party->id);
@@ -140,6 +140,21 @@ class PartyController extends Controller
      */
     public function update(Request $request, $code){
 
+        
+        $party = Party::where('code','=',$code)->first();
+
+        if(!$party){
+            return redirect()->back()->withErrors([
+                'message' => 'This party does not exist'
+            ]);
+        }
+
+        if($party->user->id != Auth::id()){
+            return redirect()->back()->withErrors([
+                'error' => 'This party is not yours'
+            ]);
+        }
+
         /**
          * Valida i campi della richiesta
          */
@@ -186,12 +201,7 @@ class PartyController extends Controller
 
 
 
-        $party = Party::where('code','=',$code)->first();
-        if($party->user->id != Auth::id()){
-            return back()->withErrors([
-                'error' => 'This party is not yours'
-            ]);
-        }
+      
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;

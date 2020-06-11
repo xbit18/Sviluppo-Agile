@@ -75,8 +75,9 @@ class PartyTest extends TestCase
      /** @test **/
 
      public function party_participant_cannot_update_party(){
+
           
-        $response = $this->actingAs($this->host)->post('/party/update/'.$this->party->code,[
+        $response = $this->actingAs($this->participant)->post('/party/update/'.$this->party->code,[
             'mood' => 'Mood aggiornato',
             'type' => 'Democracy',
             'desc' => "Descrizione aggiornata",
@@ -91,7 +92,6 @@ class PartyTest extends TestCase
     public function party_host_can_update_party()
     {
 
-        $this->withoutExceptionHandling();
         /**
          * Creo un party
          */
@@ -153,7 +153,7 @@ class PartyTest extends TestCase
 
         $response = $this->actingAs($this->host)->get('/party/show/'.$this->code);
 
-        $response->assertSessionHasErrors(['error']);
+        $response->assertSessionHasErrors(['message']);
     }
 
     /** @test */
