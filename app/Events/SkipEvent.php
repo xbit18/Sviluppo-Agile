@@ -49,7 +49,7 @@ class SkipEvent implements ShouldBroadcastNow
 
     public function broadcastWith(){
         return [
-            'skip_count' => $this->party->users()->where('skip','1')->count()
+            'skip_count' => $this->party->users()->where('skip', 1)->count()
         ];
     }
 
