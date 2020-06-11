@@ -16,7 +16,6 @@
     var timeline = $('#timeline');
     var duration_text = $('.music-duration');
     var timer, running = false;
-    // var snapshot_id;
     var playlist_dom = $('#party_playlist');
     var actual_dur = 0;
     var actual_track;
@@ -40,15 +39,9 @@
     });
 
     /* Music Pause */
-
-    /**
-     * Comunica a tutti i partecipanti del canale quando un utente si unisce
-     */
     channel.here((users) => {
-        //console.log(users);
         $('#joining-list').empty();
         $.each(users, function (index, user) {
-            //console.log(user);
             var new_partecipant = $('#partecipant-prototype').clone();
             var new_partecipant_link = new_partecipant.find('a');
             new_partecipant_link.find('.name').text(user.name);
@@ -64,8 +57,6 @@
      *  Action a utente entrante
      */
     channel.joining((user) => {
-        //console.log('joining')
-        //console.log(user)
         var new_partecipant = $('#partecipant-prototype').clone();
         var new_partecipant_link = new_partecipant.find('a');
         new_partecipant.removeAttr('id');
@@ -78,12 +69,8 @@
      *  Comunica a tutti che un utente lascia il canale
      */
     channel.leaving((leaving_user) => {
-        //console.log('leaving')
-        //console.log(leaving_user)
         $('#joining-list li').each(function (index, user) {
-            console.log(user);
             var partecipant_link = $(this).find('a');
-            console.log(partecipant_link);
             if (partecipant_link.attr('data-id') == leaving_user.id) {
                 partecipant_link.find('.name').text(partecipant_link.text() + " (leaving party...)");
                 setTimeout(function () {
@@ -97,7 +84,6 @@
     var channel_management = Echo.private(`party.${party_code}.${my_id}`);
 
     channel_management.listen('.user.kicked',function(response){
-        console.log(response);
         if(response.kicked){
 
             Toast.fire({
@@ -112,7 +98,6 @@
     })
 
     channel_management.listen('.user.banned',function(response){
-        console.log(response);
         if(response.banned){
 
             Toast.fire({
@@ -137,13 +122,11 @@
             dataType: "json",
             success: function (response) {
 
-                // console.log(response);
                 if(!response.error){
                     Toast.fire({
                         type: 'success',
                         title: 'Voted Successfully'
                     });
-                    console.log(response);
                 }
                 else {
                     Toast.fire({
@@ -153,7 +136,7 @@
                 }
             },
             error: function(error){
-                console.log(error);
+                console.log(error, 'skip error');
             }
         });
     }
@@ -179,10 +162,10 @@
         var devId;
     
         // Error handling
-        player.addListener('initialization_error', ({ message }) => { console.log(message) });
+        player.addListener('initialization_error', ({ message }) => { console.log(message, 'spotify player initialization error') });
         player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
         player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
-        player.addListener('playback_error', ({ message }) => { console.error(message); });
+        player.addListener('playback_error', ({ message }) => { console.error(message, 'spotify playback error'); });
 
         // Playback status updates
         player.addListener('player_state_changed', state => {
@@ -205,7 +188,6 @@
                 
             }
 
-            console.log(state);
             if (!($('#title-player').text() === state.track_window.current_track.name))
                 $('#title-player').text(state.track_window.current_track.name);
 
@@ -223,7 +205,6 @@
                 var inner_len;
                 if(parseInt($(document).width()) <= 768) {
                     inner_len = ( parseInt($('.song-details-container > div > h3').width()) + parseInt($('.song-details-container > div > span').width()) + 3);
-                    //console.log(inner_len + '    ' + text_len, 'autoscroll debug');
                     var pos = 0;
                     text.css('left', '0px');
                     if( text_len < inner_len) {
@@ -306,8 +287,6 @@
         channel.listen('.player.played', (data) => {
             var instance = axios.create();
             delete instance.defaults.headers.common['X-CSRF-TOKEN'];
-            console.log(data)
-            console.log(actual_track)
             if(data.track != null){
                 actual_track = data.track.track_uri;
                 selected_song_id = data.track.id;
@@ -324,7 +303,7 @@
                 },
                 dataType: 'json',
             }).then(function (data) {
-                console.log(data);
+                console.log(data, 'error on play');
             })
         });
 
@@ -465,7 +444,6 @@
                 });
                 
             }
-            console.log(data);
         })
 
 
@@ -473,16 +451,13 @@
         
 
         channel.listen('.song.voted',function(data){
-            // console.log(data);
         let left = $('#track_uri_side_1');
         let right = $('#track_uri_side_2')
         
         if(left.data('id') == data.song_id){
             $('#left_side').find('button').children('span').text(data.likes)
-            console.log( $('#left_side').find('button').children('span'));
         } else if(right.data('id') == data.song_id) {
             $('#right_side').find('button').children('span').text(data.likes);
-            console.log($('#right_side').find('button').children('span'));
         }
         })
     
@@ -509,7 +484,6 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    console.log(response);
                     if(!response.error){
                         vote.removeClass('like_bat');
                         vote.addClass('unlike');
@@ -525,7 +499,7 @@
                     
                 },
                 error: function(error){
-                    console.log(error);
+                    console.log(error, 'like button error');
                 }
             });
     
@@ -550,7 +524,6 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    console.log(response);
                     if(!response.error){
                         vote.removeClass('unlike');
                         vote.addClass('like_bat');
@@ -566,7 +539,7 @@
                     
                 },
                 error: function(error){
-                    console.log(error);
+                    console.log(error, 'unvote error');
                 }
             });
     
