@@ -272,9 +272,8 @@ class TrackController extends Controller
 
         if($user_participates->skip === 0) {
 
-        
-            broadcast(new SkipEvent($party));
             $user->participates()->updateExistingPivot($party->id,['skip' => 1]);
+            broadcast(new SkipEvent($party));
 
             if($party->users()->where('skip',1)->count() >= ($party->users()->count() * 0.5)){
                 broadcast(new AutoSkip($party));
