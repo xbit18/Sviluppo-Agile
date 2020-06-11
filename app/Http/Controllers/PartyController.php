@@ -469,8 +469,9 @@ class PartyController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function delete($id){
+
         $party = Party::find($id);
-        if(Auth::user()->id == $party->user_id){
+        if(Auth::id() == $party->user->id){
             $party->delete();
             return response()->json([
                 'message' => 'Party deleted'

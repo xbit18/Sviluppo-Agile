@@ -72,8 +72,23 @@ class PartyTest extends TestCase
     
     }
 
+     /** @test **/
+
+     public function party_participant_cannot_update_party(){
+          
+        $response = $this->actingAs($this->host)->post('/party/update/'.$this->party->code,[
+            'mood' => 'Mood aggiornato',
+            'type' => 'Democracy',
+            'desc' => "Descrizione aggiornata",
+            'genre' => array(67), //id associato al genere Jazz
+        ]);
+
+         $response->assertSessionHasErrors(['error']);
+    }
+
+
     /** @test **/
-    public function party_is_updated()
+    public function party_host_can_update_party()
     {
 
         $this->withoutExceptionHandling();
@@ -118,6 +133,7 @@ class PartyTest extends TestCase
                  ->assertSee('Jazz');
     }
 
+   
     /** @test **/
 
     public function party_link_with_code_works(){
@@ -272,35 +288,34 @@ class PartyTest extends TestCase
         $response->assertStatus(500);
     }
 
+    
+
     /** @test **/
 
     public function participants_cant_delete_party(){
-        
-        $user = factory(User::class)->create();
-        $user->markEmailAsVerified();
 
-
-        $response = $this->actingAs($user)->delete('/party/'.$this->party->code.'/delete');
-
+        $response = $this->actingAs($this->participant)->delete('/party/'.$this->party->id.'/delete');
         $response->assertExactJson([
             'error' => 'This party is not yours'
         ]);
         
     }
 
-    /**@test **/
+    /** @test **/
     
     public function party_owner_can_delete_party(){
 
-
-        $response = $this->actingAs($this->host)->delete('/party/'.$this->party->code.'/delete');
+        $response = $this->actingAs($this->host)->delete('/party/'.$this->party->id.'/delete');
 
         $response->assertExactJson([
             'message' => 'Party deleted'
             ]);
-
-
+        $response->assertSessionHasNoErrors();
     }
+
+
+
+
     /**
      * Aggiungendo la validazione i campi devono essere così
      * $validatedData = $request->validate([
