@@ -1065,10 +1065,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         play_next_song_battle(devId, token, party_code)
     });
 
-    channel.listen('song.skip', function(data) {
+    channel.listen('.song.skip', function(data) {
         console.log('skips: ' + data.skip_count);
     });
-
 
     channel.listen('.song.added', function (data) {
         if (data.tracks.length > 1) {
