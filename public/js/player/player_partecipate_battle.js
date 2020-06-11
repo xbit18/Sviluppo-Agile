@@ -401,6 +401,7 @@
         channel.listen('.battle.selected',function(data){
             if(data.track == null) {
                 $('#left_side').children('img').attr('src', '/img/bg-img/no_song.png');
+                $('#left_side').children('span').remove();
                 $('#left_side').find('h5').text('Left Side');
                 $('#left_side').find('p').text('No song selected');
                 $('#left_side').find('button').attr('disabled', true);
@@ -410,6 +411,7 @@
 
                 $('#right_side').children('img').attr('src', '/img/bg-img/no_song.png');
                 $('#right_side').find('h5').text('Right Side');
+                $('#right_side').children('span').remove();
                 $('#right_side').find('p').text('No song selected');
                 $('#right_side').find('button').attr('disabled', true);
                 $('#right_side').find('button').removeClass('voted');
