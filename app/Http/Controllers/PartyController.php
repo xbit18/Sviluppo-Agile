@@ -140,7 +140,7 @@ class PartyController extends Controller
      */
     public function update(Request $request, $code){
 
-        
+
         $party = Party::where('code','=',$code)->first();
 
         if(!$party){
@@ -201,7 +201,7 @@ class PartyController extends Controller
 
 
 
-      
+
         $party->mood = $request->mood;
         $party->type = $request->type;
         $party->description = $request->desc;
@@ -227,7 +227,7 @@ class PartyController extends Controller
 
        return redirect()->route( 'party.show', [ 'code' => $party->code ] );
 
-       
+
     }
 
     /**
@@ -473,6 +473,23 @@ class PartyController extends Controller
 
     }
 
+    public function populateByPreferences($code){
+        $party = Party::where('code','=',$code)->first();
+        $URI = 'https://api.spotify.com/v1/me/top/tracks?time_range=short_term';
+        if(Auth::id() == $party->user_id) {
+            $response = Http::withHeaders(['Authorization' => 'Bearer ' . Auth::user()->access_token])->get($URI);
+            $tracks = array();
+            if (!isset($response['items'])) return redirect()->route('spotify.login');
+            $tracks = $response['items'];
+
+            $tracks_uris = array();
+            foreach ($tracks as $track) {
+                $tracks_uris[] = $track['uri'];
+            }
+            return $tracks_uris;
+        }
+    }
+
     /**
      * Cancella il party specificato
      * @param $party_code
@@ -487,7 +504,7 @@ class PartyController extends Controller
                 'message' => 'Party deleted'
             ]);
         }
-        
+
         return response()->json([
             'error' => 'This party is not yours'
         ]);
