@@ -1061,11 +1061,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     })
 
-    channel.listen('.song.auto-skip', function (data) {
+    channel.listen('.song.auto-skip', function () {
         play_next_song_battle(devId, token, party_code)
-        console.log('skips: ' + data.skip_count);
-    })
+    });
 
+    channel.list('song.skip', function(data) {
+        console.log('skips: ' + data.skip_count);
+    });
 
 
     channel.listen('.song.added', function (data) {
