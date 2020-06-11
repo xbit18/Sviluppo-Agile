@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth','totalban']], function () {
 
     /**Get songs by Genre**/
     Route::post('/party/playlist/populate','PartyController@populateParty')->name('playlist.populate');
-
+    Route::get('/party/{code}/playlist/populate/me','PartyController@populateByPreferences')->name('playlist.populate.me');
     /**
      * Invite routes
      */
