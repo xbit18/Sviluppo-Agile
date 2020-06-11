@@ -372,6 +372,7 @@ function vote_to_skip(code, track_id) {
 
         let track_id = element.track_uri.replace('spotify:track:', '');
         let song_id = element.id;
+        
         instance({
             url: "https://api.spotify.com/v1/tracks/" + track_id,
             method: 'GET',
@@ -381,6 +382,7 @@ function vote_to_skip(code, track_id) {
             dataType: 'json',
         }).then(function (data) {
             let song_link = $('#playlist_song_prototype').clone();
+            song_link.find('button').eq(0).find('span').addClass('like');
             song_link.removeAttr('id');
             song_link.attr('data-track', data.data.uri);
             song_link.attr('data-song-id', song_id);
@@ -457,6 +459,10 @@ function vote_to_skip(code, track_id) {
             }
         });
 
+    })
+
+    $(document).on('submit','#editPartyForm', function(event){
+        event.preventDefault();
     })
 
     channel.listen('.refresh.party',function(){
