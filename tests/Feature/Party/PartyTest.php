@@ -3,6 +3,7 @@
 namespace Tests\Feature\Party;
 
 use App\Party;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
@@ -69,14 +70,14 @@ class PartyTest extends TestCase
         $this->withoutExceptionHandling();
         $this->assertCount(1, Party::all());
 
-    
+
     }
 
      /** @test **/
 
      public function party_participant_cannot_update_party(){
 
-          
+
         $response = $this->actingAs($this->participant)->post('/party/update/'.$this->party->code,[
             'mood' => 'Mood aggiornato',
             'type' => 'Democracy',
@@ -111,7 +112,7 @@ class PartyTest extends TestCase
         /**
          * Modifico il party con dei parametri specifici
          */
-        
+
         $response = $this->actingAs($this->host)->post('/party/update/'.$code,[
             'mood' => 'Mood aggiornato',
             'type' => 'Democracy',
@@ -133,7 +134,7 @@ class PartyTest extends TestCase
                  ->assertSee('Jazz');
     }
 
-   
+
     /** @test **/
 
     public function party_link_with_code_works(){
@@ -178,7 +179,7 @@ class PartyTest extends TestCase
     /** @test */
     public function user_can_join() {
 
-        
+
         $user_part = factory(User::class)->create();
         $user_part->name = 'Participant';
         $user_part->email = 'participant@example.com';
@@ -189,7 +190,7 @@ class PartyTest extends TestCase
 
         // ENTRA IL PARTECIPANTE
         $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
-        
+
         $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
 
         $response->assertSee($this->party->code);
@@ -209,7 +210,7 @@ class PartyTest extends TestCase
 
         // ENTRA IL PARTECIPANTE
         $this->actingAs($user_part)->get('/party/show/'.$this->party->code);
-        
+
         $this->actingAs($this->host)->get('/party/' . $this->party->code . '/join/' . $user_part->id);
         $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/leave/' . $user_part->id);
 
@@ -291,7 +292,7 @@ class PartyTest extends TestCase
 
        /** @test */
        public function participant_cannot_add_song() {
-        
+
         $song_data = [
             'track_uri' => 'spotify:track:132qd23f4f'
         ];
@@ -306,7 +307,7 @@ class PartyTest extends TestCase
 
     /** @test */
     public function host_can_add_song() {
-        
+
         $song_data = [
             'track_uri' => 'spotify:track:132qd23f4f'
         ];
@@ -316,7 +317,7 @@ class PartyTest extends TestCase
 
     }
 
-    
+
     /** @test **/
 
     public function participants_cannot_remove_song(){
@@ -334,7 +335,7 @@ class PartyTest extends TestCase
 
     /** @test */
     public function host_can_remove_song() {
-        
+
         $this->actingAs($this->host)->post('/party/'.$this->code.'/tracks/',  ['track_uri' => 'spotify:track:132qd23f4f']);
         $song_id = $this->party->tracks()->where('track_uri', 'spotify:track:132qd23f4f')->pluck('id')->first();
 
@@ -343,7 +344,112 @@ class PartyTest extends TestCase
 
     }
 
-    
+    /** @test * */
+
+    public function participant_cannot_kick_a_user()
+    {
+
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+
+        $this->actingAs($this->participant)->get('/party/show/' . $this->party->code);
+        $this->actingAs($user)->get('/party/show/' . $this->party->code);
+
+        $response = $this->actingAs($user)->post('/party/' . $this->party->code . '/user/' . $this->participant->id . '/kick', [
+            'kick_duration' => Carbon::now('Europe/London')
+        ]);
+        $response->assertExactJson([
+            'message' => 'You are not the host of this party',
+            'error' => true,
+        ]);
+
+
+    }
+
+    /** @test * */
+
+    public function host_cannot_kick_a_non_existent_user()
+    {
+
+        $this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $user->delete();
+
+
+        $response = $this->actingAs($this->participant)->post('/party/' . $this->party->code . '/user/' . $user->id . '/kick', [
+            'kick_duration' => Carbon::now()
+        ]);
+        $response->assertExactJson([
+            'message' => 'This user does not exist',
+            'error' => true,
+        ]);
+    }
+
+
+    /** @test * */
+
+    public function host_cannot_kick_a_user_that_does_not_participate_in_that_party()
+    {
+        $user = factory(User::class)->create();
+
+        $response = $this->actingAs($this->host)->post('/party/' . $this->party->code . '/user/' . $user->id . '/kick', [
+            'kick_duration' => Carbon::now()
+        ]);
+        $response->assertExactJson([
+            'message' => 'The given user does not participate in this party',
+            'error' => true,
+        ]);
+
+
+    }
+
+    /** @test **/
+
+    public function host_cannot_set_kick_duration_earlier_than_now(){
+
+        $user = factory(User::class)->create();
+        $this->actingAs($user)->get('/party/show/' . $this->party->code);
+        $response = $this->actingAs($this->host)->post('/party/' . $this->party->code . '/user/' . $user->id . '/kick', [
+            'kick_duration' => '2020-02-24 00:00:00'
+        ]);
+        $response->assertExactJson([
+            'message'=> 'kick time cannot be earlier than now',
+            'error' => true,
+        ]);
+
+    }
+
+    /** @test **/
+
+    public function host_can_kick_a_participant(){
+
+        $user = factory(User::class)->create();
+        $this->actingAs($user)->get('/party/show/' . $this->party->code);
+        $response = $this->actingAs($this->host)->post('/party/' . $this->party->code . '/user/' . $user->id . '/kick', [
+            'kick_duration' => Carbon::now('Europe/London')->addHours(2)
+        ]);
+        $response->assertExactJson([
+            'message' => 'The user has been kicked succesfully',
+            'error' => false,
+        ]);
+
+    }
+
+    /** @test **/
+
+    public function kicked_participant_cannot_enter_to_the_party(){
+
+        $user = factory(User::class)->create();
+        $this->actingAs($user)->get('/party/show/' . $this->party->code);
+        $this->actingAs($this->host)->post('/party/' . $this->party->code . '/user/' . $user->id . '/kick', [
+            'kick_duration' => Carbon::now('Europe/London')->addHours(2)
+        ]);
+
+        $response = $this->ActingAs($user)->get('/party/show/'.$this->party->code);
+        $response->assertSessionHasErrors('error');
+
+    }
+
 
     /** @test **/
 
@@ -353,11 +459,11 @@ class PartyTest extends TestCase
         $response->assertExactJson([
             'error' => 'This party is not yours'
         ]);
-        
+
     }
 
     /** @test **/
-    
+
     public function party_owner_can_delete_party(){
 
         $response = $this->actingAs($this->host)->delete('/party/'.$this->party->id.'/delete');
