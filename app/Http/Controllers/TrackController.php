@@ -372,7 +372,7 @@ class TrackController extends Controller
 
             if(!$participant){
                 return response()->json([
-                    'message' => 'This user does not exist'
+                    'message' => 'This user does not participate in this party'
                 ]);
             }
 
