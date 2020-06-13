@@ -251,8 +251,6 @@ a h5, a small, a p, a .like, a span {
 
 }
 
-
-
 #joining-list{
 
     height: 513px;
@@ -347,9 +345,17 @@ a h5, a small, a p, a .like, a span {
 }
 
 .suggested-songs-list{
+    max-height: 500px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+
+.suggested-song > div img{
+    border-radius: 15px;
+}
+
+
 
 
 
@@ -544,7 +550,7 @@ i.kick:hover,i.ban:hover{
     }
 }
 
-@media (max-width: 280){
+@media (max-width: 280px){
     .battle-box > div{
         flex: 0 0 100%;
         max-width: 100%;
@@ -552,6 +558,82 @@ i.kick:hover,i.ban:hover{
     }
 }
 
+@media (max-width:991px){
+    .suggested-delete i{
+        font-size: 1.5em;
+    }
+}
+
+@media (max-width: 576px){
+    .suggested-song > div h6{
+        font-size: 0.9em;
+    } 
+
+    .suggested-song > div small {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 375px){
+    .suggested-song > div h6{
+        font-size: 0.8em;
+    } 
+
+    .suggested-song > div small {
+        font-size: 0.7em;
+    }
+
+    .suggested-delete i{
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 375px){
+    .suggested-song > div h6{
+        font-size: 0.7em;
+    } 
+
+    .suggested-song > div small {
+        font-size: 0.6em;
+    }
+
+}
+
+@media (max-width: 251px){
+
+    .suggested-delete {
+        padding: 0;
+        padding-right: 15px;
+    }
+
+    .user > div i{
+        font-size: 1em;
+    }
+
+    .ban-name{
+        padding-right: 0;
+    }
+    .ban-name + div{
+        padding-left: 0;
+    }
+}
+
+@media (max-width: 210px){
+
+
+    .ban-name{
+        padding-left: 0;
+        max-width: 47.333%;
+        padding-right: 5px;
+    }
+
+    .ban-name + div{
+        padding-left: 3px;
+    }
+
+
+   
+}
 
   /* @media (max-width: 720px){
       .battle-box{
