@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Events;
+
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -10,22 +11,21 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class KickEvent implements ShouldBroadcastNow
+class AutoAddSong implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party, $user;
+    public $track, $party;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party, $user)
+    public function __construct($party, $track)
     {
         $this->party = $party;
-        $this->user = $user;
-     
-       
+        $this->track = $track;
     }
 
     /**
@@ -35,22 +35,23 @@ class KickEvent implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('party.'.$this->party->code.'.'.$this->user->id);
+        return new PresenceChannel('party.'.$this->party->code);
     }
 
-    public function broadcastAs(){
-        return 'user.kicked';
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'auto.song.added';
     }
 
     public function broadcastWith(){
         return [
-            'kicked' =>true,
+            'track_uri' => $this->track,
         ];
     }
 
-    public function broadcastWhen(){
-        $host = Auth::user();
-        return $this->party->user->id === $host->id;
-    }
 }
-

@@ -10,20 +10,21 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class KickEvent implements ShouldBroadcastNow
+class HostAcceptsDeletesSuggestion implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party, $user;
+    public $party, $user, $bool;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party, $user)
+    public function __construct($party, $user, $bool)
     {
         $this->party = $party;
         $this->user = $user;
+        $this->bool = $bool;
      
        
     }
@@ -39,12 +40,13 @@ class KickEvent implements ShouldBroadcastNow
     }
 
     public function broadcastAs(){
-        return 'user.kicked';
+        return 'song.accepted.refused';
     }
 
     public function broadcastWith(){
         return [
-            'kicked' =>true,
+            'accepted' => $this->bool,
+            'refused' => $this->bool,
         ];
     }
 
