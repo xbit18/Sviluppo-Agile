@@ -12,21 +12,22 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
-
-class RefreshParty implements ShouldBroadcastNow
+class SuggestSong implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $party;
+    public $track_uri, $party, $bool;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($party)
+    public function __construct($party, $track_uri, $bool)
     {
         $this->party = $party;
+        $this->track_uri = $track_uri;
+        $this->bool = $bool;
     }
 
     /**
@@ -46,17 +47,18 @@ class RefreshParty implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'refresh.party';
+        return 'song.suggested';
     }
 
-    public function broadcastWith(){
-        return [
-            'refreshed' => true
-        ];
-    }
-
-    public function broadcastWhen(){
-        $this->party->user->id == Auth::id();
-    }
+   public function broadcastWith(){
+       /* Se suggested è true significa che la canzone è stata suggerita, se false significa
+           il partecipante ha rimosso il suggerimento
+       */
+       return [
+           'user_id' => Auth::id(),
+           'track_uri' => $this->track_uri,
+           'suggested' => $this->bool,
+       ];
+   }
 
 }

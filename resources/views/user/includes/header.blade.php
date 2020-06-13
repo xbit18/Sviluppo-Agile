@@ -67,16 +67,19 @@
 
 
                   </li>
-                 
+
 
                 </ul>
               </li>
               @if(Route::currentRouteName() == 'party.show' && $party->user->id == Auth::id())
-              <li>
-                <ul>
-                  <a data-toggle="modal" data-target="#unbanModal" href="#"> My bans</a>
-                </ul>
+              <li><a id="management" href="#"><i class="fa fa-headphones fa-1 mr-1" aria-hidden="true"></i> My party </a>
+                  <ul class="dropdown">
+                      <li><a  data-toggle="modal" href="#" data-target="#unbanModal" >My bans</a></li>
+                      <li><a data-toggle="modal" data-target="#suggestedSongsModal" href="#">Suggested List</a></li>
+                  </ul>
               </li>
+              @else
+              <li cl><a data-toggle="modal" data-target="#suggestedSongsModal" href="#"><i class="fa fa-headphones fa-1 mr-1" aria-hidden="true"></i> My suggestion</a></li>
               @endif
 
               @endauth

@@ -17,6 +17,7 @@ class Party extends Model
                      'timestamp_kick',
                      'kick_duration',
                      'skip',
+                      'suggest_track_uri',
                   ])
                   ->withTimestamps();
    }

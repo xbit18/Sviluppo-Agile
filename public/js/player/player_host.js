@@ -1,4 +1,3 @@
-
 'use strict';
 
 if ($('#party_code').attr('data-code').length) {
@@ -20,6 +19,8 @@ var playlist_uri;
 var selected_track;
 var selected_song_id;
 var scrolling;
+var suggested_songs = $('#suggested-songs');
+
 
 var party_type = $('#p_type').attr('data-type');
 
@@ -62,7 +63,6 @@ channel.leaving((leaving_user) => {
 })
 
 
-
 function millisToMinutesAndSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -79,7 +79,7 @@ function increment_timeline(data) {
                 //$('.music-duration').text( millisToMinutesAndSeconds(timeline.val()) );
                 timeline.val(parseInt(timeline.val()) + 1000);
                 duration_text.text(millisToMinutesAndSeconds(parseInt(timeline.val())));
-                //console.log('incrementing ' + timeline.val()); 
+                //console.log('incrementing ' + timeline.val());
                 var v = (timeline.val()) / actual_dur;
                 act_pos = timeline.val();
 
@@ -112,7 +112,9 @@ function increment_timeline(data) {
 }
 
 function order_playlist() {
-    playlist_dom.children().sort(sort_li).appendTo(playlist_dom).hide().fadeIn(500);;
+    playlist_dom.children().sort(sort_li).appendTo(playlist_dom).hide().fadeIn(500);
+    ;
+
     function sort_li(a, b) {
         return ($(b).find('button').eq(1).find('span').text()) < ($(a).find('button').eq(1).find('span').text()) ? -1 : 1;
     }
@@ -177,7 +179,7 @@ function get_next_song(code) {
         },
         dataType: 'json',
         success: function (data) {
-           
+
             $('.song_link').each(function (index, item) {
                 if ($(this).attr('data-track') == data.track_uri) {
                     $(this).click()
@@ -238,22 +240,30 @@ const play_song = function (code, id, position_ms) {
 }
 
 
-
-
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = $('#mytoken').text();
     const player = new Spotify.Player({
         name: 'Web Player Party App',
-        getOAuthToken: cb => { cb(token); }
+        getOAuthToken: cb => {
+            cb(token);
+        }
     });
 
     var devId;
 
     // Error handling
-    player.addListener('initialization_error', ({ message }) => { console.log(message) });
-    player.addListener('authentication_error', ({ message }) => { window.location.replace('/loginspotify') });
-    player.addListener('account_error', ({ message }) => { window.location.replace('/loginspotify') });
-    player.addListener('playback_error', ({ message }) => { console.error(message); });
+    player.addListener('initialization_error', ({ message }) => {
+        console.log(message)
+    });
+    player.addListener('authentication_error', ({ message }) => {
+        window.location.replace('/loginspotify')
+    });
+    player.addListener('account_error', ({ message }) => {
+        window.location.replace('/loginspotify')
+    });
+    player.addListener('playback_error', ({ message }) => {
+        console.error(message);
+    });
 
     player.addListener('player_state_changed', state => {
 
@@ -302,8 +312,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                             }, 1000 / 20);
                         }
 
-                    }
-                    else {
+                    } else {
                         text.css('justify-content', 'center');
                         clearInterval(scrolling);
                         scrolling = null;
@@ -322,7 +331,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         } else {
             var position = 0;
         }
-
 
 
         if (state) {
@@ -369,12 +377,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 }
 
 
-
             }
             actual_track = state.track_window.current_track.uri;
         }
-
-
 
 
     });
@@ -449,12 +454,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
-
-
-
-
-
-
     /**
      * Listener alle canzoni
      */
@@ -468,7 +467,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         var link = $(this);
         selected_song_id = $(this).data('song-id');
         var song_id = selected_song_id;
-
 
 
         /**
@@ -503,11 +501,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             });
 
         });
-
-
-
-
-   
 
 
     });
@@ -662,7 +655,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     });
 
 
-
     /** -------------- Play Button Listener ----------------------- */
     $('#spotify_play_form').on('submit', function (event) {
         event.preventDefault();
@@ -721,7 +713,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         });
 
 
-
     /** ---------------- TIMELINE Listener ----------------- */
 
     //COMPATIBILITà MOBILE : Devo usare la sintassi pure js : hammer js da problemi con selettore $
@@ -752,6 +743,52 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         }
 
     });
+
+    /* Inizializzo la lista delle canzone suggerite */
+
+
+    $('.suggested-song').each(function (index, element) {
+
+
+        let track_uri = $(this).data('track-uri');
+        let track_id = track_uri.replace('spotify:track:', '');
+
+        instance({
+            url: "https://api.spotify.com/v1/tracks/" + track_id,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            dataType: 'json',
+        }).then(function (data) {
+
+            let img = $(element).children('div').children('div').first().find('img');
+            img.attr('src', data.data.album.images[0].url);
+
+            let content = $(element).children('div').children('div').last();
+            content.children('div').eq(1).children().first().find('h6').text(data.data.name);
+            content.children('div').eq(1).children().first().find('small').text(millisToMinutesAndSeconds(data.data.duration_ms));
+
+            let artists = "";
+            $.each(data.data.artists, function (index, artist) {
+                artists += artist.name + ' ';
+            });
+
+            content.children('div').eq(1).children().last().children().first().text(artists);
+            content.children('div').eq(1).children().last().children().last().text(data.data.album.name)
+
+            $(element).addClass('suggest-item');
+            // $(element).removeClass('d-none');
+            // $(element).removeAttr('id');
+
+        })
+            .catch(function (e) {
+                console.log(e)
+            })
+
+
+    });
+
 
     /*----------------------- CERCARE UNA CANZONE --------------------*/
     $('#searchSong').on('keyup', function (e) {
@@ -852,6 +889,45 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     })
 
+    $(document).on('click', '.suggest-item', function (event) {
+        event.preventDefault();
+        // Se ho cliccato su elimina non deve partire
+        if (event.target.classList.contains('suggested-delete')) return;
+
+        let track_uri = $(this).data('track-uri');
+        let user_id = $(this).data('user-id');
+        let item = $(this)
+
+        $.ajax({
+            url: `/party/${party_code}/tracks`,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                'track_uri': track_uri,
+                'user_id': user_id,
+            },
+            dataType: 'json',
+            success: function (response) {
+
+                item.fadeOut(300, function () {
+                    item.remove()
+                })
+
+                Toast.fire({
+                    type: 'success',
+                    title: 'Song added to the playlist'
+                })
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        })
+
+
+    })
+
     /* ---------------- RIMUOVERE UNA CANZONE --------------*/
 
     var parent;
@@ -867,8 +943,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         event.preventDefault();
 
         /**
-        * Logica eliminazione canzone dalla playlist
-        */
+         * Logica eliminazione canzone dalla playlist
+         */
 
         $.ajax({
             type: "DELETE",
@@ -892,9 +968,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     })
 
     /**
- * Comunica a tutti i partecipanti del canale quando un utente si unisce
- */
-
+     * Comunica a tutti i partecipanti del canale quando un utente si unisce
+     */
 
 
     /**
@@ -968,82 +1043,112 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         order_playlist();
     })
 
-    $(document).on('submit', '#playlistPopolate', function (event) {
-        event.preventDefault();
-
-        let genre = $('#genre').val();
+    channel.listen('.song.suggested', function (data) {
 
 
-        $.ajax({
-            type: "POST",
-            url: "/party/playlist/populate",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            dataType: "json",
-            data: {
-                "genre_id": genre,
-                "party_code": party_code
-            },
-            success: function (response) {
+        if (data.suggested) {
 
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
+            let track_uri = data.track_uri;
+            let track_id = track_uri.replace('spotify:track:', '');
+            let prototype = $('#suggested-prototype').clone();
+            let user_id = data.user_id;
 
-    })
+            instance({
+                url: "https://api.spotify.com/v1/tracks/" + track_id,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+            }).then(function (data) {
 
-    channel.listen('.song.auto-skip', function () {
-        get_next_song(party_code)
-    })
+                let img = prototype.children('div').children('div').first().find('img');
+                img.attr('src', data.data.album.images[0].url);
+
+                let content = prototype.children('div').children('div').last();
+                content.children('div').eq(1).children().first().find('h6').text(data.data.name);
+                content.children('div').eq(1).children().first().find('small').text(millisToMinutesAndSeconds(data.data.duration_ms));
+
+                let artists = "";
+                $.each(data.data.artists, function (index, artist) {
+                    artists += artist.name + ' ';
+                });
+
+                content.children('div').eq(1).children().last().children().first().text(artists);
+                content.children('div').eq(1).children().last().children().last().text(data.data.album.name)
+
+                prototype.attr('data-user-id', user_id);
+                prototype.attr('data-track-uri', track_uri)
+                prototype.addClass('suggest-item');
+                prototype.addClass('suggested-song');
+                prototype.removeClass('d-none');
+                prototype.removeAttr('id');
+                suggested_songs.append(prototype).hide().fadeIn(200);
 
 
-
-    channel.listen('.song.added', function (data) {
-        if (data.tracks.length > 1) {
-            $.each(data.tracks, function (index, element) {
-
-                let track_id = element.track_uri.replace('spotify:track:', '');
-                let song_id = element.id;
-                instance({
-                    url: "https://api.spotify.com/v1/tracks/" + track_id,
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                    },
-                    dataType: 'json',
-                }).then(function (data) {
-                    let song_link = $('#playlist_song_prototype').clone();
-                    song_link.find('button').eq(0).find('span').addClass('like');
-                    song_link.removeAttr('id');
-                    song_link.attr('data-track', data.data.uri);
-                    song_link.attr('data-song-id', song_id);
-                    let item = populate_song_link(song_link, data.data, song_id, true);
-                    playlist_dom.append(item).hide().fadeIn();
-
-                    const Toast = Swal.mixin({
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 6000
-                    });
-
-                    Toast.fire({
-                        type: 'success',
-                        title: 'A new son has been added to the playlist!'
-                    });
-
+                Toast.fire({
+                    type: 'success',
+                    title: 'A new song has been suggested'
                 })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+            })
+                .catch(function (e) {
+                    console.log(e)
+                })
 
-            });
-        } else {
-            let track_id = data.tracks.track_uri.replace('spotify:track:', '');
-            let song_id = data.tracks.id;
+
+        } else if (!data.suggested) {
+            $('.suggested-song').each(function (index, element) {
+                if ($(element).data('user-id') == data.user_id) {
+                    $(element).fadeOut(300, function () {
+                        $(element).remove()
+                        return;
+                    })
+                }
+            })
+        }
+
+    })
+
+
+
+$(document).on('submit', '#playlistPopolate', function (event) {
+    event.preventDefault();
+
+    let genre = $('#genre').val();
+
+
+    $.ajax({
+        type: "POST",
+        url: "/party/playlist/populate",
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: "json",
+        data: {
+            "genre_id": genre,
+            "party_code": party_code
+        },
+        success: function (response) {
+
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+
+})
+
+channel.listen('.song.auto-skip', function () {
+    get_next_song(party_code)
+})
+
+
+channel.listen('.song.added', function (data) {
+    if (data.tracks.length > 1) {
+        $.each(data.tracks, function (index, element) {
+
+            let track_id = element.track_uri.replace('spotify:track:', '');
+            let song_id = element.id;
             instance({
                 url: "https://api.spotify.com/v1/tracks/" + track_id,
                 method: 'GET',
@@ -1053,6 +1158,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 dataType: 'json',
             }).then(function (data) {
                 let song_link = $('#playlist_song_prototype').clone();
+                song_link.find('button').eq(0).find('span').addClass('like');
                 song_link.removeAttr('id');
                 song_link.attr('data-track', data.data.uri);
                 song_link.attr('data-song-id', song_id);
@@ -1068,145 +1174,159 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
                 Toast.fire({
                     type: 'success',
-                    title: 'A new son has been added to the playlist!'
+                    title: 'A new song has been added to the playlist!'
                 });
 
             })
                 .catch(function (error) {
                     console.log(error);
                 });
+
+        });
+    } else {
+        let track_id = data.tracks.track_uri.replace('spotify:track:', '');
+        let song_id = data.tracks.id;
+        instance({
+            url: "https://api.spotify.com/v1/tracks/" + track_id,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            dataType: 'json',
+        }).then(function (data) {
+            let song_link = $('#playlist_song_prototype').clone();
+            song_link.removeAttr('id');
+            song_link.attr('data-track', data.data.uri);
+            song_link.attr('data-song-id', song_id);
+            let item = populate_song_link(song_link, data.data, song_id, true);
+            playlist_dom.append(item).hide().fadeIn();
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 6000
+            });
+
+            Toast.fire({
+                type: 'success',
+                title: 'A new son has been added to the playlist!'
+            });
+
+        })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+
+})
+
+
+/*------------VOTE A SONG ------------ */
+
+$(document).on('click', '.like', function (event) {
+    event.preventDefault();
+    event.stopPropagation()
+    let vote = $(this);
+    let parent = $(this).parents('a.song_link');
+    let song_id = parent.data('song-id');
+
+    $.ajax({
+        type: "GET",
+        url: `/party/${party_code}/tracks/${song_id}/vote`,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: "json",
+        success: function (response) {
+            if (!response.error) {
+                vote.removeClass('like');
+                vote.addClass('unlike');
+            }
+
+        },
+        error: function (error) {
+            console.log(error);
         }
-
-
-
-
-    })
-
-
-
-    /*------------VOTE A SONG ------------ */
-
-    $(document).on('click', '.like', function (event) {
-        event.preventDefault();
-        event.stopPropagation()
-        let vote = $(this);
-        let parent = $(this).parents('a.song_link');
-        let song_id = parent.data('song-id');
-
-        $.ajax({
-            type: "GET",
-            url: `/party/${party_code}/tracks/${song_id}/vote`,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            dataType: "json",
-            success: function (response) {
-                if (!response.error) {
-                    vote.removeClass('like');
-                    vote.addClass('unlike');
-                }
-
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-
     });
 
-    /* -------------------- UNVOTE A SONG -----------------*/
+});
 
-    $(document).on('click', '.unlike', function (event) {
-        event.preventDefault();
-        event.stopPropagation()
-        let vote = $(this);
-        let parent = $(this).parents('a.song_link');
-        let song_id = parent.data('song-id');
+/* -------------------- UNVOTE A SONG -----------------*/
 
-        $.ajax({
-            type: "GET",
-            url: `/party/${party_code}/tracks/${song_id}/unvote`,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            dataType: "json",
-            success: function (response) {
-                if (!response.error) {
-                    vote.removeClass('unlike');
-                    vote.addClass('like');
-                }
+$(document).on('click', '.unlike', function (event) {
+    event.preventDefault();
+    event.stopPropagation()
+    let vote = $(this);
+    let parent = $(this).parents('a.song_link');
+    let song_id = parent.data('song-id');
 
-            },
-            error: function (error) {
-                console.log(error);
+    $.ajax({
+        type: "GET",
+        url: `/party/${party_code}/tracks/${song_id}/unvote`,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        dataType: "json",
+        success: function (response) {
+            if (!response.error) {
+                vote.removeClass('unlike');
+                vote.addClass('like');
             }
-        });
 
+        },
+        error: function (error) {
+            console.log(error);
+        }
     });
 
-    /* ---------------------------------------------------------------- */
+});
 
-    if ($('#left_side_button').length) {
-        $('#left_side_button').click(function () {
-            $('.song_link').each(function (index, item) {
-                if ($(item).attr('data-track') == selected_track) {
-                    $('#battleModal').modal('hide');
+/**  Remove a suggested song **/
 
-                    setSongActive(selected_track, party_code, 1, item);
-
-                }
-            });
-        });
-    }
-
-    if ($('#left_side_button').length) {
-        $('#right_side_button').click(function () {
-            $('.song_link').each(function (index, item) {
-                if ($(item).attr('data-track') == selected_track) {
-                    $('#battleModal').modal('hide');
-
-                    setSongActive(selected_track, party_code, 2, item);
-                }
-            });
-        });
-    }
+$(document).on('click', '.suggested-delete', function (event) {
+    event.preventDefault();
+    event.stopPropagation();
 
 
-    function setSongActive(track_uri, code, side, item) {
-        $.ajax({
-            type: "POST",
-            url: '/party/active_track',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            dataType: "json",
-            data: {
-                'track_uri': track_uri,
-                'party_code': code,
-                'side': side
-            },
-            success: function (response) {
-                if (side == 1) {
-                    $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
-                    $('#left_side').find('h5').text($(item).find('h5').text());
-                    $('#left_side').find('p').text($(item).find('p').text());
-                } else {
-                    $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
-                    $('#right_side').find('h5').text($(item).find('h5').text());
-                    $('#right_side').find('p').text($(item).find('p').text());
-                }
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    }
+    let parent = $(this).parents('.suggested-song');
+    let user_id = parent.data('user-id');
+
+    $.ajax({
+        type: "POST",
+        url: `/party/${party_code}/tracks/suggest/remove`,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: {
+            "user_id": user_id
+        },
+        dataType: "json",
+        success: function (response) {
+            console.log('removed');
+            parent.fadeOut(300, function () {
+                parent.remove();
+            })
+
+        },
+        error: function (error) {
+
+        }
+    });
+})
+
+/* ---------------------------------------------------------------- */
+
+$(document).on('click','#management',function(event){
+    event.preventDefault()
+})
 
 
+}
+;
 
-};
-
-    // FINE onSpotifyWebPlaybackSDKReady
+// FINE onSpotifyWebPlaybackSDKReady
 
 
 

@@ -29,9 +29,6 @@
                                     </div>
                                 </div>
                                 @empty
-                                <div class="row justify-content-center align-items-center" >
-                                    <h2>You have not banned any user</h2>
-                                </div>
 
                                 @endforelse
                             </div>
