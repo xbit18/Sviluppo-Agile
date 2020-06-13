@@ -21,6 +21,8 @@
     var actual_track;
     var playlist_uri;
     var selected_song_id;
+    var suggested_songs = $('#suggested-songs');
+
 
     var selected_track;
     var scrolling;
@@ -110,6 +112,25 @@
         }
     })
 
+    channel_management.listen('.song.accepted.refused', function(data){
+        console.log(data);
+        let suggested_song = $('#suggestedSong');
+           suggested_song.fadeOut(300,function(){
+                suggested_song.remove();
+            })
+            if(data.accepted){
+                Toast.fire({
+                    type: 'success',
+                    title: 'You suggestion has been accepted by the host'
+                })
+            } else if(!data.refused){
+                Toast.fire({
+                    type: 'error',
+                    title: 'You suggestion has been refused by the host'
+                })
+            }
+    });
+    
 
     
     function vote_to_skip(code, track_id) {
@@ -597,11 +618,239 @@
                 isDragging = false;
             });
 
+               /* Inizializzo la lista delle canzone suggerite */
+
+
+    $('.suggested-song').each(function (index, element) {
+
+
+        let track_uri = $(this).data('track-uri');
+        if(track_uri){
+            let track_id = track_uri.replace('spotify:track:', '');
+
+        instance({
+            url: "https://api.spotify.com/v1/tracks/" + track_id,
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+            },
+            dataType: 'json',
+        }).then(function (data) {
+
+            let img = $(element).children('div').children('div').first().find('img');
+            img.attr('src', data.data.album.images[0].url);
+
+            let content = $(element).children('div').children('div').last();
+            content.children('div').eq(1).children().first().find('h6').text(data.data.name);
+            content.children('div').eq(1).children().first().find('small').text(millisToMinutesAndSeconds(data.data.duration_ms));
+
+            let artists = "";
+            $.each(data.data.artists, function (index, artist) {
+                artists += artist.name + ' ';
+            });
+
+            content.children('div').eq(1).children().last().children().first().text(artists);
+            content.children('div').eq(1).children().last().children().last().text(data.data.album.name)
+
+            $(element).addClass('suggest-item');
+            $(element).attr('id','suggestedSong')
+            $(element).removeClass('d-none');
+            // $(element).removeClass('d-none');
+            // $(element).removeAttr('id');
+
+        })
+            .catch(function(e){
+                console.log(e)
+            })
+ 
+        }
+       
+    });
+
+    
+    /*----------------------- CERCARE UNA CANZONE --------------------*/
+    $('#searchSong').on('keyup', function (e) {
+
+        var song_name = $('#searchSong').val();
+        song_name = encodeURIComponent(song_name.trim());
+        var result = $('#result');
+
+        if (song_name.length == 0) {
+            result.fadeOut("normal", function () {
+                result.empty();
+            });
+        }
+
+        if (song_name.length > 0) {
+
+            var instance = axios.create();
+            delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+            instance({
+                url: `https://api.spotify.com/v1/search?q=${song_name}&type=track,artist&limit=5`,
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                },
+                dataType: 'json',
+
+            })
+                .then(function (data) {
+                    result.empty();
+                    let tracks = data.data.tracks.items;
+
+                    $.each(tracks, function (index, element) {
+
+                        let item = $('#song-prototype').clone();
+                        let img = item.children('div').children('div').first().find('img');
+                        img.attr('src', element.album.images[0].url);
+
+                        let content = item.children('div').children('div').last();
+                        content.children('div').first().find('h6').text(element.name);
+                        content.children('div').first().find('small').text(millisToMinutesAndSeconds(element.duration_ms));
+
+                        let artists = "";
+                        $.each(element.artists, function (index, artist) {
+                            artists += artist.name + ' ';
+                        });
+
+                        content.children('div').last().children().first().text(artists);
+                        content.children('div').last().children().last().text(element.album.name)
+
+                        item.attr('data-id', element.id);
+                        item.attr('data-uri', element.uri)
+                        item.attr('data-duration', element.duration_ms)
+                        item.attr('data-number', index)
+                        item.addClass('item');
+                        item.removeAttr('id');
+                        result.append(item).hide().fadeIn();
+
+
+                    });
+
+                })
+                .catch(function (error) {
+                    console.log('search error: ');
+                    console.log(error);
+                })
+        }
+    })
+
+    /* SUGGERIRE UNA CANZONE */
+
+    $(document).on('click', '.item', function (event) {
+        event.preventDefault();
+        let track_uri = $(this).data('uri');
+        let track_id = $(this).data('id');
+        var instance = axios.create();
+        delete instance.defaults.headers.common['X-CSRF-TOKEN'];
+
+        $.ajax({
+            url: `/party/${party_code}/tracks/suggest/add`,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                'track_uri': track_uri
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.warning) {
+                    Toast.fire({
+                        type: 'warning',
+                        title: response.warning,
+                    })
+                } else {
+
+                    let prototype = $('#suggested-prototype').clone();
+
+                    instance({
+                        url: "https://api.spotify.com/v1/tracks/" + track_id,
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + token,
+                        },
+                        dataType: 'json',
+                    }).then(function (data) {
+        
+                        let img = prototype.children('div').children('div').first().find('img');
+                        img.attr('src', data.data.album.images[0].url);
+        
+                        let content = prototype.children('div').children('div').last();
+                        content.children('div').eq(1).children().first().find('h6').text(data.data.name);
+                        content.children('div').eq(1).children().first().find('small').text(millisToMinutesAndSeconds(data.data.duration_ms));
+        
+                        let artists = "";
+                        $.each(data.data.artists, function (index, artist) {
+                            artists += artist.name + ' ';
+                        });
+        
+                        content.children('div').eq(1).children().last().children().first().text(artists);
+                        content.children('div').eq(1).children().last().children().last().text(data.data.album.name)
+        
+                        prototype.attr('data-track-uri', track_uri)
+                        prototype.addClass('suggest-item');
+                        prototype.addClass('suggested-song');
+                        prototype.removeClass('d-none');
+                        prototype.attr('id','suggestedSong');
+                        suggested_songs.append(prototype).hide().fadeIn(200);
+        
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Song suggested'
+                        })
+                    })
+                        .catch(function(e){
+                            console.log(e)
+                        })
+                }
+
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        })
+
+
+    })
+
+    
+    $(document).on('click','.suggested-delete',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+       
+        
+        let parent = $(this).parents('.suggested-song');
+        
+        $.ajax({
+            type: "POST",
+            url: `/party/${party_code}/tracks/suggest/remove`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data:{
+
+            },  
+            dataType: "json",
+            success: function (response) {
+                console.log('removed');
+                parent.fadeOut(300,function(){
+                    parent.remove();
+                })
+
+            },
+            error: function (error) {
+               
+            }
+        });
+    })
+
+  // FINE onSpotifyWebPlaybackSDKReady
 
 
 
     };
 
-    // FINE onSpotifyWebPlaybackSDKReady
-
+  
     

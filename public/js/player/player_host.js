@@ -1318,61 +1318,9 @@ $(document).on('click', '.suggested-delete', function (event) {
 
 /* ---------------------------------------------------------------- */
 
-if ($('#left_side_button').length) {
-    $('#left_side_button').click(function () {
-        $('.song_link').each(function (index, item) {
-            if ($(item).attr('data-track') == selected_track) {
-                $('#battleModal').modal('hide');
-
-                setSongActive(selected_track, party_code, 1, item);
-
-            }
-        });
-    });
-}
-
-if ($('#left_side_button').length) {
-    $('#right_side_button').click(function () {
-        $('.song_link').each(function (index, item) {
-            if ($(item).attr('data-track') == selected_track) {
-                $('#battleModal').modal('hide');
-
-                setSongActive(selected_track, party_code, 2, item);
-            }
-        });
-    });
-}
-
-
-function setSongActive(track_uri, code, side, item) {
-    $.ajax({
-        type: "POST",
-        url: '/party/active_track',
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        dataType: "json",
-        data: {
-            'track_uri': track_uri,
-            'party_code': code,
-            'side': side
-        },
-        success: function (response) {
-            if (side == 1) {
-                $('#left_side').children('img').attr('src', $(item).find('img').attr('src'));
-                $('#left_side').find('h5').text($(item).find('h5').text());
-                $('#left_side').find('p').text($(item).find('p').text());
-            } else {
-                $('#right_side').children('img').attr('src', $(item).find('img').attr('src'));
-                $('#right_side').find('h5').text($(item).find('h5').text());
-                $('#right_side').find('p').text($(item).find('p').text());
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-}
+$(document).on('click','#management',function(event){
+    event.preventDefault()
+})
 
 
 }
