@@ -19,7 +19,7 @@
 
                                 @if($party->user->id != Auth::id())
                                 <div id="#suggested-song"
-                                    class="d-none suggested-song justify-content-around col-12 align-items-center p-0 p-sm-2 p-md-2 p-lg-2 p-xl-2"
+                                    class="d-none suggested-song justify-content-around  col-12 col-lg-8 col-xl-8 align-items-center p-0 p-sm-1 p-md-1 p-lg-1 p-xl-1 mb-1"
                                     data-track-uri="{{Auth::user()->participates()->where('party_id',$party->id)->first()->pivot->suggest_track_uri}}">
                                     <div
                                         class="list-group-item list-group-item-action align-items-start">
@@ -27,7 +27,7 @@
                                             <div class="col-2 h-100 p-0">
                                                 <img src="" alt="">
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-8 pl-0 pl-sm-1 pl-md-1 pl-lg-1 pl-xl-1">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <h6></h6>
                                                     <small ></small>
@@ -91,24 +91,24 @@
 
 
                     <div id="suggested-prototype"
-                        class=" d-none justify-content-around col-12 align-items-center p-2">
+                        class="justify-content-around  col-12 col-lg-8 col-xl-8 align-items-center p-0 p-sm-1 p-md-1 p-lg-1 p-xl-1 mb-1">
                         <div class="list-group-item list-group-item-action align-items-start">
                             <div class="row align-items-center justify-content-around">
                                 <div class="col-2 h-100 p-0">
                                     <img src="" alt="">
                                 </div>
-                                <div class="col-8">
+                                <div class="col-8 pl-0 pl-sm-1 pl-md-1 pl-lg-1 pl-xl-1">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6></h6>
-                                        <small ></small>
+                                        <small class="ml-2" ></small>
                                     </div>
                                     <div class="d-flex w-100 justify-content-between">
                                         <small></small>
-                                        <small ></small>
+                                        <small  class="ml-2"></small>
                                     </div>
                                 </div>
                                 <div class="suggested-delete col-1">
-                                    <span class="">
+                                    <span >
                                         <i class="fa fa-times fa-2x" aria-hidden="true"></i>
                                     </span>
 
