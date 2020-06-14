@@ -78,7 +78,7 @@
                       <li><a data-toggle="modal" data-target="#suggestedSongsModal" href="#">Suggested List</a></li>
                   </ul>
               </li>
-              @else
+              @elseif(Route::currentRouteName() == 'party.show' )
               <li cl><a data-toggle="modal" data-target="#suggestedSongsModal" href="#"><i class="fa fa-headphones fa-1 mr-1" aria-hidden="true"></i> My suggestion</a></li>
               @endif
 

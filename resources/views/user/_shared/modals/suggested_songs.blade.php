@@ -91,7 +91,7 @@
 
 
                     <div id="suggested-prototype"
-                        class="justify-content-around  col-12 col-lg-8 col-xl-8 align-items-center p-0 p-sm-1 p-md-1 p-lg-1 p-xl-1 mb-1">
+                        class=" d-none justify-content-around  col-12 col-lg-8 col-xl-8 align-items-center p-0 p-sm-1 p-md-1 p-lg-1 p-xl-1 mb-1">
                         <div class="list-group-item list-group-item-action align-items-start">
                             <div class="row align-items-center justify-content-around">
                                 <div class="col-2 h-100 p-0">
