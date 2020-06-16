@@ -204,6 +204,21 @@ function get_next_song(code) {
 
 }
 
+function accept_suggested_song_if_major(elements, new_uri) {
+    
+    // Dopo 5 suggerimenti viene aggiunta la canzone
+    var count = 0, size = 5; 
+    $.each(elements.children('div'), function (index, element) {
+        if($(element).attr('data-track-uri') == new_uri) count++;
+    });
+
+    if(count >= size) {
+        // Accetto
+        elements.find(".suggest-item[data-track-uri='" + new_uri + "']").first().click();
+        elements.find(".suggest-item[data-track-uri='" + new_uri + "']").find(".suggested-delete").click();
+    }
+}
+
 const play_song = function (code, id, position_ms) {
     return new Promise((resolve, reject) => {
         $.ajax({
@@ -1090,6 +1105,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     type: 'success',
                     title: 'A new song has been suggested'
                 })
+
+                accept_suggested_song_if_major(suggested_songs, track_uri);
             })
                 .catch(function (e) {
                     console.log(e)
