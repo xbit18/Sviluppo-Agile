@@ -1,6 +1,7 @@
 @extends('user.layouts.layout',['battle' => true])
 
 @section('content')
+@include('user._shared.vote_ad', ['user' => Auth::user(), 'party' => $party, 'voted' => $liked ])
 
     <!--
 <div class="animated-back">

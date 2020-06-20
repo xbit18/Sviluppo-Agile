@@ -438,6 +438,8 @@
                 $('#right_side').find('button').removeClass('voted');
                 $('#right_side').find('button').removeClass('unlike');
                 $('#right_side').find('button').find('span').text('0');
+                $('#vote_ad').removeClass('d-none');
+
             } else {
                 var track_id = data.track.track_uri.replace('spotify:track:', '');
                 instance({
@@ -519,6 +521,7 @@
                         vote.removeClass('like_bat');
                         vote.addClass('unlike');
                         vote.addClass('voted');
+                        $('#vote_ad').addClass('d-none');
                         //vote.children('span').text(parseInt(vote.children('span').text()) + 1);
                     }
                     else {
@@ -559,6 +562,7 @@
                         vote.removeClass('unlike');
                         vote.addClass('like_bat');
                         vote.removeClass('voted');
+                        $('#vote_ad').removeClass('d-none');
                         //vote.children('span').text(parseInt(vote.children('span').text()) - 1);
                     }
                     else {

@@ -62,6 +62,7 @@ Route::group(['middleware' => ['auth','totalban']], function () {
     // Route::get('/party/{code}/suggestedTracks/{id}/vote', 'TrackController@voteSuggestedSong')->name('party.voteSuggestedTrack');
     // Route::get('/party/{code}/suggestedTracks/{id}/unvote', 'TrackController@unvoteSuggestedSong')->name('party.unvoteSuggestedTrack');
 
+
     /* PARTY KICK & BAN */
 
     Route::post('/party/{code}/user/{user_id}/kick/', 'PartyManagerController@kick')->name('kick.user');
@@ -81,7 +82,7 @@ Route::group(['middleware' => ['auth','totalban']], function () {
 
     /**Get songs by Genre**/
     Route::post('/party/playlist/populate','PartyController@populateParty')->name('playlist.populate');
-    Route::get('/party/{code}/playlist/populate/me','PartyController@populateByPreferences')->name('playlist.populate.me');
+    Route::get('/party/{code}/playlist/populate/me','PartyController@populatePartyByPreferences')->name('playlist.populate.me');
     /**
      * Invite routes
      */

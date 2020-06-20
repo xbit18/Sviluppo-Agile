@@ -482,6 +482,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     function refresh_all(tracks, actual_playing_uri) {
         $('#party_playlist').empty();
+        $('#vote_ad').removeClass('d-none');
 
         $.each(tracks, function (index, track) {
             if (actual_playing_uri != track.track_uri) {
@@ -1176,6 +1177,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     vote.removeClass('like_bat');
                     vote.addClass('unlike');
                     vote.addClass('voted');
+                    $('#vote_ad').addClass('d-none');
+
                 }
                 else {
                     Toast.fire({
@@ -1215,6 +1218,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                     vote.removeClass('unlike');
                     vote.addClass('like_bat');
                     vote.removeClass('voted');
+                    $('#vote_ad').removeClass('d-none');
+
                 }
                 else {
                     Toast.fire({

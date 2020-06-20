@@ -10,8 +10,11 @@
             <h5 class="widget-title">SONGS</h5>
         </div>
         <div class="col-md-4 col-12 text-center">
-            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn" data-toggle="modal"
+            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" data-toggle="modal"
                 data-target="#addSongsModal">+10 songs</button> @endif
+        </div>
+        <div class="col-md-4 col-12 text-center">
+            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" id="addSongByPreferences">+10 from my Preferences</button> @endif
         </div>
     </div>
     @endif

@@ -473,10 +473,32 @@ class PartyController extends Controller
 
     }
 
-    public function populateByPreferences($code){
+    public function populatePartyByPreferences($code) {
+        $uris = $this->populateByPreferences();
+
         $party = Party::where('code','=',$code)->first();
+        if(Auth::user()->id != $party->user->id) abort(401);
+        $tracks_array = collect();
+
+        foreach($uris as $song) {
+            $track = Track::create([
+                'party_id' => $party->id,
+                'track_uri' => $song
+            ]);
+            $party->tracks()->save($track);
+            $tracks_array->push($track);
+        }
+
+        broadcast(new SongAdded($party, $tracks_array));
+
+        return response()->json([
+            'message' => 'Tracks added'
+        ]);
+    }
+
+    public function populateByPreferences(){
         $URI = 'https://api.spotify.com/v1/me/top/tracks?time_range=short_term';
-        if(Auth::id() == $party->user_id) {
+        try {
             $response = Http::withHeaders(['Authorization' => 'Bearer ' . Auth::user()->access_token])->get($URI);
             $tracks = array();
             if (!isset($response['items'])) return redirect()->route('spotify.login');
@@ -487,6 +509,8 @@ class PartyController extends Controller
                 $tracks_uris[] = $track['uri'];
             }
             return $tracks_uris;
+        }catch (SpotifyWebApiException $e){
+            return redirect()->route('spotify.login');
         }
     }
 

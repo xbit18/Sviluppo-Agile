@@ -205,14 +205,14 @@ function get_next_song(code) {
 }
 
 function accept_suggested_song_if_major(elements, new_uri) {
-    
+
     // Dopo 5 suggerimenti viene aggiunta la canzone
-    var count = 0, size = 5; 
+    var count = 0, size = 5;
     $.each(elements.children('div'), function (index, element) {
-        if($(element).attr('data-track-uri') == new_uri) count++;
+        if ($(element).attr('data-track-uri') == new_uri) count++;
     });
 
-    if(count >= size) {
+    if (count >= size) {
         // Accetto
         elements.find(".suggest-item[data-track-uri='" + new_uri + "']").first().click();
         elements.find(".suggest-item[data-track-uri='" + new_uri + "']").find(".suggested-delete").click();
@@ -514,6 +514,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             link.fadeOut('normal', () => {
                 link.remove();
             });
+
+            $('#vote_ad').removeClass('d-none');
 
         });
 
@@ -1127,45 +1129,98 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     })
 
 
+    $('#addSongByPreferences').click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/playlist/populate/me",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response, "Add by Preferences response");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
 
-$(document).on('submit', '#playlistPopolate', function (event) {
-    event.preventDefault();
+    })
 
-    let genre = $('#genre').val();
+    $(document).on('submit', '#playlistPopolate', function (event) {
+        event.preventDefault();
+
+        let genre = $('#genre').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/party/playlist/populate",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            data: {
+                "genre_id": genre,
+                "party_code": party_code
+            },
+            success: function (response) {
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    })
+
+    channel.listen('.song.auto-skip', function () {
+        get_next_song(party_code)
+    })
 
 
-    $.ajax({
-        type: "POST",
-        url: "/party/playlist/populate",
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        dataType: "json",
-        data: {
-            "genre_id": genre,
-            "party_code": party_code
-        },
-        success: function (response) {
+    channel.listen('.song.added', function (data) {
+        if (data.tracks.length > 1) {
+            $.each(data.tracks, function (index, element) {
 
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
+                let track_id = element.track_uri.replace('spotify:track:', '');
+                let song_id = element.id;
+                instance({
+                    url: "https://api.spotify.com/v1/tracks/" + track_id,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                    },
+                    dataType: 'json',
+                }).then(function (data) {
+                    let song_link = $('#playlist_song_prototype').clone();
+                    song_link.find('button').eq(0).find('span').addClass('like');
+                    song_link.removeAttr('id');
+                    song_link.attr('data-track', data.data.uri);
+                    song_link.attr('data-song-id', song_id);
+                    let item = populate_song_link(song_link, data.data, song_id, true);
+                    playlist_dom.append(item).hide().fadeIn();
 
-})
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 6000
+                    });
 
-channel.listen('.song.auto-skip', function () {
-    get_next_song(party_code)
-})
+                    Toast.fire({
+                        type: 'success',
+                        title: 'A new song has been added to the playlist!'
+                    });
 
+                })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
 
-channel.listen('.song.added', function (data) {
-    if (data.tracks.length > 1) {
-        $.each(data.tracks, function (index, element) {
-
-            let track_id = element.track_uri.replace('spotify:track:', '');
-            let song_id = element.id;
+            });
+        } else {
+            let track_id = data.tracks.track_uri.replace('spotify:track:', '');
+            let song_id = data.tracks.id;
             instance({
                 url: "https://api.spotify.com/v1/tracks/" + track_id,
                 method: 'GET',
@@ -1175,7 +1230,6 @@ channel.listen('.song.added', function (data) {
                 dataType: 'json',
             }).then(function (data) {
                 let song_link = $('#playlist_song_prototype').clone();
-                song_link.find('button').eq(0).find('span').addClass('like');
                 song_link.removeAttr('id');
                 song_link.attr('data-track', data.data.uri);
                 song_link.attr('data-song-id', song_id);
@@ -1191,157 +1245,123 @@ channel.listen('.song.added', function (data) {
 
                 Toast.fire({
                     type: 'success',
-                    title: 'A new song has been added to the playlist!'
+                    title: 'A new son has been added to the playlist!'
                 });
 
             })
                 .catch(function (error) {
                     console.log(error);
                 });
+        }
 
-        });
-    } else {
-        let track_id = data.tracks.track_uri.replace('spotify:track:', '');
-        let song_id = data.tracks.id;
-        instance({
-            url: "https://api.spotify.com/v1/tracks/" + track_id,
-            method: 'GET',
+
+    })
+
+
+    /*------------VOTE A SONG ------------ */
+
+    $(document).on('click', '.like', function (event) {
+        event.preventDefault();
+        event.stopPropagation()
+        let vote = $(this);
+        let parent = $(this).parents('a.song_link');
+        let song_id = parent.data('song-id');
+
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/vote`,
             headers: {
-                'Authorization': 'Bearer ' + token,
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            dataType: 'json',
-        }).then(function (data) {
-            let song_link = $('#playlist_song_prototype').clone();
-            song_link.removeAttr('id');
-            song_link.attr('data-track', data.data.uri);
-            song_link.attr('data-song-id', song_id);
-            let item = populate_song_link(song_link, data.data, song_id, true);
-            playlist_dom.append(item).hide().fadeIn();
+            dataType: "json",
+            success: function (response) {
+                if (!response.error) {
+                    vote.removeClass('like');
+                    vote.addClass('unlike');
+                    $('#vote_ad').addClass("d-none");
+                }
 
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 6000
-            });
-
-            Toast.fire({
-                type: 'success',
-                title: 'A new son has been added to the playlist!'
-            });
-
-        })
-            .catch(function (error) {
+            },
+            error: function (error) {
                 console.log(error);
-            });
-    }
-
-
-})
-
-
-/*------------VOTE A SONG ------------ */
-
-$(document).on('click', '.like', function (event) {
-    event.preventDefault();
-    event.stopPropagation()
-    let vote = $(this);
-    let parent = $(this).parents('a.song_link');
-    let song_id = parent.data('song-id');
-
-    $.ajax({
-        type: "GET",
-        url: `/party/${party_code}/tracks/${song_id}/vote`,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        dataType: "json",
-        success: function (response) {
-            if (!response.error) {
-                vote.removeClass('like');
-                vote.addClass('unlike');
             }
+        });
 
-        },
-        error: function (error) {
-            console.log(error);
-        }
     });
 
-});
+    /* -------------------- UNVOTE A SONG -----------------*/
 
-/* -------------------- UNVOTE A SONG -----------------*/
+    $(document).on('click', '.unlike', function (event) {
+        event.preventDefault();
+        event.stopPropagation()
+        let vote = $(this);
+        let parent = $(this).parents('a.song_link');
+        let song_id = parent.data('song-id');
 
-$(document).on('click', '.unlike', function (event) {
-    event.preventDefault();
-    event.stopPropagation()
-    let vote = $(this);
-    let parent = $(this).parents('a.song_link');
-    let song_id = parent.data('song-id');
+        $.ajax({
+            type: "GET",
+            url: `/party/${party_code}/tracks/${song_id}/unvote`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                if (!response.error) {
+                    vote.removeClass('unlike');
+                    vote.addClass('like');
+                    $('#vote_ad').removeClass("d-none");
+                }
 
-    $.ajax({
-        type: "GET",
-        url: `/party/${party_code}/tracks/${song_id}/unvote`,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        dataType: "json",
-        success: function (response) {
-            if (!response.error) {
-                vote.removeClass('unlike');
-                vote.addClass('like');
+            },
+            error: function (error) {
+                console.log(error);
             }
+        });
 
-        },
-        error: function (error) {
-            console.log(error);
-        }
     });
 
-});
+    /**  Remove a suggested song **/
 
-/**  Remove a suggested song **/
-
-$(document).on('click', '.suggested-delete', function (event) {
-    event.preventDefault();
-    event.stopPropagation();
+    $(document).on('click', '.suggested-delete', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
 
 
-    let parent = $(this).parents('.suggested-song');
-    let user_id = parent.data('user-id');
+        let parent = $(this).parents('.suggested-song');
+        let user_id = parent.data('user-id');
 
-    $.ajax({
-        type: "POST",
-        url: `/party/${party_code}/tracks/suggest/remove`,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        data: {
-            "user_id": user_id
-        },
-        dataType: "json",
-        success: function (response) {
-            console.log('removed');
-            parent.fadeOut(300, function () {
-                parent.remove();
-            })
+        $.ajax({
+            type: "POST",
+            url: `/party/${party_code}/tracks/suggest/remove`,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                "user_id": user_id
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log('removed');
+                parent.fadeOut(300, function () {
+                    parent.remove();
+                })
 
-        },
-        error: function (error) {
+            },
+            error: function (error) {
 
-        }
-    });
-})
+            }
+        });
+    })
 
-/* ---------------------------------------------------------------- */
+    /* ---------------------------------------------------------------- */
 
-$(document).on('click','#management',function(event){
-    event.preventDefault()
-})
+    $(document).on('click', '#management', function (event) {
+        event.preventDefault()
+    })
 
 
 }
-;
+    ;
 
 // FINE onSpotifyWebPlaybackSDKReady
 

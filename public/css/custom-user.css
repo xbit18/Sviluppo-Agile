@@ -339,6 +339,15 @@ a h5, a small, a p, a .like, a span {
     animation: scale_vs 0.8s ease infinite;
 }
 
+#vote_ad {
+    position: fixed;
+    top: 100px;
+    left: 30%;
+    right: 30%;
+    animation: scale_vote 0.8s ease infinite;
+    z-index: 1000;
+}
+
 .poca-back {
     background-color: #f55656;
     color: white;
@@ -368,6 +377,18 @@ a h5, a small, a p, a .like, a span {
 	}
 	100% {
 		transform: scale(1.2, 1.2);
+	}
+}
+
+@keyframes scale_vote {
+	0% {
+        transform: scale(1.05, 1.05);
+	}
+	50% {
+		transform: scale(1, 1);
+	}
+	100% {
+		transform: scale(1.05, 1.05);
 	}
 }
 

@@ -240,6 +240,8 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
             if (!($('#title-player').text() === state.track_window.current_track.name)) {
                 $('#title-player').text(state.track_window.current_track.name);
+                $('#vote_ad').removeClass('d-none');
+
 
                 var artists = "";
                 $.each(state.track_window.current_track.artists, function (index, artist) {
@@ -862,6 +864,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 if (!response.error) {
                     vote.removeClass('like');
                     vote.addClass('unlike');
+                    $('#vote_ad').addClass('d-none');
                 }
 
             },
@@ -892,6 +895,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
                 if (!response.error) {
                     vote.removeClass('unlike');
                     vote.addClass('like');
+                    $('#vote_ad').removeClass('d-none');
                 }
 
             },
