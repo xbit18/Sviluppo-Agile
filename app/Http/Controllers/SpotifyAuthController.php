@@ -30,7 +30,8 @@ class SpotifyAuthController extends Controller
                 'user-read-private',
                 'user-read-email',
                 'streaming',
-                'playlist-modify-private'
+                'playlist-modify-private',
+                'user-top-read'
             ],
         ];
 
