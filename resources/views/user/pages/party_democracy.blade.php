@@ -65,7 +65,7 @@
         <div class="col-lg-8 col-md-12  h-100">
             <div class="row h-100">
 
-               
+
 
                 <div class="row h-25">
                      {{-- CARD --}}
@@ -78,7 +78,7 @@
                     @include('.user._shared.cerca')
                     {{-- PLAYLIST --}}
                     @include('.user._shared.playlist', ['party' => $party, 'liked' => $liked])
-                    
+
                 </div>
 
             </div>
@@ -88,7 +88,7 @@
             {{-- LISTA PARTECIPANTI --}}
             @include('.user._shared.lista_partecipanti')
             @include('.user._shared.player', ['party' => $party])
-            
+
         </div>
 
 
@@ -123,6 +123,10 @@
 @include('user._shared.modals.ban_user')
 
 @include('user._shared.modals.unban',['party' => $party])
+
+{{-- Suggested Songs List   --}}
+
+@include('user._shared.modals.suggested_songs')
 
 @endisset
 

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Party;
 use App\UserBanUser;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class UserTest extends TestCase
 {
 
     use RefreshDatabase;
+
     protected $user;
     protected $password;
     protected $party;
@@ -22,7 +24,8 @@ class UserTest extends TestCase
     protected $participant;
     protected $code;
 
-    public function setUp() :void{
+    public function setUp(): void
+    {
 
         parent::setUp();
 
@@ -52,7 +55,7 @@ class UserTest extends TestCase
 
     }
 
-    /** @test **/
+    /** @test * */
     public function if_not_logged_in_redirect_log_in_page()
     {
         $response = $this->get('/');
@@ -60,9 +63,10 @@ class UserTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /** @test **/
+    /** @test * */
 
-    public function users_can_register(){
+    public function users_can_register()
+    {
 
         $this->withoutExceptionHandling();
         $response = $this->get('/register');
@@ -78,16 +82,17 @@ class UserTest extends TestCase
 
     }
 
-    /** @test **/
+    /** @test * */
 
-    public function users_can_log_in(){
+    public function users_can_log_in()
+    {
 
         $this->withoutExceptionHandling();
 
         $response = $this->get('/login');
         $response->assertStatus(200);
 
-        $response = $this->post('/login',[
+        $response = $this->post('/login', [
             'email' => $this->user->email,
             'password' => $this->password
         ]);
@@ -96,12 +101,13 @@ class UserTest extends TestCase
 
     }
 
-    /** @test **/
+    /** @test * */
 
-    public function users_cannot_log_in_with_incorrect_password(){
+    public function users_cannot_log_in_with_incorrect_password()
+    {
 
 
-        $response = $this->from('/login')->post('/login',[
+        $response = $this->from('/login')->post('/login', [
             'email' => $this->user->email,
             'password' => 'invalid-password',
         ]);
@@ -111,26 +117,67 @@ class UserTest extends TestCase
         $this->assertGuest();
     }
 
-    /** @test **/
 
-    public function host_can_ban_a_user(){
+    /** @test * */
 
-        $this->actingAs($this->host)->get('/party/'.$this->party->code.'/user/'.$this->participant->id.'/ban');
-        $response = UserBanUser::where('user_id','=',$this->host->id)->where('ban_user_id','=',$this->participant->id)->get();
-        $this->assertCount(1,$response);
+    public function user_cannot_ban_himself()
+    {
+
+        $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/user/' . $this->host->id . '/ban');
+        $response->assertExactJson([
+            'message' => 'You cannot ban yourself',
+            'error' => true,
+        ]);
 
     }
 
-    /** @test **/
+    /** @test * */
 
-    public function banned_user_cannot_access_party(){
-        $this->actingAs($this->host)->get('/party/'.$this->party->code.'/user/'.$this->participant->id.'/ban');
-        $response = $this->actingAs($this->participant)->get('/party/show/'.$this->party->code);
+    public function user_cannot_ban_a_non_existent_user()
+    {
+
+        $response = $response = $this->actingAs($this->host)->get('/party/' . $this->party->code . '/user/999999/ban');
+        $response->assertExactJson([
+            'message' => 'This user does not exists',
+            'error' => true,
+        ]);
+
+    }
+
+
+    /** @test * */
+
+    public function host_can_ban_a_user()
+    {
+
+        $this->actingAs($this->host)->get('/party/' . $this->party->code . '/user/' . $this->participant->id . '/ban');
+        $response = UserBanUser::where('user_id', '=', $this->host->id)->where('ban_user_id', '=', $this->participant->id)->get();
+        $this->assertCount(1, $response);
+
+    }
+
+    /** @test * */
+
+    public function banned_user_cannot_enter_to_the_party()
+    {
+        $this->actingAs($this->host)->get('/party/' . $this->party->code . '/user/' . $this->participant->id . '/ban');
+        $response = $this->actingAs($this->participant)->get('/party/show/' . $this->party->code);
+        $response->assertSessionHasErrors('error');
+
+    }
+
+    /** @test * */
+
+    public function banned_user_cannot_access_party()
+    {
+        $this->actingAs($this->host)->get('/party/' . $this->party->code . '/user/' . $this->participant->id . '/ban');
+        $response = $this->actingAs($this->participant)->get('/party/show/' . $this->party->code);
         $response->assertRedirect('/party/show');
     }
 
 
-    private function data(){
+    private function data()
+    {
         return [
             'name' => 'Bryant Sarabia',
             'email' => 'bryantsarabia@example.com',

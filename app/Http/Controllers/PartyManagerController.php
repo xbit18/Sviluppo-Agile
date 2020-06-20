@@ -24,7 +24,16 @@ class PartyManagerController extends Controller
      */
    public function kick(Request $request, $code, $user_id){
 
-       if(Auth::user()->id == $user_id)
+       $user_test = User::find($user_id);
+
+       if (!$user_test){
+           return response()->json([
+               'message' => 'This user does not exist',
+               'error' => true,
+           ]);
+       }
+
+       if(Auth::id() == $user_id)
        {
            return response()->json([
                'message' => 'You cannot kick yourself',
@@ -34,8 +43,17 @@ class PartyManagerController extends Controller
 
 
        $party = Party::where('code',$code)->first();
-   
+
+       if($party->user->id != Auth::id()){
+           return response()->json([
+               'message' => 'You are not the host of this party',
+               'error' => true,
+           ]);
+       }
+
        $user = $party->users()->where('user_id',$user_id)->first();
+
+
        if($user == null) {
            return response()->json([
                'message' => 'The given user does not participate in this party',
@@ -43,11 +61,11 @@ class PartyManagerController extends Controller
            ]);
 
        }
-       $user->participates()->updateExistingPivot($party->id,['timestamp_kick' => Carbon::now('Europe/London')] );
+       $user->participates()->updateExistingPivot($party->id,['timestamp_kick' => Carbon::now('Europe/London')->addHours(1)] );
 
-       
+
        if(($request->kick_duration) < (Carbon::now('Europe/London'))){
-           return response()->json()([
+           return response()->json([
                'message'=> 'kick time cannot be earlier than now',
                'error' => true,
                ]);
@@ -116,7 +134,7 @@ class PartyManagerController extends Controller
                'error' => true,
            ]);
        }
-       
+
        $already_banned = $user->bans()->where('ban_user_id', $user_to_ban->id)->first();
 
        if($already_banned == null){
@@ -164,7 +182,7 @@ class PartyManagerController extends Controller
                'error' => true,
            ]);
        }
-       
+
        $already_banned = $user->bans()->where('ban_user_id', $user_to_ban->id)->first();
 
        if($already_banned !== null){

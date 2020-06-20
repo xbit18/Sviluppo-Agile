@@ -30,9 +30,9 @@ class Kicked
         $user = Auth::user();
 
         $kick_duration = $party->users()->where('user_id',$user->id)->first();
-        
+
         if($kick_duration){
-            if( $kick_duration->pivot->kick_duration > Carbon::now()){
+            if( $kick_duration->pivot->kick_duration > Carbon::now()->addHours(1)){
                 return redirect()->route('parties.index')->withErrors([
                     'error' => 'This host has kicked you'
                 ]);

@@ -49,6 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
                                         'timestamp_kick',
                                         'kick_duration',
                                         'skip',
+                                        'suggest_track_uri',
                                     ])
                                     ->withTimestamps();
     }

@@ -56,6 +56,11 @@ Route::group(['middleware' => ['auth','totalban']], function () {
     //Route::post('/party/release_track', 'TrackController@setTrackNotActive')->name('party.releaseTrack');
     Route::delete('/party/{code}/tracks/{id}', 'TrackController@deleteTrackFromPlaylist')->name('party.deleteTrack');
 
+    Route::post('/party/{code}/tracks/suggest/add', 'TrackController@suggestSong')->name('party.suggestSong');
+    Route::post('/party/{code}/tracks/suggest/remove', 'TrackController@removeSuggestedSong')->name('party.removeSuggestedSong');
+
+    // Route::get('/party/{code}/suggestedTracks/{id}/vote', 'TrackController@voteSuggestedSong')->name('party.voteSuggestedTrack');
+    // Route::get('/party/{code}/suggestedTracks/{id}/unvote', 'TrackController@unvoteSuggestedSong')->name('party.unvoteSuggestedTrack');
 
     /* PARTY KICK & BAN */
 
