@@ -6,14 +6,14 @@
 <div class="single-widget-area catagories-widget mt-3 mb-40 h-50">
     @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
     <div class="row justify-content-between  mt-20 mb-2">
-        <div class="col-md-4 col-12 text-center">
+        <div class="col-md-12 col-12 text-center">
             <h5 class="widget-title">SONGS</h5>
         </div>
-        <div class="col-md-4 col-12 text-center">
+        <div class="col-md-12 col-12 text-center">
             @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" data-toggle="modal"
-                data-target="#addSongsModal">+10 songs</button> @endif
+                data-target="#addSongsModal">+10 songs by Genre</button> @endif
         </div>
-        <div class="col-md-4 col-12 text-center">
+        <div class="col-md-12 col-12 text-center">
             @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" id="addSongByPreferences">+10 from my Preferences</button> @endif
         </div>
     </div>
@@ -104,12 +104,15 @@
 <div class="single-widget-area catagories-widget h-50" id="battle-playlist">
     @if($party->type == 'Democracy' || Auth::user()->id == $party->user->id)
     <div class="row justify-content-around  mt-12 mb-2 ">
-        <div class="col-md-4 col-12 text-center">
+        <div class="col-md-12 col-12 text-center">
             <h5 class="widget-title">SONGS</h5>
         </div>
-        <div class="col-md-4 col-12 text-center">
-            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn" data-toggle="modal"
-                data-target="#addSongsModal">+10 songs</button> @endif
+        <div class="col-md-12 col-12 text-center">
+            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" data-toggle="modal"
+                data-target="#addSongsModal">+10 songs by Genre</button> @endif
+        </div>
+        <div class="col-md-12 col-12 text-center">
+            @if(Auth::user()->id == $party->user->id) <button type="button" class="btn poca-btn mt-2" id="addSongByPreferences">+10 from my Preferences</button> @endif
         </div>
     </div>
     @endif

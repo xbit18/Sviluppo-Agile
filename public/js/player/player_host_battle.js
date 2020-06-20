@@ -1235,6 +1235,24 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     });
 
+    $('#addSongByPreferences').click(function () {
+        $.ajax({
+            type: "GET",
+            url: "/party/" + party_code + "/playlist/populate/me",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log(response, "Add by Preferences response");
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+
+    })
+
 
 
     /** ----------- Gestione dell'aggiunta delle canzoni sul ring in modalità Battle ------------ */
